@@ -15,7 +15,7 @@ if getenv("DEV", "").lower() == "true":
 
     lights_serivce = MockService()
 else:
-    from src.lights_service.neopixel_serice import NeopixelService
+    from ledstrip.api.src.lights_service.neopixel_service import NeopixelService
 
     lights_serivce = NeopixelService()
 
