@@ -1,0 +1,3 @@
+adafruit_circuitpython_neopixel==6.3.11
+pygame==2.5.2
+python-dotenv==0.21.1
