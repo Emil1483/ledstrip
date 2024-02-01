@@ -93,11 +93,6 @@ if __name__ == "__main__":
                 modes[activated_mode]()
         finally:
             print("\nServer stopped")
-            print(0)
             lights_serivce.fill((0, 0, 0))
-            print(1)
             lights_serivce.show()
-            print(2)
             lights_serivce.teardown()
-            print(3)
-            httpd.shutdown()
