@@ -11,7 +11,7 @@ class PygameQuit(Exception):
 class MockService(LightsService):
     def __init__(self, num_pixels: int = 1081) -> None:
         self.WINDOW_WIDTH = 1500
-        self.WINDOW_HEIGHT = 800
+        self.WINDOW_HEIGHT = 200
         self.NUM_PIXELS = num_pixels
         self.CIRCLE_RADIUS = 5
 
@@ -48,3 +48,6 @@ class MockService(LightsService):
 
     def fill(self, color: tuple[int, int, int]) -> None:
         self._pixels = [color for _ in range(self.NUM_PIXELS)]
+
+    def teardown(self) -> None:
+        pygame.quit()

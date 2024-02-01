@@ -18,5 +18,10 @@ class LightsService(ABC):
     def __getitem__(self, key: int) -> tuple[int, int, int]:
         raise NotImplementedError()
 
+    @abstractmethod
+    def teardown(self) -> None:
+        raise NotImplementedError()
+
+    @abstractmethod
     def __len__(self) -> int:
         raise NotImplementedError()

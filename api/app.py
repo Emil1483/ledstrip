@@ -1,4 +1,4 @@
-import http.server
+from http.server import SimpleHTTPRequestHandler
 import json
 from os import getenv
 import socketserver
@@ -24,10 +24,21 @@ modes = {
     "off": Off(lights_serivce),
 }
 
-activated_mode = "rainbow"
+activated_mode = "off"
 
 
-class LightsHTTPHandler(http.server.SimpleHTTPRequestHandler):
+class LightsHTTPHandler(SimpleHTTPRequestHandler):
+    def end_headers(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "*")
+        self.send_header("Access-Control-Allow-Headers", "*")
+        SimpleHTTPRequestHandler.end_headers(self)
+
+    def do_OPTIONS(self) -> None:
+        self.send_response(200)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self) -> None:
         self.send_response(200)
 
@@ -82,6 +93,11 @@ if __name__ == "__main__":
                 modes[activated_mode]()
         finally:
             print("\nServer stopped")
+            print(0)
             lights_serivce.fill((0, 0, 0))
+            print(1)
             lights_serivce.show()
+            print(2)
+            lights_serivce.teardown()
+            print(3)
             httpd.shutdown()

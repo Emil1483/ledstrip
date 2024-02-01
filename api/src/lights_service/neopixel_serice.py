@@ -20,3 +20,6 @@ class NeopixelService(LightsService):
 
     def __len__(self) -> int:
         return self._num_pixels
+
+    def teardown(self) -> None:
+        pass
