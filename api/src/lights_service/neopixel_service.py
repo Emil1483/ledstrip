@@ -18,6 +18,9 @@ class NeopixelService(LightsService):
     def show(self) -> None:
         self._pixels.show()
 
+    def fill(self, value: tuple[int, int, int]) -> None:
+        self._pixels.fill(value)
+
     def __len__(self) -> int:
         return self._num_pixels
 
