@@ -1,5 +1,8 @@
 import { GetServerSideProps } from "next";
+import getConfig from "next/config";
 import { useState } from "react";
+
+const { publicRuntimeConfig } = getConfig();
 
 interface ModesData {
     [key: string]: boolean;
@@ -15,12 +18,14 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
 
     const handleClick = async (mode: string) => {
         try {
+            console.log(publicRuntimeConfig.API_URL)
+
             setLoadingStates(prevLoadingStates => ({
                 ...prevLoadingStates,
                 [mode]: true,
             }));
 
-            await fetch('http://localhost:8080/modes', {
+            await fetch(`${publicRuntimeConfig.API_URL}/modes`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -36,7 +41,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
                 [mode]: true,
             }));
 
-            const res = await fetch('http://localhost:8080/modes');
+            const res = await fetch(`${publicRuntimeConfig.API_URL}/modes`);
             const latestModes: ModesData = await res.json();
             setModes(latestModes);
         } catch (error) {
@@ -66,7 +71,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-    const res = await fetch('http://localhost:8080/modes');
+    const res = await fetch(`${process.env.API_URL}/modes`);
     const modes: { [key: string]: boolean } = await res.json();
 
     return {
