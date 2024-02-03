@@ -9,5 +9,5 @@ class LightsMode(ABC):
         self.pixels = lights_service
 
     @abstractmethod
-    def __call__(self) -> None:
+    def __call__(self, dt: float) -> None:
         raise NotImplementedError()

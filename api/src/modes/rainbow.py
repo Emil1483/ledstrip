@@ -1,29 +1,19 @@
-from time import sleep
 from src.lights_service.lights_service import LightsService
 from src.modes.lights_mode import LightsMode
+import colorsys
 
 
 class Rainbow(LightsMode):
-    def __init__(self, pixels: LightsService) -> None:
+    def __init__(self, pixels: LightsService, frequency=0.001, speed=1.0) -> None:
         super().__init__(pixels)
+        self.t = 0
+        self.frequency = frequency
+        self.speed = speed
 
-    def wheel(self, pos):
-        if pos < 85:
-            return (pos * 3, 255 - pos * 3, 0)
-        elif pos < 170:
-            pos -= 85
-            return (255 - pos * 3, 0, pos * 3)
-        else:
-            pos -= 170
-            return (0, pos * 3, 255 - pos * 3)
-
-    def rainbow_cycle(self, wait):
-        for j in range(255):
-            for i in range(len(self.pixels)):
-                pixel_index = (i * 256 // len(self.pixels)) + j
-                self.pixels[i] = self.wheel(pixel_index & 255)
-            self.pixels.show()
-            sleep(wait)
-
-    def __call__(self) -> None:
-        self.rainbow_cycle(0)
+    def __call__(self, dt: float) -> None:
+        self.t += dt
+        for i in range(len(self.pixels)):
+            h = (self.frequency * i + self.speed * self.t) % 1
+            r, g, b = colorsys.hsv_to_rgb(h, 1, 1)
+            self.pixels[i] = (r * 255, g * 255, b * 255)
+        self.pixels.show()

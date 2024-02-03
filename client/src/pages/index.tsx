@@ -5,66 +5,92 @@ import { useState } from "react";
 const { publicRuntimeConfig } = getConfig();
 
 interface ModesData {
-    [key: string]: boolean;
+    [key: string]: {
+        on: boolean;
+        kwargs: {
+            [key: string]: "str" | "float";
+        };
+    };
 }
 
 interface HomeProps {
     modes: ModesData;
 }
 
+interface ModeForm {
+    [key: string]: string | number;
+}
+
 const Home: React.FC<HomeProps> = ({ modes }) => {
-    const [currentModes, setModes] = useState<ModesData>(modes);
-    const [loadingStates, setLoadingStates] = useState<{ [key: string]: boolean }>({});
+    const [formData, setFormData] = useState<ModeForm>({});
 
-    const handleClick = async (mode: string) => {
-        try {
-            console.log(publicRuntimeConfig.API_URL)
-
-            setLoadingStates(prevLoadingStates => ({
-                ...prevLoadingStates,
-                [mode]: true,
-            }));
-
-            await fetch(`${publicRuntimeConfig.API_URL}/modes`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ set_mode: mode }),
-            });
-
-            setModes(prevModes => ({
-                ...Object.keys(prevModes).reduce((acc: ModesData, key) => {
-                    acc[key] = false;
-                    return acc;
-                }, {}),
-                [mode]: true,
-            }));
-
-            const res = await fetch(`${publicRuntimeConfig.API_URL}/modes`);
-            const latestModes: ModesData = await res.json();
-            setModes(latestModes);
-        } catch (error) {
-            console.error('Error setting mode:', error);
-        } finally {
-            setLoadingStates(prevLoadingStates => ({
-                ...prevLoadingStates,
-                [mode]: false,
-            }));
+    const handleSubmit = async (mode: string) => {
+        const parsedFormData: ModeForm = {};
+        for (const key of Object.keys(modes[mode].kwargs)) {
+            const value = formData[key]
+            if (!value) continue
+            switch (modes[mode].kwargs[key]) {
+                case 'float':
+                    parsedFormData[key] = parseFloat(value as string);
+                    break;
+                case 'str':
+                    parsedFormData[key] = value;
+                    break;
+                default:
+                    throw new Error('Invalid type');
+            }
         }
+
+        const payload = {
+            mode,
+            kwargs: parsedFormData
+        };
+
+        try {
+            const response = await fetch(`${publicRuntimeConfig.API_URL}/modes`, {
+                method: 'POST',
+                body: JSON.stringify(payload)
+            });
+            if (response.ok) {
+                console.log('Data submitted successfully');
+            } else {
+                console.error('Error submitting data');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const handleInputChange = (key: string, value: string | number) => {
+        setFormData(prevData => ({
+            ...prevData,
+            [key]: value
+        }));
     };
 
     return (
         <div>
-            {Object.entries(currentModes).map(([key, value]) => (
-                <button
-                    key={key}
-                    disabled={loadingStates[key] || value}
-                    onClick={() => handleClick(key)}
-                    style={{ marginRight: '10px' }}
-                >
-                    {loadingStates[key] ? 'Loading...' : key}
-                </button>
+            {Object.entries(modes).map(([key, mode]) => (
+                <div key={key}>
+                    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(key); }}>
+                        {Object.entries(mode.kwargs).map(([kwargKey, type]) => (
+                            <div key={kwargKey}>
+                                <label htmlFor={kwargKey}>{kwargKey}</label>
+                                <input
+                                    type={{ str: 'text', float: 'number' }[type]}
+                                    id={kwargKey}
+                                    name={kwargKey}
+                                    value={formData[kwargKey] || ''}
+                                    onChange={(e) => handleInputChange(kwargKey, e.target.value)}
+                                />
+                            </div>
+                        ))}
+                    </form>
+                    <button onClick={() => handleSubmit(key)}>
+                        {key}
+                    </button>
+                    {mode.on ? "On" : "Off"}
+                </div>
             ))}
         </div>
     );
@@ -72,7 +98,8 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
     const res = await fetch(`${process.env.API_URL}/modes`);
-    const modes: { [key: string]: boolean } = await res.json();
+
+    const modes = await res.json();
 
     return {
         props: {

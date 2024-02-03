@@ -7,6 +7,6 @@ class Off(LightsMode):
     def __init__(self, pixels: LightsService) -> None:
         super().__init__(pixels)
 
-    def __call__(self) -> None:
+    def __call__(self, dt: float) -> None:
         self.pixels.fill((0, 0, 0))
         self.pixels.show()

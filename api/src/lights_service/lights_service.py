@@ -1,4 +1,7 @@
 from abc import ABC, abstractmethod
+from os import getenv
+
+from dotenv import load_dotenv
 
 
 class LightsService(ABC):
@@ -25,3 +28,15 @@ class LightsService(ABC):
     @abstractmethod
     def __len__(self) -> int:
         raise NotImplementedError()
+
+
+load_dotenv()
+
+if getenv("DEV", "").lower() == "true":
+    from src.lights_service.mock_service import MockService
+
+    lights_serivce = MockService()
+else:
+    from src.lights_service.neopixel_service import NeopixelService
+
+    lights_serivce = NeopixelService()

@@ -3,28 +3,12 @@ import json
 from os import getenv
 import socketserver
 import threading
-from dotenv import load_dotenv
+from time import time
 
-from src.modes.off import Off
-from src.modes.rainbow import Rainbow
+from src.modes.mode_service import ModeService
+from src.lights_service.lights_service import lights_serivce
 
-load_dotenv()
-
-if getenv("DEV", "").lower() == "true":
-    from src.lights_service.mock_service import MockService
-
-    lights_serivce = MockService()
-else:
-    from src.lights_service.neopixel_service import NeopixelService
-
-    lights_serivce = NeopixelService()
-
-modes = {
-    "rainbow": Rainbow(lights_serivce),
-    "off": Off(lights_serivce),
-}
-
-activated_mode = "off"
+mode_service = ModeService()
 
 
 class LightsHTTPHandler(SimpleHTTPRequestHandler):
@@ -45,32 +29,25 @@ class LightsHTTPHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
 
-        json_response = json.dumps({k: k == activated_mode for k in modes.keys()})
+        json_response = mode_service.status()
 
-        self.wfile.write(json_response.encode("utf-8"))
+        self.wfile.write(json.dumps(json_response).encode("utf-8"))
 
     def do_POST(self):
         content_length = int(self.headers["Content-Length"])
         post_data = self.rfile.read(content_length)
         post_body = json.loads(post_data.decode("utf-8"))
 
-        if "set_mode" not in post_body:
+        if "mode" not in post_body:
             self.send_response(400)
             self.end_headers()
-            self.wfile.write(b'Missing "set_mode" field in JSON body')
+            self.wfile.write(b'Missing "mode" field in JSON body')
             return
 
-        mode = post_body["set_mode"]
+        mode = post_body["mode"]
+        kwargs = post_body.get("kwargs", {})
 
-        if mode not in modes:
-            self.send_response(400)
-            self.end_headers()
-            self.wfile.write(b"Mode not found")
-            return
-
-        global activated_mode
-        activated_mode = mode
-
+        mode_service.set_mode(mode, **kwargs)
         self.send_response(200)
         self.send_header("Content-type", "text/plain")
         self.end_headers()
@@ -89,8 +66,12 @@ if __name__ == "__main__":
         server_thread.start()
 
         try:
+            t = time()
             while True:
-                modes[activated_mode]()
+                now = time()
+                dt = now - t
+                t = now
+                mode_service.mode(dt)
         finally:
             print("\nServer stopped")
             lights_serivce.fill((0, 0, 0))
