@@ -1,4 +1,5 @@
 adafruit_circuitpython_neopixel==6.3.11
+Adafruit-Blinka==8.31.0
 Flask==3.0.2
 pygame==2.5.2
 python-dotenv==0.21.1

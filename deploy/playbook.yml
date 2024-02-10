@@ -1,0 +1,74 @@
+# ansible-playbook -i 192.168.68.69, -u pi -k playbook.yml
+---
+- name: Install Docker on the Raspberry Pi
+  hosts: 192.168.68.69
+  become: true
+
+  tasks:
+    - name: Install required packages
+      apt:
+        state: present
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        state: present
+        url: https://download.docker.com/linux/raspbian/gpg
+
+    - name: Add Docker repository
+      apt_repository:
+        state: present
+        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+
+    - name: Update apt package cache
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        state: present
+        name: docker-ce
+
+    - name: Ensure Docker service is started
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Docker SDK for Python
+      pip:
+        state: present
+        name: docker
+
+    - name: Clone Git repository
+      git:
+        repo: https://github.com/Emil1483/ledstrip.git
+        dest: /src/ledstrip
+
+    - name: Build API Docker image
+      docker_image:
+        name: api
+        tag: latest
+        source: build
+        build:
+          path: /src/ledstrip/api
+
+    - name: Run API Docker container
+      docker_container:
+        name: api
+        image: api:latest
+        state: started
+        restart_policy: unless-stopped
+        capabilities:
+          - SYS_RAWIO
+        devices:
+          - /dev/mem
+          - /dev/vcio
+        ports:
+          - "8080:8080"
