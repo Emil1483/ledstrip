@@ -56,6 +56,8 @@
         name: api
         tag: latest
         source: build
+        force_source: True
+        state: present
         build:
           path: /src/ledstrip/api
 
@@ -65,10 +67,6 @@
         image: api:latest
         state: started
         restart_policy: unless-stopped
-        capabilities:
-          - SYS_RAWIO
-        devices:
-          - /dev/mem
-          - /dev/vcio
+        privileged: true
         ports:
           - "8080:8080"
