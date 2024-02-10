@@ -8,7 +8,7 @@ class PygameQuit(Exception):
     pass
 
 
-class MockService(LightsService):
+class PygameService(LightsService):
     def __init__(self, num_pixels: int = 1081) -> None:
         self.WINDOW_WIDTH = 1500
         self.WINDOW_HEIGHT = 200

@@ -8,10 +8,12 @@ from time import time
 from src.modes.mode_service import ModeService
 from src.lights_service.lights_service import lights_serivce
 
-mode_service = ModeService()
-
 
 class LightsHTTPHandler(SimpleHTTPRequestHandler):
+    def __init__(self, mode_service: ModeService, *args, **kwargs) -> None:
+        self.mode_service = mode_service
+        super().__init__(*args, **kwargs)
+
     def end_headers(self):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "*")
@@ -56,7 +58,11 @@ class LightsHTTPHandler(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     PORT = int(getenv("PORT", "8080"))
-    with socketserver.TCPServer(("", PORT), LightsHTTPHandler) as httpd:
+    mode_service = ModeService()
+    with socketserver.TCPServer(
+        ("", PORT),
+        lambda *args: LightsHTTPHandler(mode_service, *args),
+    ) as httpd:
         print("Server running at port", PORT)
 
         server_thread = threading.Thread(target=httpd.serve_forever)

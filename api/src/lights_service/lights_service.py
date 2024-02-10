@@ -32,11 +32,19 @@ class LightsService(ABC):
 
 load_dotenv()
 
-if getenv("DEV", "").lower() == "true":
-    from src.lights_service.mock_service import MockService
+target_service = getenv("LIGHTS_SERVICE", "neopixel")
 
-    lights_serivce = MockService()
-else:
+if target_service == "canvas":
+    from src.lights_service.canvas_service import CanvasService
+
+    lights_serivce = CanvasService()
+elif target_service == "pygame":
+    from src.lights_service.pygame_service import PygameService
+
+    lights_serivce = PygameService()
+elif target_service == "neopixel":
     from src.lights_service.neopixel_service import NeopixelService
 
     lights_serivce = NeopixelService()
+else:
+    raise ValueError(f'Invalid lights service: "{target_service}"')

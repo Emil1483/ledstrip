@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Display</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            width: 95vw;
+            height: 50px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="colorCanvas"></canvas>
+    <script>
+        var canvas = document.getElementById('colorCanvas');
+        var ctx = canvas.getContext('2d');
+
+        function drawColors(colors) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var blockWidth = canvas.width / colors.length;
+            colors.forEach((color, index) => {
+                ctx.fillStyle = 'rgb(' + color.r + ',' + color.g + ',' + color.b + ')';
+                ctx.fillRect(index * blockWidth, 0, blockWidth, canvas.height);
+            });
+        }
+
+        function updateColors() {
+            fetch("/pixels")
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        drawColors(data);
+                    }
+                    updateColors();
+                })
+                .catch(error => console.error('Error fetching color data:', error));
+        }
+
+        updateColors();
+    </script>
+</body>
+
+</html>
