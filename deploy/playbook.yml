@@ -1,85 +1,167 @@
 # ansible-playbook -i 192.168.68.69, -u pi -k playbook.yml
----
-- name: Install Docker on the Raspberry Pi
-  hosts: 192.168.68.69
+# ansible-playbook -i inventory.ini playbook.yml --ask-pass
+
+- name: Build and deploy Docker images
+  hosts: localhost
   become: true
 
+  vars_prompt:
+    - name: docker_hub_username
+      prompt: "Enter your Docker Hub username"
+      private: false
+    - name: docker_hub_password
+      prompt: "Enter your Docker Hub password"
+      private: true
+
   tasks:
-    # - name: Install required packages
-    #   apt:
-    #     state: present
-    #     name:
-    #       - apt-transport-https
-    #       - ca-certificates
-    #       - curl
-    #       - git
-    #       - gnupg
-    #       - software-properties-common
+    - name: Set Facts
+      set_fact:
+        docker_hub_username: "{{ docker_hub_username}}"
+        docker_hub_password: "{{ docker_hub_password}}"
 
-    # - name: Add Docker's official GPG key
-    #   apt_key:
-    #     state: present
-    #     url: https://download.docker.com/linux/raspbian/gpg
+    - name: Update apt package cache
+      apt:
+        update_cache: true
 
-    # - name: Add Docker repository
-    #   apt_repository:
-    #     state: present
-    #     repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
-
-    # - name: Update apt package cache
-    #   apt:
-    #     update_cache: yes
-
-    # - name: Install Docker
-    #   apt:
-    #     state: present
-    #     name: docker-ce
-
-    # - name: Ensure Docker service is started
-    #   service:
-    #     name: docker
-    #     state: started
-    #     enabled: yes
-
-    # - name: Install Docker SDK for Python
-    #   pip:
-    #     state: present
-    #     name: docker
-
-    - name: Clone Git repository
-      git:
-        repo: https://github.com/Emil1483/ledstrip.git
-        dest: /src/ledstrip
-
-    - name: Build API Docker image
-      docker_image:
-        name: api
-        tag: latest
-        source: build
-        force_source: True
+    - name: Install required packages
+      apt:
         state: present
-        build:
-          path: /src/ledstrip/api
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+          - python3-pip
 
-    - name: Build Client Docker image
-      docker_image:
-        name: client
-        tag: latest
-        source: build
-        force_source: True
+    - name: Add Docker's official GPG key
+      apt_key:
         state: present
-        build:
-          path: /src/ledstrip/client
+        url: https://download.docker.com/linux/ubuntu/gpg
+
+    - name: Add Docker repository
+      apt_repository:
+        state: present
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
+
+    - name: Update apt package cache after adding Docker APT repository
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install Docker CE
+      apt:
+        state: present
+        name: docker-ce
+
+    - name: Ensure Docker service is started
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Install Docker SDK for Python
+      pip:
+        state: present
+        name: docker
+
+    - name: Login to Docker Hub
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+
+    - name: Create Docker Buildx builder
+      command: docker buildx create --name mybuilder --use
+      args:
+        creates: /root/.docker/cli-plugins/docker-buildx
+
+    - name: Set the builder to support multiple architectures
+      command: docker buildx inspect --bootstrap
+      args:
+        creates: /root/.docker/cli-plugins/docker-buildx
+
+    - name: Build and Push API Docker image
+      command: docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 -t {{ docker_hub_username }}/ledstrip_api:latest ../api/ --push
+      args:
+        creates: /root/.docker/cli-plugins/docker-buildx
+
+    - name: Build and Push Client Docker image
+      command: docker buildx build --platform linux/amd64,linux/arm/v7,linux/arm64 -t {{ docker_hub_username }}/ledstrip_client:latest ../client/ --push
+      args:
+        creates: /root/.docker/cli-plugins/docker-buildx
+
+- name: Install Docker images on the Raspberry Pi
+  hosts: raspberry_pi
+  become: true
+
+  vars:
+    docker_hub_username: "{{ hostvars['localhost']['docker_hub_username'] }}"
+    docker_hub_password: "{{ hostvars['localhost']['docker_hub_password'] }}"
+
+  tasks:
+    - name: Install required packages
+      apt:
+        state: present
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        state: present
+        url: https://download.docker.com/linux/raspbian/gpg
+
+    - name: Add Docker repository
+      apt_repository:
+        state: present
+        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+
+    - name: Update apt package cache
+      apt:
+        update_cache: true
+
+    - name: Install Docker
+      apt:
+        state: present
+        name: docker-ce
+
+    - name: Ensure Docker service is started
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Install Docker SDK for Python
+      pip:
+        state: present
+        name: docker
 
     - name: Create Docker network
       docker_network:
         name: ledstrip_network
         state: present
 
+    - name: Pull Docker API image from Docker Hub
+      docker_image:
+        name: "{{ docker_hub_username }}/ledstrip_api"
+        tag: latest
+        source: pull
+
+    - name: Pull Docker Client image from Docker Hub
+      docker_image:
+        name: "{{ docker_hub_username }}/ledstrip_client"
+        tag: latest
+        source: pull
+
     - name: Run API Docker container
       docker_container:
         name: api
-        image: api:latest
+        image: "{{ docker_hub_username }}/ledstrip_api:latest"
         state: started
         restart_policy: unless-stopped
         privileged: true
@@ -91,7 +173,7 @@
     - name: Run API Docker container
       docker_container:
         name: client
-        image: client:latest
+        image: "{{ docker_hub_username }}/ledstrip_client:latest"
         state: started
         restart_policy: unless-stopped
         privileged: true
