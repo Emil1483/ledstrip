@@ -47,7 +47,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
         };
 
         try {
-            const response = await fetch(`${publicRuntimeConfig.API_URL}/modes`, {
+            const response = await fetch(`${publicRuntimeConfig.PUBLIC_API_URL}/modes`, {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
@@ -97,7 +97,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-    const res = await fetch(`${process.env.API_URL}/modes`);
+    const res = await fetch(`${process.env.PRIVATE_API_URL}/modes`);
 
     const modes = await res.json();
 

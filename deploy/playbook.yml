@@ -5,46 +5,46 @@
   become: true
 
   tasks:
-    - name: Install required packages
-      apt:
-        state: present
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - git
-          - gnupg
-          - software-properties-common
+    # - name: Install required packages
+    #   apt:
+    #     state: present
+    #     name:
+    #       - apt-transport-https
+    #       - ca-certificates
+    #       - curl
+    #       - git
+    #       - gnupg
+    #       - software-properties-common
 
-    - name: Add Docker's official GPG key
-      apt_key:
-        state: present
-        url: https://download.docker.com/linux/raspbian/gpg
+    # - name: Add Docker's official GPG key
+    #   apt_key:
+    #     state: present
+    #     url: https://download.docker.com/linux/raspbian/gpg
 
-    - name: Add Docker repository
-      apt_repository:
-        state: present
-        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+    # - name: Add Docker repository
+    #   apt_repository:
+    #     state: present
+    #     repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
 
-    - name: Update apt package cache
-      apt:
-        update_cache: yes
+    # - name: Update apt package cache
+    #   apt:
+    #     update_cache: yes
 
-    - name: Install Docker
-      apt:
-        state: present
-        name: docker-ce
+    # - name: Install Docker
+    #   apt:
+    #     state: present
+    #     name: docker-ce
 
-    - name: Ensure Docker service is started
-      service:
-        name: docker
-        state: started
-        enabled: yes
+    # - name: Ensure Docker service is started
+    #   service:
+    #     name: docker
+    #     state: started
+    #     enabled: yes
 
-    - name: Install Docker SDK for Python
-      pip:
-        state: present
-        name: docker
+    # - name: Install Docker SDK for Python
+    #   pip:
+    #     state: present
+    #     name: docker
 
     - name: Clone Git repository
       git:
@@ -61,6 +61,21 @@
         build:
           path: /src/ledstrip/api
 
+    - name: Build Client Docker image
+      docker_image:
+        name: client
+        tag: latest
+        source: build
+        force_source: True
+        state: present
+        build:
+          path: /src/ledstrip/client
+
+    - name: Create Docker network
+      docker_network:
+        name: ledstrip_network
+        state: present
+
     - name: Run API Docker container
       docker_container:
         name: api
@@ -70,3 +85,20 @@
         privileged: true
         ports:
           - "8080:8080"
+        networks:
+          - name: ledstrip_network
+
+    - name: Run API Docker container
+      docker_container:
+        name: client
+        image: client:latest
+        state: started
+        restart_policy: unless-stopped
+        privileged: true
+        ports:
+          - "80:80"
+        networks:
+          - name: ledstrip_network
+        env:
+          PRIVATE_API_URL: "http://api:8080"
+          PUBLIC_API_URL: "https://pi5001.linode.djupvik.dev"
