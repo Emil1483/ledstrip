@@ -1,0 +1,11 @@
+---
+- name: Check that '{{ path }}' exists
+  delegate_to: localhost
+  stat:
+    path: "{{ path }}"
+  register: vars_file
+
+- name: Read '{{ path }}' file
+  include_vars:
+    file: "{{ path }}"
+  when: vars_file.stat.exists

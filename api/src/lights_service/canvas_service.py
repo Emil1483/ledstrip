@@ -24,12 +24,12 @@ class CanvasService(LightsService):
             return [{"r": r, "g": g, "b": b} for r, g, b in self._pixels]
 
         self.thread = threading.Thread(
-            target=lambda: self.app.run(host="0.0.0.0", port=3000)
+            target=lambda: self.app.run(host="0.0.0.0", port=3001)
         )
 
         self.thread.daemon = True
         self.thread.start()
-        print("CanvasService running at port 3000")
+        print("CanvasService running at port 3001")
 
     def __setitem__(self, key: int, value: tuple[int, int, int]) -> None:
         self._pixels[key] = value

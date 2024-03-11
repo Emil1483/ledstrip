@@ -1,0 +1,36 @@
+---
+- name: Prompt the user for '{{ var_name }}'
+  pause:
+    prompt: "Enter the value of {{ var_name }}"
+    echo: true
+  register: result
+  when: vars[var_name] is undefined
+
+- name: Set the value of '{{ var_name }}' to the user input
+  set_fact:
+    "{{ var_name }}": "{{ result.user_input }}"
+  when: vars[var_name] is undefined
+
+- name: Debug the value of '{{ var_name }}'
+  debug:
+    msg: "using {{ var_name }}: {{ vars[var_name] }}"
+#
+# ---
+#
+# Example usage:
+# vars:
+#   variables_to_prompt:
+#     - foo
+#     - bar
+#     - baz
+
+# tasks:
+#   - name: Read vars.yml file
+#     include_vars:
+#       file: vars.yml
+
+#   - name: Loop through undefined variables and prompt the user
+#     include_tasks: ./prompt_undefined_vars.yml
+#     loop: "{{ variables_to_prompt }}"
+#     loop_control:
+#       loop_var: var_name

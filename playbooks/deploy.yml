@@ -1,0 +1,124 @@
+# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass deploy.yml --diff
+
+- name: Deploy Docker Containers on the Raspberry Pi
+  hosts: pi-remote
+  become: true
+
+  vars:
+    variables_to_prompt:
+      - docker_hub_username
+      - docker_hub_password
+
+  tasks:
+    - name: Get variables from vars.yml
+      include_tasks: ./get_vars.yml
+      loop:
+        - vars.yml
+        - docker_hub_credentials.yml
+      loop_control:
+        loop_var: path
+
+    - name: Loop through undefined variables and prompt the user
+      include_tasks: ./prompt_undefined_vars.yml
+      loop: "{{ variables_to_prompt }}"
+      loop_control:
+        loop_var: var_name
+
+    - name: Install required packages
+      apt:
+        state: present
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+          - python3-pip
+          - python3-venv
+          - python3-full
+
+    - name: Ensure pip configuration directory exists
+      file:
+        path: ~/.config/pip
+        state: directory
+        mode: "0755"
+
+    - name: Create pip.conf file
+      copy:
+        content: |
+          [global]
+          break-system-packages = true
+        dest: ~/.config/pip/pip.conf
+        mode: "0644"
+
+    - name: Add Docker's official GPG key
+      apt_key:
+        state: present
+        url: https://download.docker.com/linux/raspbian/gpg
+
+    - name: Add Docker repository
+      apt_repository:
+        state: present
+        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+
+    - name: Update apt package cache
+      apt:
+        update_cache: true
+
+    - name: Install Docker
+      apt:
+        state: present
+        name: docker-ce
+
+    - name: Ensure Docker service is started
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Install Docker SDK for Python
+      pip:
+        state: present
+        name: docker
+
+    - name: Create Docker network
+      docker_network:
+        name: ledstrip-network
+        state: present
+
+    - name: Pull Docker images from Docker Hub
+      docker_image:
+        name: "{{ docker_hub_username }}/ledstrip-{{ item }}"
+        tag: latest
+        source: pull
+      loop:
+        - client
+        - api
+
+    - name: Run API Docker container
+      docker_container:
+        name: api
+        image: "{{ docker_hub_username }}/ledstrip-api:latest"
+        state: started
+        restart_policy: unless-stopped
+        privileged: true
+        ports:
+          - "8080:8080"
+        networks:
+          - name: ledstrip-network
+
+    - name: Run API Docker container
+      docker_container:
+        name: client
+        image: "{{ docker_hub_username }}/ledstrip-client:latest"
+        state: started
+        restart_policy: unless-stopped
+        privileged: true
+        ports:
+          - "80:80"
+        networks:
+          - name: ledstrip-network
+        env:
+          PRIVATE_API_URL: "http://api:8080"
+          PUBLIC_API_URL: "https://pi5001.linode.djupvik.dev"

@@ -2,3 +2,5 @@ venv
 .env
 __pycache__
 nohup.out
+
+docker_hub_credentials.yml
