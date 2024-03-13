@@ -76,31 +76,9 @@
         username: "{{ docker_hub_username }}"
         password: "{{ docker_hub_password }}"
 
-    #! Don't know if this worsk on other futher changes. Could not delete old images
-
-    - name: Delete Docker Image
-      docker_image:
-        name: "{{ docker_hub_username }}/ledstrip-{{ item }}"
-        state: absent
-      loop:
-        - client
-        - api
-
     - name: Build and Push Docker Images
       shell: |
         docker buildx build --platform linux/arm64 --push -t {{ docker_hub_username }}/ledstrip-{{ item }} ../../{{ item }}
       loop:
         - client
         - api
-
-    # - name: Build and Push Docker Images
-    #   community.docker.docker_image:
-    #     name: "{{ docker_hub_username }}/ledstrip-{{ item }}"
-    #     build:
-    #       path: ../../{{ item }}
-    #       platform: linux/arm64
-    #     source: build
-    #     push: true
-    #   loop:
-    #     - client
-    #     - api
