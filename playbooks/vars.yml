@@ -19,7 +19,7 @@ frps_dashboard_port: 7500
 frps_bind_port: 7000
 
 api_remote_port: 5005
-api_local_port: 80
+api_local_port: 8080
 client_remote_port: 5006
-client_local_port: 8080
+client_local_port: 80
 pi_ssh_port: 6004

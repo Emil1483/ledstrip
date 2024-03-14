@@ -9,10 +9,11 @@
       - frps_token
       - frps_bind_port
       - subdomain_host
+      - api_local_port
+      - client_local_port
+      - pi_ssh_port
       - api_remote_port
       - client_remote_port
-      - pi_ssh_port
-      - client_local_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -37,7 +38,27 @@
           - gnupg
           - software-properties-common
           - python3-pip
+          - python3-venv
           - python3-full
+
+    - name: Ensure pip configuration directory exists
+      file:
+        path: ~/.config/pip
+        state: directory
+        mode: "0755"
+
+    - name: Create pip.conf file
+      copy:
+        content: |
+          [global]
+          break-system-packages = true
+        dest: ~/.config/pip/pip.conf
+        mode: "0644"
+
+    - name: Install Docker SDK for Python
+      pip:
+        state: present
+        name: docker
 
     - name: Add Docker's official GPG key
       apt_key:
@@ -127,6 +148,19 @@
       vars:
         path: vars.yml
 
+    - name: Install required packages
+      apt:
+        state: present
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+          - python3-pip
+          - python3-full
+
     - name: Configure Caddyfile
       blockinfile:
         path: /root/Caddyfile
@@ -173,19 +207,6 @@
           dashboard_port = {{ frps_dashboard_port }}
           dashboard_user = admin
           dashboard_pwd = "{{ frps_dashboard_password }}"
-
-    - name: Install required packages
-      apt:
-        state: present
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - git
-          - gnupg
-          - software-properties-common
-          - python3-pip
-          - python3-full
 
     - name: Add Docker's official GPG key
       apt_key:

@@ -1,4 +1,4 @@
-# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass deploy.yml --diff
+# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
 
 - name: Deploy Docker Containers on the Raspberry Pi
   hosts: pi-remote
@@ -8,6 +8,8 @@
     variables_to_prompt:
       - docker_hub_username
       - docker_hub_password
+      - api_local_port
+      - client_local_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -24,64 +26,6 @@
       loop_control:
         loop_var: var_name
 
-    - name: Install required packages
-      apt:
-        state: present
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - git
-          - gnupg
-          - software-properties-common
-          - python3-pip
-          - python3-venv
-          - python3-full
-
-    - name: Ensure pip configuration directory exists
-      file:
-        path: ~/.config/pip
-        state: directory
-        mode: "0755"
-
-    - name: Create pip.conf file
-      copy:
-        content: |
-          [global]
-          break-system-packages = true
-        dest: ~/.config/pip/pip.conf
-        mode: "0644"
-
-    - name: Add Docker's official GPG key
-      apt_key:
-        state: present
-        url: https://download.docker.com/linux/raspbian/gpg
-
-    - name: Add Docker repository
-      apt_repository:
-        state: present
-        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
-
-    - name: Update apt package cache
-      apt:
-        update_cache: true
-
-    - name: Install Docker
-      apt:
-        state: present
-        name: docker-ce
-
-    - name: Ensure Docker service is started
-      service:
-        name: docker
-        state: started
-        enabled: true
-
-    - name: Install Docker SDK for Python
-      pip:
-        state: present
-        name: docker
-
     - name: Create Docker network
       docker_network:
         name: ledstrip-network
@@ -96,7 +40,7 @@
         - client
         - api
 
-    - name: Run API Docker container
+    - name: Run Client Docker container
       docker_container:
         name: api
         image: "{{ docker_hub_username }}/ledstrip-api:latest"
@@ -104,7 +48,7 @@
         restart_policy: unless-stopped
         privileged: true
         ports:
-          - "8080:8080"
+          - "{{ api_local_port }}:8080"
         networks:
           - name: ledstrip-network
 
@@ -116,9 +60,9 @@
         restart_policy: unless-stopped
         privileged: true
         ports:
-          - "80:80"
+          - "{{ client_local_port }}:80"
         networks:
           - name: ledstrip-network
         env:
           PRIVATE_API_URL: "http://api:8080"
-          PUBLIC_API_URL: "https://pi5001.linode.djupvik.dev"
+          PUBLIC_API_URL: "https://lights-api.linode.djupvik.dev"
