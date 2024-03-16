@@ -94,7 +94,7 @@
         restart_policy: unless-stopped
         privileged: true
         ports:
-          - "{{ client_local_port }}:80"
+          - "{{ client_local_port }}:3000"
         networks:
           - name: ledstrip-network
         env:

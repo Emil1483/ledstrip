@@ -21,7 +21,7 @@ frps_bind_port: 7000
 api_remote_port: 5005
 api_local_port: 8080
 client_remote_port: 5006
-client_local_port: 80
+client_local_port: 3000
 pi_ssh_port: 6004
 
 api_subdomain: lights-api
