@@ -26,10 +26,39 @@
       loop_control:
         loop_var: var_name
 
-    - name: Create Docker network
-      docker_network:
-        name: ledstrip-network
-        state: present
+    - name: Login to Docker Hub
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+
+    - name: Get running containers
+      docker_host_info:
+        containers: yes
+      register: docker_containers
+
+    - name: Remove Existing Containers
+      docker_container:
+        name: "{{ item.Id }}"
+        state: absent
+        force_kill: true
+      loop: "{{ docker_containers.containers }}"
+      when: item.Image is search(docker_hub_username)
+
+    - name: Prune Docker Containers
+      docker_prune:
+        containers: true
+
+    - name: Get Docker Images
+      docker_host_info:
+        images: true
+      register: docker_images
+
+    - name: Delete Docker Images
+      docker_image:
+        name: "{{ item.Id }}"
+        state: absent
+      loop: "{{ docker_images.images }}"
+      when: item.RepoTags | select('search', docker_hub_username) | list | length > 0
 
     - name: Pull Docker images from Docker Hub
       docker_image:
@@ -39,6 +68,11 @@
       loop:
         - client
         - api
+
+    - name: Create Docker network
+      docker_network:
+        name: ledstrip-network
+        state: present
 
     - name: Run Client Docker container
       docker_container:
@@ -65,4 +99,4 @@
           - name: ledstrip-network
         env:
           PRIVATE_API_URL: "http://api:8080"
-          PUBLIC_API_URL: "https://lights-api.linode.djupvik.dev"
+          PUBLIC_API_URL: "https://{{ api_subdomain }}.linode.djupvik.dev"

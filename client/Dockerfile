@@ -27,4 +27,6 @@ RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
 USER nextjs
 
+RUN yarn global add next
+
 CMD yarn start

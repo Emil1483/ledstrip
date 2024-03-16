@@ -1,6 +1,7 @@
 import { GetServerSideProps } from "next";
 import getConfig from "next/config";
 import { useState } from "react";
+import Head from 'next/head';
 
 const { publicRuntimeConfig } = getConfig();
 
@@ -68,7 +69,11 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
         }));
     };
 
-    return (
+    return <>
+        <Head>
+            <link rel="manifest" href="/manifest.json" />
+            <link rel="icon" href="/favicon.ico" />
+        </Head>
         <div>
             {Object.entries(modes).map(([key, mode]) => (
                 <div key={key}>
@@ -93,7 +98,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
                 </div>
             ))}
         </div>
-    );
+    </>;
 };
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {

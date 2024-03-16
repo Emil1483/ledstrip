@@ -10,13 +10,10 @@
       - docker_hub_password
 
   tasks:
-    - name: Get variables from vars.yml
+    - name: Get veriables
       include_tasks: ./get_vars.yml
-      loop:
-        - vars.yml
-        - ../docker_hub_credentials.yml
-      loop_control:
-        loop_var: path
+      vars:
+        path: docker_hub_credentials.yml
 
     - name: Loop through undefined variables and prompt the user
       include_tasks: ./prompt_undefined_vars.yml
@@ -28,57 +25,17 @@
       apt:
         update_cache: true
 
-    - name: Install required packages
-      apt:
-        state: present
-        name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - git
-          - gnupg
-          - software-properties-common
-          - python3-pip
-
-    - name: Add Docker's official GPG key
-      apt_key:
-        state: present
-        url: https://download.docker.com/linux/ubuntu/gpg
-
-    - name: Add Docker repository
-      apt_repository:
-        state: present
-        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable
-
-    - name: Update apt package cache after adding Docker APT repository
-      apt:
-        update_cache: true
-        cache_valid_time: 3600
-
-    - name: Install Docker CE
-      apt:
-        state: present
-        name: docker-ce
-
-    - name: Ensure Docker service is started
-      service:
-        name: docker
-        state: started
-        enabled: true
-
-    - name: Install Docker SDK for Python
-      pip:
-        state: present
-        name: docker
-
     - name: Login to Docker Hub
       docker_login:
         username: "{{ docker_hub_username }}"
         password: "{{ docker_hub_password }}"
 
     - name: Build and Push Docker Images
-      shell: |
-        docker buildx build --platform linux/arm64 --push -t {{ docker_hub_username }}/ledstrip-{{ item }} ../../{{ item }}
+      command: >
+        docker buildx build \
+        --platform linux/arm64 \
+        --push -t {{ docker_hub_username }}/ledstrip-{{ item }} \
+        ../{{ item }}
       loop:
         - client
         - api
