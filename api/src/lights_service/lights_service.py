@@ -33,18 +33,19 @@ class LightsService(ABC):
 load_dotenv()
 
 target_service = getenv("LIGHTS_SERVICE", "neopixel")
+led_count = int(getenv("LED_COUNT", "1081"))
 
 if target_service == "canvas":
     from src.lights_service.canvas_service import CanvasService
 
-    lights_serivce = CanvasService()
+    lights_serivce = CanvasService(led_count)
 elif target_service == "pygame":
     from src.lights_service.pygame_service import PygameService
 
-    lights_serivce = PygameService()
+    lights_serivce = PygameService(led_count)
 elif target_service == "neopixel":
     from src.lights_service.neopixel_service import NeopixelService
 
-    lights_serivce = NeopixelService()
+    lights_serivce = NeopixelService(led_count)
 else:
     raise ValueError(f'Invalid lights service: "{target_service}"')

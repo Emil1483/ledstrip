@@ -57,8 +57,9 @@ class LightsHTTPHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    PORT = int(getenv("PORT", "8080"))
     mode_service = ModeService()
+
+    PORT = int(getenv("PORT", "8080"))
     with socketserver.TCPServer(
         ("", PORT),
         lambda *args: LightsHTTPHandler(mode_service, *args),

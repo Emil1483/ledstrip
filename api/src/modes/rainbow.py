@@ -4,10 +4,10 @@ import colorsys
 
 
 class Rainbow(LightsMode):
-    def __init__(self, pixels: LightsService, frequency=0.001, speed=1.0) -> None:
+    def __init__(self, pixels: LightsService, frequency=1, speed=0.1) -> None:
         super().__init__(pixels)
         self.t = 0
-        self.frequency = frequency
+        self.frequency = frequency / len(self.pixels)
         self.speed = speed
 
     def __call__(self, dt: float) -> None:

@@ -12,7 +12,7 @@ class ModeService:
             "off": Off,
         }
 
-        self.mode = Rainbow(lights_serivce, frequency=0.001, speed=0.1)
+        self.mode = Rainbow(lights_serivce)
 
     def set_mode(self, mode: str, **kwargs) -> None:
         if mode not in self.modes:
