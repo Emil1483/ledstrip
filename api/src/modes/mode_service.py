@@ -20,7 +20,7 @@ class ModeService:
 
         self.mode = self.modes[mode](lights_serivce, **kwargs)
 
-    def status(self) -> list[str]:
+    def status(self):
         def gen():
             for mode in self.modes:
                 init_signature = inspect.signature(self.modes[mode].__init__)
