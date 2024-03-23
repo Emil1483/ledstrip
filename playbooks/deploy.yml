@@ -8,8 +8,8 @@
     variables_to_prompt:
       - docker_hub_username
       - docker_hub_password
-      - api_local_port
       - client_local_port
+      - api_local_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -81,8 +81,6 @@
         state: started
         restart_policy: unless-stopped
         privileged: true
-        ports:
-          - "{{ api_local_port }}:8080"
         networks:
           - name: ledstrip-network
 
@@ -94,9 +92,8 @@
         restart_policy: unless-stopped
         privileged: true
         ports:
-          - "{{ client_local_port }}:3000"
+          - "{{ client_local_port }}:{{ client_local_port }}"
         networks:
           - name: ledstrip-network
         env:
-          PRIVATE_API_URL: "http://api:8080"
-          PUBLIC_API_URL: "https://{{ api_subdomain }}.linode.djupvik.dev"
+          API_URL: "http://api:{{ api_local_port }}"

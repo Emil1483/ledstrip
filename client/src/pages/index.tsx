@@ -1,9 +1,6 @@
 import { GetServerSideProps } from "next";
-import getConfig from "next/config";
 import { useState } from "react";
 import Head from 'next/head';
-
-const { publicRuntimeConfig } = getConfig();
 
 interface ModesData {
     [key: string]: {
@@ -48,7 +45,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
         };
 
         try {
-            const response = await fetch(`${publicRuntimeConfig.PUBLIC_API_URL}/modes`, {
+            const response = await fetch(`/api/modes`, {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
@@ -102,7 +99,7 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
-    const res = await fetch(`${process.env.PRIVATE_API_URL}/modes`);
+    const res = await fetch(`${process.env.API_URL}/modes`);
 
     const modes = await res.json();
 
