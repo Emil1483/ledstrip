@@ -1,24 +1,28 @@
 import { GetServerSideProps } from "next";
-import { useState } from "react";
 import Head from 'next/head';
+import { Box, Grid, Button, createTheme, Typography, ThemeProvider } from '@mui/material';
+
 import { getModes, setMode } from "@/services/modes";
+import { useState } from "react";
+import { Global } from "@emotion/react";
 
 
-interface HomeProps {
-    modes: Modes;
+interface PageProps {
+    initialModes: Modes;
 }
 
-interface ModeForm {
-    [key: string]: string | number;
-}
+const Home: React.FC<PageProps> = ({ initialModes }) => {
+    const [modes, setModes] = useState(initialModes);
 
-const Home: React.FC<HomeProps> = ({ modes }) => {
+
     const handleSubmit = async (mode: string) => {
-        await setMode({
-            mode: mode,
-            kwargs: {},
-        }).catch(console.error)
-            .then(() => console.log('Mode set successfully'));
+        try {
+            await setMode({ mode: mode, kwargs: {} })
+            const newModes = await getModes()
+            setModes(newModes)
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     return <>
@@ -26,23 +30,49 @@ const Home: React.FC<HomeProps> = ({ modes }) => {
             <link rel="manifest" href="/manifest.json" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
-        <div>
-            {Object.entries(modes).map(([key, mode]) => (
-                <div key={key}>
-                    <button onClick={() => handleSubmit(key)}>
-                        {key}
-                    </button>
-                    {mode.on ? "On" : "Off"}
-                </div>
-            ))}
-        </div>
+
+        <Global styles={"body {margin: 0;}"} />
+
+        <Grid
+            container
+            sx={{
+                backgroundColor: '#121212',
+                color: 'white',
+                paddingLeft: '20px',
+                paddingRight: '20px',
+                paddingBottom: '42px',
+                height: '100vh',
+                alignItems: 'flex-end',
+            }}
+        >
+            <Grid container spacing={2} sx={{ padding: '20px', justifyContent: 'flex-end' }}>
+                {Object.entries(modes).map(([key, value]) => (
+                    <Grid item xs={12} sm={6} md={4} key={key}>
+                        <Button
+                            variant="contained"
+                            disabled={value.on}
+                            onClick={() => handleSubmit(key)}
+                            sx={{
+                                width: '100%',
+                                height: '100%',
+                                backgroundColor: '#3700B3',
+                            }}
+                        >
+                            <Typography variant="h6" color="white">
+                                {key.toUpperCase()}
+                            </Typography>
+                        </Button>
+                    </Grid>
+                ))}
+            </Grid>
+        </Grid>
     </>;
 };
 
-export const getServerSideProps: GetServerSideProps<HomeProps> = async () => {
+export const getServerSideProps: GetServerSideProps<PageProps> = async () => {
     return {
         props: {
-            modes: await getModes()
+            initialModes: await getModes()
         }
     };
 };
