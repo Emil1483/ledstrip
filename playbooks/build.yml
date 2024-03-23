@@ -8,12 +8,16 @@
     variables_to_prompt:
       - docker_hub_username
       - docker_hub_password
+      - api_local_port
 
   tasks:
-    - name: Get veriables
+    - name: Get variables from vars.yml
       include_tasks: ./get_vars.yml
-      vars:
-        path: docker_hub_credentials.yml
+      loop:
+        - vars.yml
+        - docker_hub_credentials.yml
+      loop_control:
+        loop_var: path
 
     - name: Loop through undefined variables and prompt the user
       include_tasks: ./prompt_undefined_vars.yml
@@ -33,6 +37,7 @@
     - name: Build and Push Docker Images
       command: >
         docker buildx build \
+        --build-arg API_URL=http://api:{{ api_local_port }} \
         --platform linux/arm64 \
         --push -t {{ docker_hub_username }}/ledstrip-{{ item }} \
         ../{{ item }}
