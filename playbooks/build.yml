@@ -37,7 +37,6 @@
     - name: Build and Push Docker Images
       command: >
         docker buildx build \
-        --build-arg API_URL=http://api:{{ api_local_port }} \
         --platform linux/arm64 \
         --push -t {{ docker_hub_username }}/ledstrip-{{ item }} \
         ../{{ item }}

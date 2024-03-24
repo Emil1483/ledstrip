@@ -12,13 +12,16 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.0",
+    "@mui/joy": "^5.0.0-beta.32",
     "@mui/material": "^5.15.14",
+    "@uidotdev/usehooks": "^2.4.1",
+    "http-proxy": "^1.18.1",
     "next": "14.1.0",
-    "next-http-proxy-middleware": "^1.2.6",
     "react": "^18",
     "react-dom": "^18"
   },
   "devDependencies": {
+    "@types/http-proxy": "^1.17.14",
     "@types/jest": "^29.5.12",
     "@types/node": "^20",
     "@types/react": "^18",

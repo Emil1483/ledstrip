@@ -4,7 +4,15 @@ interface Modes {
 
 interface Mode {
     on: boolean;
-    kwargs: {
-        [key: string]: "str" | "float" | "int";
-    };
+    kwargs: ModeKwargs;
+}
+
+interface ModeKwargs {
+    [key: string]: Kwarg;
+}
+
+type Kwarg = "str" | "float" | "int";
+
+interface UpdateKwargsProps {
+    [key: string]: string | number;
 }
