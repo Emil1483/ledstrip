@@ -1,6 +1,8 @@
 import inspect
+
 from src.modes.lights_mode import LightsMode
 from src.lights_service.lights_service import lights_serivce
+
 from src.modes.off import Off
 from src.modes.rainbow import Rainbow
 from src.modes.static import Static
