@@ -3,16 +3,18 @@ from src.modes.lights_mode import LightsMode
 from src.lights_service.lights_service import lights_serivce
 from src.modes.off import Off
 from src.modes.rainbow import Rainbow
+from src.modes.static import Static
 
 
 class ModeService:
     def __init__(self) -> None:
         self.modes: dict[str, type[LightsMode]] = {
             "rainbow": Rainbow,
+            "static": Static,
             "off": Off,
         }
 
-        self.mode = Rainbow(lights_serivce)
+        self.mode = Static(lights_serivce)
 
     def set_mode(self, mode: str, **kwargs) -> None:
         if mode not in self.modes:
