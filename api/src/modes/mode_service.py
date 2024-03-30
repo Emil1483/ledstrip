@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 import inspect
 
 from src.modes.lights_mode import LightsMode

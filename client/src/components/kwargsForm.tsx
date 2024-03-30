@@ -1,9 +1,14 @@
-import { FormControl, FormLabel, Stack } from "@mui/joy";
+import { Fragment, useEffect, useState } from "react";
+import React from "react";
+
+import { FormControl, FormLabel } from "@mui/joy";
+import ShadeSlider from '@uiw/react-color-shade-slider';
+import Wheel from "@uiw/react-color-wheel";
+
 import FloatInput from "@/components/floatInput";
 import IntInput from "@/components/intInput";
 import StrInput from "@/components/strInput";
-import { useEffect, useState } from "react";
-import React from "react";
+import ColorInput from "@/components/colorInput";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
@@ -64,6 +69,16 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                             {key}
                         </FormLabel>
                         <FloatInput onChange={(value) => { handleChange(key, value) }} />
+                    </FormControl>
+                    break
+
+                case 'color':
+                    yield <FormControl key={key}>
+                        <FormLabel
+                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            {key}
+                        </FormLabel>
+                        <ColorInput onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 default:

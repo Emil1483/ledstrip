@@ -25,10 +25,10 @@ const Inputs: React.FC = () => {
             <KwargsForm
                 onDataChanged={setKwargsFormData}
                 kwargs={{
-                    strInput0: "str",
-                    strInput1: "str",
+                    strInput: "str",
                     intInput: "int",
                     floatInput: "float",
+                    colorInput: "color",
                 }} />
             <Button
                 onClick={() => { console.log(kwargsFormData) }}
