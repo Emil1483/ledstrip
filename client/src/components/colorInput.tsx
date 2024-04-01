@@ -15,7 +15,6 @@ const ColorInput: React.FC<ColorInputProps> = ({ onChange }) => {
         <Wheel color={color} onChange={(c) => {
             setColor((color) => {
                 const newColor = { ...color, ...c.hsva }
-                console.log(newColor)
 
                 const cString = `hsva(${newColor.h}, ${newColor.s}%, ${newColor.v}%, ${newColor.a})`
                 const [r, g, b] = parseColor(cString).rgb
@@ -31,7 +30,6 @@ const ColorInput: React.FC<ColorInputProps> = ({ onChange }) => {
             onChange={(c) => {
                 setColor((color) => {
                     const newColor = { ...color, ...c }
-                    console.log(newColor)
 
                     const cString = `hsva(${newColor.h}, ${newColor.s}%, ${newColor.v}%, ${newColor.a})`
                     const [r, g, b] = parseColor(cString).rgb

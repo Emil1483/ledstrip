@@ -3,11 +3,14 @@ from abc import ABC
 
 class KwargType(ABC):
     @classmethod
-    def identifier(self) -> str:
+    def label(self) -> str:
         raise NotImplementedError()
 
     @classmethod
     def decode(cls, value) -> "KwargType":
+        raise NotImplementedError()
+
+    def encode(self):
         raise NotImplementedError()
 
 
@@ -18,12 +21,19 @@ class Color(KwargType):
         self.b = b
 
     @classmethod
-    def identifier(self) -> str:
+    def label(self) -> str:
         return "color"
 
     @classmethod
     def decode(cls, value: dict) -> "Color":
         return Color(value["r"], value["g"], value["b"])
+
+    def encode(self):
+        return {
+            "r": self.r,
+            "g": self.g,
+            "b": self.b,
+        }
 
 
 kwarg_types = [Color]

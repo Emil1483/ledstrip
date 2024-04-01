@@ -4,8 +4,9 @@ from os import getenv
 import socketserver
 import threading
 from time import time
+import traceback
 
-from src.modes.mode_service import ModeService
+from src.modes.mode_service import ModeService, UnexpectedKwarg
 from src.lights_service.lights_service import lights_serivce
 
 
@@ -36,24 +37,36 @@ class LightsHTTPHandler(SimpleHTTPRequestHandler):
         self.wfile.write(json.dumps(json_response).encode("utf-8"))
 
     def do_POST(self):
-        content_length = int(self.headers["Content-Length"])
-        post_data = self.rfile.read(content_length)
-        post_body = json.loads(post_data.decode("utf-8"))
+        try:
+            content_length = int(self.headers["Content-Length"])
+            post_data = self.rfile.read(content_length)
+            post_body = json.loads(post_data.decode("utf-8"))
 
-        if "mode" not in post_body:
+            if "mode" not in post_body:
+                self.send_response(400)
+                self.end_headers()
+                self.wfile.write(b'Missing "mode" field in JSON body')
+                return
+
+            mode = post_body["mode"]
+            kwargs = post_body.get("kwargs", {})
+
+            mode_service.set_mode(mode, **kwargs)
+            self.send_response(200)
+            self.send_header("Content-type", "text/plain")
+            self.end_headers()
+            self.wfile.write(f"Set mode to {mode}".encode("utf-8"))
+
+        except UnexpectedKwarg as e:
             self.send_response(400)
             self.end_headers()
-            self.wfile.write(b'Missing "mode" field in JSON body')
-            return
+            self.wfile.write(f"Unknown kwarg: {e.unexpected_kwarg}".encode("utf-8"))
 
-        mode = post_body["mode"]
-        kwargs = post_body.get("kwargs", {})
-
-        mode_service.set_mode(mode, **kwargs)
-        self.send_response(200)
-        self.send_header("Content-type", "text/plain")
-        self.end_headers()
-        self.wfile.write(f"Set mode to {mode}".encode("utf-8"))
+        except Exception as e:
+            print(traceback.format_exc())
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(f"{type(e)}: {e}".encode("utf-8"))
 
 
 if __name__ == "__main__":

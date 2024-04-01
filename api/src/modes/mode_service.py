@@ -1,12 +1,18 @@
 from abc import ABC, abstractmethod
 import inspect
 
+from src.modes.models import KwargType
 from src.modes.lights_mode import LightsMode
-from src.lights_service.lights_service import lights_serivce
+from src.lights_service.lights_service import LightsService, lights_serivce
 
 from src.modes.off import Off
 from src.modes.rainbow import Rainbow
 from src.modes.static import Static
+
+
+class UnexpectedKwarg(Exception):
+    def __init__(self, unexpected_kwarg: str) -> None:
+        self.unexpected_kwarg = unexpected_kwarg
 
 
 class ModeService:
@@ -23,22 +29,57 @@ class ModeService:
         if mode not in self.modes:
             raise ValueError("Mode not found")
 
-        self.mode = self.modes[mode](lights_serivce, **kwargs)
+        def gen_kwargs():
+            mode_signature = inspect.signature(self.modes[mode].__init__)
+            mode_params = mode_signature.parameters
+
+            for key, value in kwargs.items():
+                if key not in mode_params:
+                    raise UnexpectedKwarg(key)
+
+                corresponding_type = mode_params[key]
+                if issubclass(corresponding_type.annotation, KwargType):
+                    yield key, corresponding_type.annotation.decode(value)
+                elif isinstance(corresponding_type.default, KwargType):
+                    yield key, corresponding_type.default.decode(value)
+                else:
+                    yield key, value
+
+        genned_kwargs = {k: v for k, v in gen_kwargs()}
+
+        self.mode = self.modes[mode](lights_serivce, **genned_kwargs)
 
     def status(self):
-        def gen():
+        def gen_status():
             for mode in self.modes:
                 init_signature = inspect.signature(self.modes[mode].__init__)
                 params = init_signature.parameters
-                kwargs_info = {}
 
+                kwargs_info = {}
                 for param_name, param in params.items():
                     if param.default is not inspect.Parameter.empty:
-                        kwargs_info[param_name] = type(param.default).__name__
+                        if isinstance(param.default, KwargType):
+                            kwargs_info[param_name] = param.default.label()
+                        else:
+                            kwargs_info[param_name] = type(param.default).__name__
+
+                on = isinstance(self.mode, self.modes[mode])
+
+                state = {}
+                if on:
+                    for key in kwargs_info.keys():
+                        assert hasattr(self.mode, key)
+
+                        value = getattr(self.mode, key)
+                        if isinstance(value, KwargType):
+                            state[key] = value.encode()
+                        else:
+                            state[key] = value
 
                 yield mode, {
                     "kwargs": kwargs_info,
-                    "on": isinstance(self.mode, self.modes[mode]),
+                    "on": on,
+                    "state": state,
                 }
 
-        return {mode: data for mode, data in gen()}
+        return {k: v for k, v in gen_status()}

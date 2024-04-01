@@ -73,7 +73,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                     break
 
                 case 'color':
-                    yield <FormControl key={key}>
+                    yield <FormControl key={key} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <FormLabel
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
