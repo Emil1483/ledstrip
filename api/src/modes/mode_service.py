@@ -25,7 +25,7 @@ class ModeService:
 
         self.mode = Static(lights_serivce)
 
-    def set_mode(self, mode: str, **kwargs) -> None:
+    def set_mode(self, mode: str, decode_kwargs=True, **kwargs) -> None:
         if mode not in self.modes:
             raise ValueError("Mode not found")
 
@@ -36,6 +36,10 @@ class ModeService:
             for key, value in kwargs.items():
                 if key not in mode_params:
                     raise UnexpectedKwarg(key)
+
+                if not decode_kwargs:
+                    yield key, value
+                    continue
 
                 corresponding_type = mode_params[key]
                 if issubclass(corresponding_type.annotation, KwargType):
