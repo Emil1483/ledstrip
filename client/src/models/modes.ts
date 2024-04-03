@@ -5,6 +5,7 @@ interface Modes {
 interface Mode {
     on: boolean;
     kwargs: ModeKwargs;
+    state: ModeState;
 }
 
 interface ModeKwargs {
@@ -13,8 +14,8 @@ interface ModeKwargs {
 
 type Kwarg = "str" | "float" | "int" | "color";
 
-interface UpdateKwargsProps {
-    [key: string]: string | number;
+interface ModeState {
+    [key: string]: string | number | Color;
 }
 
 interface Color {

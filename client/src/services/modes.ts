@@ -17,7 +17,7 @@ export async function getModes(): Promise<Modes> {
 
 export async function setMode(params: {
     mode: string;
-    kwargs: UpdateKwargsProps;
+    kwargs: ModeState;
 }): Promise<string> {
     const { mode, kwargs } = params;
 

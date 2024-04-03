@@ -25,7 +25,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     const [modes, setModes] = useState(initialModes);
 
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
-    const [kwargsFormData, setKwargsFormData] = useState<UpdateKwargsProps>({});
+    const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
 
     const longPressAttrs = useLongPress(
         (e) => {
@@ -82,11 +82,20 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                                 height: '128px',
                                 backgroundColor: value.on ? '#1835F2' : '#3E4051',
                                 borderRadius: '8px',
+                                flexDirection: 'column'
                             }}
                         >
-                            <Typography id={key} level="h3" textColor="common.white" fontWeight="bold">
+                            <Typography level="h3" textColor="common.white" fontWeight="bold">
                                 {key.toUpperCase()}
                             </Typography>
+
+                            <Grid sx={{
+                                flexDirection: 'column',
+                            }}>
+                                {Object.entries(value.state).map(([key, value]) => (
+                                    <Typography key={key} level="body-sm" textColor="common.white">{key}: {typeof value === 'object' ? JSON.stringify(value) : value}</Typography>
+                                ))}
+                            </Grid>
                         </Button>
                     </Grid>
                 ))}

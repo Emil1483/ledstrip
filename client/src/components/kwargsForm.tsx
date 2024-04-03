@@ -12,12 +12,12 @@ import ColorInput from "@/components/colorInput";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
-    onDataChanged: (data: UpdateKwargsProps) => void
+    onDataChanged: (data: ModeState) => void
 }
 
 
 const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
-    const [data, setData] = useState<UpdateKwargsProps>({})
+    const [data, setData] = useState<ModeState>({})
 
     useEffect(() => {
         onDataChanged(data)

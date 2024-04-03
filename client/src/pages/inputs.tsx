@@ -6,7 +6,7 @@ import { useState } from "react";
 
 
 const Inputs: React.FC = () => {
-    const [kwargsFormData, setKwargsFormData] = useState<UpdateKwargsProps>({});
+    const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
 
     return <>
         <Global styles={"body {margin: 0;}"} />
