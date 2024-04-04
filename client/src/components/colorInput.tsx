@@ -5,11 +5,17 @@ import parseColor from 'parse-color'
 
 interface ColorInputProps {
     onChange: (value: Color | null) => void;
+    defaultValue: Color | undefined;
 }
 
-const ColorInput: React.FC<ColorInputProps> = ({ onChange }) => {
-    const [color, setColor] = useState({ h: 214, s: 43, v: 90, a: 1 })
+function toHSVA(color: Color): { h: number, s: number, v: number, a: number } {
+    const cString = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`
+    const [h, s, v, a] = parseColor(cString).hsva
+    return { h, s, v, a }
+}
 
+const ColorInput: React.FC<ColorInputProps> = ({ onChange, defaultValue }) => {
+    const [color, setColor] = useState(toHSVA(defaultValue || { r: 131, g: 174, b: 230 }))
 
     return <Fragment>
         <Wheel color={color} onChange={(c) => {

@@ -1,7 +1,7 @@
 import { GetServerSideProps } from "next";
 import Head from 'next/head';
 import { useState } from "react";
-import { Grid, Button, Modal, DialogTitle } from '@mui/material';
+import { Grid, Button, Modal, DialogTitle, alpha } from '@mui/material';
 import { Global } from "@emotion/react";
 import { useLongPress } from "@uidotdev/usehooks";
 
@@ -14,6 +14,7 @@ import { getModes, setMode } from "@/services/modes";
 import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";
+import { isColor } from "@/models/typeCheckers";
 
 
 interface PageProps {
@@ -48,6 +49,32 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
             console.error(error);
         }
     };
+
+    function* generateStateComponents(state: ModeState) {
+        for (const [key, value] of Object.entries(state)) {
+            if (isColor(value)) {
+                yield <Stack key={key}
+                    sx={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                    }}
+                >
+                    <Typography level="body-sm" textColor="common.white">{key}:</Typography>
+                    <div style={{
+                        width: 20,
+                        height: 20,
+                        backgroundColor: `rgb(${value.r},${value.g},${value.b})`,
+                        borderColor: alpha('#000', 0.75),
+                        borderWidth: 1,
+                        borderStyle: 'solid',
+                        marginLeft: '6px',
+                    }}></div>
+                </Stack>
+                continue
+            }
+            yield <Typography key={key} level="body-sm" textColor="common.white">{key}: {value}</Typography>
+        }
+    }
 
     return <>
         <Head>
@@ -92,9 +119,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                             <Grid sx={{
                                 flexDirection: 'column',
                             }}>
-                                {Object.entries(value.state).map(([key, value]) => (
-                                    <Typography key={key} level="body-sm" textColor="common.white">{key}: {typeof value === 'object' ? JSON.stringify(value) : value}</Typography>
-                                ))}
+                                {Array.from(generateStateComponents(value.state))}
                             </Grid>
                         </Button>
                     </Grid>
@@ -146,6 +171,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                         }}>
                             <KwargsForm
                                 kwargs={modes[selectedMode].kwargs}
+                                defaultData={modes[selectedMode].state}
                                 onDataChanged={setKwargsFormData}
                             ></KwargsForm>
                             <Button

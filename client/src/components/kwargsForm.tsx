@@ -9,15 +9,17 @@ import FloatInput from "@/components/floatInput";
 import IntInput from "@/components/intInput";
 import StrInput from "@/components/strInput";
 import ColorInput from "@/components/colorInput";
+import { isColor } from "@/models/typeCheckers";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
+    defaultData: ModeState
     onDataChanged: (data: ModeState) => void
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
-    const [data, setData] = useState<ModeState>({})
+const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, defaultData }) => {
+    const [data, setData] = useState<ModeState>(defaultData)
 
     useEffect(() => {
         onDataChanged(data)
@@ -41,6 +43,18 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
         })
     }
 
+    function asString(value: any): string | undefined {
+        return typeof value === 'string' ? value : undefined
+    }
+
+    function asNumber(value: any): number | undefined {
+        return typeof value === 'number' ? value : undefined
+    }
+
+    function asColor(value: any): Color | undefined {
+        return isColor(value) ? value : undefined
+    }
+
     function* generateInputs(kwargs: ModeKwargs) {
         for (const [key, value] of Object.entries(kwargs)) {
             switch (value) {
@@ -50,7 +64,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <StrInput onChange={(value) => { handleChange(key, value) }} />
+                        <StrInput defaultValue={asString(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 case 'int':
@@ -59,7 +73,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <IntInput onChange={(value) => { handleChange(key, value) }} />
+                        <IntInput defaultValue={asNumber(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 case 'float':
@@ -68,7 +82,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <FloatInput onChange={(value) => { handleChange(key, value) }} />
+                        <FloatInput defaultValue={asNumber(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
 
@@ -78,7 +92,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged }) => {
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <ColorInput onChange={(value) => { handleChange(key, value) }} />
+                        <ColorInput defaultValue={asColor(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 default:

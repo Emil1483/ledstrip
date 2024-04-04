@@ -3,11 +3,13 @@ import React from "react";
 
 interface FloatInputProps {
     onChange: (value: number | null) => void;
+    defaultValue: number | undefined;
 }
 
-const FloatInput: React.FC<FloatInputProps> = ({ onChange }) => {
+const FloatInput: React.FC<FloatInputProps> = ({ onChange, defaultValue }) => {
     return <Input
         type='number'
+        defaultValue={defaultValue}
         slotProps={{
             input: {
                 step: 'any'
