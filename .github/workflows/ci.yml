@@ -26,6 +26,9 @@ jobs:
       - name: Install Ansible
         run: sudo apt-get install ansible
 
+      - name: Install Docker
+        run: curl -fsSL https://get.docker.com | sh
+
       - name: Run ansible script
         shell: bash
         run: |
