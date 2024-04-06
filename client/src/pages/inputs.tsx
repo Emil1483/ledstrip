@@ -24,6 +24,7 @@ const Inputs: React.FC = () => {
         >
             <KwargsForm
                 onDataChanged={setKwargsFormData}
+                defaultData={{}}
                 kwargs={{
                     strInput: "str",
                     intInput: "int",

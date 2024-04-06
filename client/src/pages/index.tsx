@@ -15,6 +15,7 @@ import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";
 import { isColor } from "@/models/typeCheckers";
+import assert from "assert";
 
 
 interface PageProps {
@@ -28,10 +29,18 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
 
+    function getButtonElement(element: HTMLElement): HTMLElement {
+        if (element.tagName === 'BUTTON') {
+            return element
+        }
+        assert(element.parentElement, `Could not find button element`)
+        return getButtonElement(element.parentElement)
+    }
+
     const longPressAttrs = useLongPress(
         (e) => {
-            const element = e.target as HTMLElement;
-            const mode = element.id
+            const buttonElement = getButtonElement(e.target as HTMLElement);
+            const mode = buttonElement.id
             setSelectedMode(mode);
         },
         { threshold: 500 }
@@ -134,7 +143,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
             onClose={() => setSelectedMode(null)}
             sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
-            {selectedMode ?
+            {selectedMode != null ?
                 <ModalDialog
                     variant="plain"
                     sx={{

@@ -1,9 +1,7 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 
 import { FormControl, FormLabel } from "@mui/joy";
-import ShadeSlider from '@uiw/react-color-shade-slider';
-import Wheel from "@uiw/react-color-wheel";
 
 import FloatInput from "@/components/floatInput";
 import IntInput from "@/components/intInput";
