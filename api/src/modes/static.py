@@ -5,7 +5,7 @@ from src.modes.lights_mode import LightsMode
 
 class Static(LightsMode):
     def __init__(
-        self, pixels: LightsService, color: Color = Color(86, 119, 209)
+        self, pixels: LightsService, color: Color = Color(42, 31, 255)
     ) -> None:
         super().__init__(pixels)
         self.color = color
