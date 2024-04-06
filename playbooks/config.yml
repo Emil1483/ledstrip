@@ -60,6 +60,8 @@
       - client_local_port
       - pi_ssh_port
       - client_remote_port
+      - portainer_local_port
+      - portainer_remote_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -142,7 +144,7 @@
         state: started
         restart_policy: always
         ports:
-          - "9000:9000"
+          - "{{ portainer_local_port }}:9000"
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock"
           - "portainer_data:/data"
@@ -172,6 +174,14 @@
           use_encryption = true
           use_compression = true
 
+          [pi4bportainer]
+          type = tcp
+          local_ip = 127.0.0.1
+          local_port  = {{ portainer_local_port }}
+          remote_port = {{ portainer_remote_port }}
+          use_encryption = true
+          use_compression = true
+
     - name: Start Frpc container
       docker_container:
         name: frpc
@@ -196,6 +206,8 @@
       - frps_dashboard_port
       - subdomain_host
       - client_subdomain
+      - portainer_subdomain
+      - portainer_remote_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -233,6 +245,15 @@
 
           {{ client_subdomain }}.{{ subdomain_host }} {
             reverse_proxy localhost:{{ client_remote_port }} {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
+            }
+          }
+
+          {{ portainer_subdomain }}.{{ subdomain_host }} {
+            reverse_proxy localhost:{{ portainer_remote_port }} {
               transport http {
                 keepalive 60m
                 keepalive_interval 10s

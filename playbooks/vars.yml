@@ -25,3 +25,7 @@ client_local_port: 3000
 pi_ssh_port: 6004
 
 client_subdomain: lights
+
+portainer_subdomain: portainer
+portainer_local_port: 9000
+portainer_remote_port: 5009
