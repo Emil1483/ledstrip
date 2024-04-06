@@ -37,9 +37,7 @@
       register: docker_containers
 
     - name: Stop Existing Containers
-      docker_container:
-        name: "{{ item.Id }}"
-        state: present
+      command: docker stop {{ item.Id }}
       loop: "{{ docker_containers.containers }}"
       when: "'ledstrip-api' in item.Image or 'ledstrip-client' in item.Image"
 
