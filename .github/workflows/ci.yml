@@ -16,12 +16,15 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install Ansible
-        run: sudo apt-get install ansible
-
       - name: Setting ansible vault password
         run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
         shell: bash
+
+      - name: Pip install docker
+        run: sudo pip install docker
+
+      - name: Install Ansible
+        run: sudo apt-get install ansible
 
       - name: Run ansible script
         shell: bash
