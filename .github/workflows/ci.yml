@@ -31,6 +31,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Create ansible configuration directory
+        run: sudo mkdir -p /etc/ansible
+
+      - name: Create Ansible configuration file
+        run: sudo echo -e "[defaults]\nhost_key_checking = False" | sudo tee /etc/ansible/ansible.cfg
+
       - name: Setting ansible vault password
         run: echo '${{ secrets.ANSIBLE_VAULT_PASS }}' | sudo tee /etc/ansible_pass_private
         shell: bash
