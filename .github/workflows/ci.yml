@@ -12,14 +12,14 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setting ansible vault password
-        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
+        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass_private
         shell: bash
 
       - name: Run ansible script
         shell: bash
         run: |
           cd playbooks
-          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
+          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
@@ -32,7 +32,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setting ansible vault password
-        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
+        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass_private
         shell: bash
 
       - name: Pip install docker

@@ -1,4 +1,4 @@
-# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
+# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
 
 - name: Build and deploy Docker images
   hosts: localhost
