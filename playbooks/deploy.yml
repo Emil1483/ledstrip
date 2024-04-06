@@ -13,7 +13,7 @@
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./get_vars.yml
+      include_tasks: ./src/get_vars.yml
       loop:
         - vars.yml
         - docker_hub_credentials.yml
@@ -21,7 +21,7 @@
         loop_var: path
 
     - name: Loop through undefined variables and prompt the user
-      include_tasks: ./prompt_undefined_vars.yml
+      include_tasks: ./src/prompt_undefined_vars.yml
       loop: "{{ variables_to_prompt }}"
       loop_control:
         loop_var: var_name
@@ -42,28 +42,19 @@
         state: absent
         force_kill: true
       loop: "{{ docker_containers.containers }}"
-      when: item.Image is search(docker_hub_username)
+      when: "'ledstrip-api' in item.Image or 'ledstrip-client' in item.Image"
 
     - name: Prune Docker Containers
       docker_prune:
         containers: true
 
-    - name: Get Docker Images
-      docker_host_info:
-        images: true
-      register: docker_images
-
-    - name: Delete Docker Images
-      docker_image:
-        name: "{{ item.Id }}"
-        state: absent
-      loop: "{{ docker_images.images }}"
-      when: item.RepoTags | select('search', docker_hub_username) | list | length > 0
+    - name: Set Tag Fact
+      include_tasks: ./src/set_tag_fact.yml
 
     - name: Pull Docker images from Docker Hub
       docker_image:
         name: "{{ docker_hub_username }}/ledstrip-{{ item }}"
-        tag: latest
+        tag: "{{ tag }}"
         source: pull
       loop:
         - client
@@ -77,7 +68,7 @@
     - name: Run Client Docker container
       docker_container:
         name: api
-        image: "{{ docker_hub_username }}/ledstrip-api:latest"
+        image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
         state: started
         restart_policy: unless-stopped
         privileged: true
@@ -87,7 +78,7 @@
     - name: Run API Docker container
       docker_container:
         name: client
-        image: "{{ docker_hub_username }}/ledstrip-client:latest"
+        image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
         state: started
         restart_policy: unless-stopped
         privileged: true

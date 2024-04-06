@@ -63,12 +63,12 @@
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./get_vars.yml
+      include_tasks: ./src/get_vars.yml
       vars:
         path: vars.yml
 
     - name: Loop through undefined variables and prompt the user
-      include_tasks: ./prompt_undefined_vars.yml
+      include_tasks: ./src/prompt_undefined_vars.yml
       loop: "{{ variables_to_prompt }}"
       loop_control:
         loop_var: var_name
@@ -183,7 +183,7 @@
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./get_vars.yml
+      include_tasks: ./src/get_vars.yml
       vars:
         path: vars.yml
 
