@@ -11,23 +11,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python 3
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
       - name: Setting ansible vault password
         run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
         shell: bash
-
-      - name: Pip install docker
-        run: sudo pip install docker
-
-      - name: Install Ansible
-        run: sudo apt-get install ansible
-
-      - name: Install buildx
-        run: docker buildx create --use
 
       - name: Run ansible script
         shell: bash
