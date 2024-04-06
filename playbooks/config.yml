@@ -131,6 +131,22 @@
         state: started
         enabled: true
 
+    - name: Create Portainer Volume
+      docker_volume:
+        name: portainer_data
+
+    - name: Start Portainer Container
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "9000:9000"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "portainer_data:/data"
+
     - name: Configure frpc.ini
       blockinfile:
         path: /root/.config/frpc.ini

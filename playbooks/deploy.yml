@@ -36,17 +36,12 @@
         containers: yes
       register: docker_containers
 
-    - name: Remove Existing Containers
+    - name: Stop Existing Containers
       docker_container:
         name: "{{ item.Id }}"
-        state: absent
-        force_kill: true
+        state: present
       loop: "{{ docker_containers.containers }}"
       when: "'ledstrip-api' in item.Image or 'ledstrip-client' in item.Image"
-
-    - name: Prune Docker Containers
-      docker_prune:
-        containers: true
 
     - name: Set Tag Fact
       include_tasks: ./src/set_tag_fact.yml
@@ -67,7 +62,7 @@
 
     - name: Run Client Docker container
       docker_container:
-        name: api
+        name: "api-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
         state: started
         restart_policy: unless-stopped
@@ -77,7 +72,7 @@
 
     - name: Run API Docker container
       docker_container:
-        name: client
+        name: "client-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
         state: started
         restart_policy: unless-stopped
@@ -87,4 +82,4 @@
         networks:
           - name: ledstrip-network
         env:
-          API_URL: "http://api:{{ api_local_port }}"
+          API_URL: "http://api-{{ tag }}:{{ api_local_port }}"
