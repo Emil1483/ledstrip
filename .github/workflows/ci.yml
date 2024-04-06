@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           cd playbooks
-          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
+          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
