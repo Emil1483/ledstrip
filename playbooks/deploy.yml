@@ -16,7 +16,6 @@
       include_tasks: ./src/get_vars.yml
       loop:
         - vars.yml
-        - docker_hub_credentials.yml
       loop_control:
         loop_var: path
 
