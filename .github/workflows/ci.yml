@@ -23,3 +23,29 @@ jobs:
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setting ansible vault password
+        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
+        shell: bash
+
+      - name: Pip install docker
+        run: sudo pip install docker
+
+      - name: Install Ansible
+        run: sudo apt-get install ansible
+
+      - name: Run ansible script
+        shell: bash
+        run: |
+          cd playbooks
+          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
+        env:
+          PY_COLORS: "1"
+          ANSIBLE_FORCE_COLOR: "1"
