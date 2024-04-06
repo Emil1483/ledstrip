@@ -20,14 +20,14 @@ jobs:
         run: sudo apt-get install ansible
 
       - name: Setting ansible vault password
-        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | tee /etc/ansible_pass
+        run: echo ${{ secrets.ANSIBLE_VAULT_PASS }} | sudo tee /etc/ansible_pass
         shell: bash
 
       - name: Run ansible script
         shell: bash
         run: |
           cd playbooks
-          ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
+          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass build.yml --diff
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
