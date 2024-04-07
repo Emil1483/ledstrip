@@ -9,7 +9,7 @@ log.setLevel(logging.ERROR)
 
 
 class CanvasService(LightsService):
-    def __init__(self, num_pixels: int = 1081) -> None:
+    def __init__(self, num_pixels: int = 109) -> None:
         self._pixels = [(0, 0, 0)] * num_pixels
         self._num_pixels = num_pixels
 

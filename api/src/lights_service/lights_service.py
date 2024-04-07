@@ -35,7 +35,7 @@ class LightsService(ABC):
 load_dotenv()
 
 target_service = getenv("LIGHTS_SERVICE", "neopixel")
-led_count = int(getenv("LED_COUNT", "1081"))
+led_count = int(getenv("LED_COUNT", "109"))
 
 if target_service == "canvas":
     from src.lights_service.canvas_service import CanvasService

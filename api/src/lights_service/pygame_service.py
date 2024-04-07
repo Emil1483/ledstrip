@@ -11,7 +11,7 @@ class PygameQuit(Exception):
 
 
 class PygameService(LightsService):
-    def __init__(self, num_pixels: int = 1081) -> None:
+    def __init__(self, num_pixels: int = 109) -> None:
         self.WINDOW_WIDTH = 1500
         self.WINDOW_HEIGHT = 200
         self.NUM_PIXELS = num_pixels

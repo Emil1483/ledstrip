@@ -66,6 +66,8 @@
         privileged: true
         networks:
           - name: ledstrip-network
+        env:
+          LED_COUNT: "109"
 
     - name: Run API Docker container
       docker_container:
