@@ -1,5 +1,6 @@
 from random import randrange
-from time import sleep
+import random
+from time import sleep, time
 import pygame
 
 from src.lights_service.lights_service import LightsService
@@ -33,6 +34,7 @@ class PygameService(LightsService):
         return self._pixels[key]
 
     def show(self) -> None:
+        start = time()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 raise PygameQuit()
@@ -43,6 +45,10 @@ class PygameService(LightsService):
             y = self.WINDOW_HEIGHT // 2
             pygame.draw.circle(self.window, color, (x, y), self.CIRCLE_RADIUS)
         pygame.display.flip()
+        end = time()
+        current = end - start
+        total_time = random.uniform(0.034, 0.036)
+        sleep(total_time - current)
 
     def __len__(self) -> int:
         return self.NUM_PIXELS

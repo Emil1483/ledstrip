@@ -3,7 +3,6 @@ import board
 import neopixel
 
 from src.lights_service.lights_service import LightsService
-from src.logging_helper import logger
 
 
 class NeopixelService(LightsService):
@@ -18,10 +17,7 @@ class NeopixelService(LightsService):
         return self._pixels[key]
 
     def show(self) -> None:
-        start = time()
         self._pixels.show()
-        end = time()
-        logger.info(f"Show took {end - start} seconds")
 
     def fill(self, value: tuple[int, int, int]) -> None:
         self._pixels.fill(value)
