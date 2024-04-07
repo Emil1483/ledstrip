@@ -47,7 +47,7 @@ class PygameService(LightsService):
         pygame.display.flip()
         end = time()
         current = end - start
-        total_time = random.uniform(0.034, 0.036)
+        total_time = random.uniform(0.00465, 0.004725)
         if current < total_time:
             sleep(total_time - current)
 
