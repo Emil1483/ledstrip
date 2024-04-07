@@ -35,5 +35,5 @@ class Color(KwargType):
             "b": self.b,
         }
 
-
-kwarg_types = [Color]
+    def __str__(self) -> str:
+        return f"Color(r={self.r}, g={self.g}, b={self.b})"

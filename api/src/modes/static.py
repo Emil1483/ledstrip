@@ -1,6 +1,7 @@
 from src.modes.models import Color
 from src.lights_service.lights_service import LightsService
 from src.modes.lights_mode import LightsMode
+from src.logging_helper import logger
 
 
 class Static(LightsMode):
@@ -16,12 +17,18 @@ class Static(LightsMode):
         self.startup_time = startup_time
         self.current_time = 0.0
 
+        logger.info(
+            f"Static mode initialized with color: {color} and startup_time: {startup_time}"
+        )
+
     def __call__(self, dt: float) -> None:
         def curve(t):
             return -t * (t - 2)
 
         if self.current_time < self.startup_time:
             self.current_time += dt
+            logger.info(f"current_time: {self.current_time}")
+
             last_pixel = int(
                 len(self.pixels) * curve(self.current_time / self.startup_time)
             )

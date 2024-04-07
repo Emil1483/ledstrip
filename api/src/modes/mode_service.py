@@ -1,13 +1,14 @@
-from abc import ABC, abstractmethod
 import inspect
 
 from src.modes.models import KwargType
 from src.modes.lights_mode import LightsMode
-from src.lights_service.lights_service import LightsService, lights_serivce
+from src.lights_service.lights_service import lights_serivce
 
 from src.modes.off import Off
 from src.modes.rainbow import Rainbow
 from src.modes.static import Static
+
+from src.logging_helper import logger
 
 
 class UnexpectedKwarg(Exception):
@@ -50,6 +51,8 @@ class ModeService:
                     yield key, value
 
         genned_kwargs = {k: v for k, v in gen_kwargs()}
+
+        logger.info(f"Setting mode to {mode} with kwargs: {genned_kwargs}")
 
         self.mode = self.modes[mode](lights_serivce, **genned_kwargs)
 

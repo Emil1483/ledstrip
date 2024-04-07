@@ -1,4 +1,5 @@
 from random import randrange
+from time import sleep
 import pygame
 
 from src.lights_service.lights_service import LightsService
