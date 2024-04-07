@@ -9,7 +9,7 @@ class Static(LightsMode):
         self,
         pixels: LightsService,
         color: Color = Color(42, 31, 255),
-        startup_time: float = 7.0,
+        startup_time: float = 0.6,
     ) -> None:
         super().__init__(pixels)
         self.color = color
