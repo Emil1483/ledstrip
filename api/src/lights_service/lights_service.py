@@ -3,6 +3,8 @@ from os import getenv
 
 from dotenv import load_dotenv
 
+from src.logging_helper import logger
+
 
 class LightsService(ABC):
     @abstractmethod
@@ -49,3 +51,5 @@ elif target_service == "neopixel":
     lights_serivce = NeopixelService(led_count)
 else:
     raise ValueError(f'Invalid lights service: "{target_service}"')
+
+logger.info(f"Using lights service: {target_service} with {len(lights_serivce)} pixels")

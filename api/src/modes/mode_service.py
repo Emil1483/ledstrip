@@ -1,5 +1,6 @@
 import inspect
 
+from src.modes.debug import Debug
 from src.modes.models import KwargType
 from src.modes.lights_mode import LightsMode
 from src.lights_service.lights_service import lights_serivce
@@ -21,6 +22,7 @@ class ModeService:
         self.modes: dict[str, type[LightsMode]] = {
             "rainbow": Rainbow,
             "static": Static,
+            "debug": Debug,
             "off": Off,
         }
 

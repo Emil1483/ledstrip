@@ -48,7 +48,8 @@ class PygameService(LightsService):
         end = time()
         current = end - start
         total_time = random.uniform(0.034, 0.036)
-        sleep(total_time - current)
+        if current < total_time:
+            sleep(total_time - current)
 
     def __len__(self) -> int:
         return self.NUM_PIXELS
