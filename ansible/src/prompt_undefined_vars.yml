@@ -14,23 +14,3 @@
 - name: Debug the value of '{{ var_name }}'
   debug:
     msg: "using {{ var_name }}: {{ vars[var_name] }}"
-#
-# ---
-#
-# Example usage:
-# vars:
-#   variables_to_prompt:
-#     - foo
-#     - bar
-#     - baz
-
-# tasks:
-#   - name: Read vars.yml file
-#     include_vars:
-#       file: vars.yml
-
-#   - name: Loop through undefined variables and prompt the user
-#     include_tasks: ./src/prompt_undefined_vars.yml
-#     loop: "{{ variables_to_prompt }}"
-#     loop_control:
-#       loop_var: var_name

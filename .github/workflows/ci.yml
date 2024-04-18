@@ -18,8 +18,8 @@ jobs:
       - name: Run ansible script
         shell: bash
         run: |
-          cd playbooks
-          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
+          cd ansible/playbooks
+          sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
@@ -50,8 +50,8 @@ jobs:
       - name: Run ansible script
         shell: bash
         run: |
-          cd playbooks
-          sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
+          cd ansible/playbooks
+          sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
         env:
           PY_COLORS: "1"
           ANSIBLE_FORCE_COLOR: "1"
