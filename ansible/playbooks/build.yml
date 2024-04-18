@@ -1,4 +1,4 @@
-# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
 
 - name: Build and deploy Docker images
   hosts: localhost
@@ -12,14 +12,14 @@
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./src/get_vars.yml
+      include_tasks: ../src/get_vars.yml
       loop:
-        - vars.yml
+        - ../vars.yml
       loop_control:
         loop_var: path
 
     - name: Loop through undefined variables and prompt the user
-      include_tasks: ./src/prompt_undefined_vars.yml
+      include_tasks: ../src/prompt_undefined_vars.yml
       loop: "{{ variables_to_prompt }}"
       loop_control:
         loop_var: var_name
@@ -34,14 +34,14 @@
         password: "{{ docker_hub_password }}"
 
     - name: Set Tag Fact
-      include_tasks: ./src/set_tag_fact.yml
+      include_tasks: ../src/set_tag_fact.yml
 
     - name: Build and Push Docker Images
       command: >
         docker buildx build \
         --platform linux/arm64 \
         --push -t {{ docker_hub_username }}/ledstrip-{{ item }}:{{ tag }} \
-        ../{{ item }}
+        .../{{ item }}
       loop:
         - client
         - api

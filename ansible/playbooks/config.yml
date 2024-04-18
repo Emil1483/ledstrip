@@ -1,4 +1,4 @@
-# sudo ansible-playbook -i inventory.yml --vault-id default@/etc/ansible_pass_private config.yml --diff
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private config.yml --diff
 
 - name: Configure Localhost
   hosts: localhost
@@ -56,21 +56,21 @@
     variables_to_prompt:
       - frps_token
       - frps_bind_port
-      - subdomain_host
+      - frp_subdomain_host
       - client_local_port
       - pi_ssh_port
       - client_remote_port
-      - portainer_local_port
-      - portainer_remote_port
+      - portainer_edge_id
+      - portainer_edge_key
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./src/get_vars.yml
+      include_tasks: ../src/get_vars.yml
       vars:
-        path: vars.yml
+        path: ../vars.yml
 
     - name: Loop through undefined variables and prompt the user
-      include_tasks: ./src/prompt_undefined_vars.yml
+      include_tasks: ../src/prompt_undefined_vars.yml
       loop: "{{ variables_to_prompt }}"
       loop_control:
         loop_var: var_name
@@ -135,19 +135,26 @@
 
     - name: Create Portainer Volume
       docker_volume:
-        name: portainer_data
+        name: portainer_agent_data
 
-    - name: Start Portainer Container
+    - name: Start Portainer Agent Container
       docker_container:
-        name: portainer
-        image: portainer/portainer-ce:latest
+        name: portainer_edge_agent
+        image: portainer/agent:2.19.4
         state: started
         restart_policy: always
-        ports:
-          - "{{ portainer_local_port }}:9000"
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock"
-          - "portainer_data:/data"
+          - "/var/lib/docker/volumes:/var/lib/docker/volumes"
+          - "/:/host"
+          - "portainer_agent_data:/data"
+        env:
+          EDGE: "1"
+          EDGE_ID: "{{ portainer_edge_id }}"
+          EDGE_KEY: "{{ portainer_edge_key }}"
+          EDGE_INSECURE_POLL: "1"
+          AGENT_CLUSTER_ADDR: tcp://tasks.agent:9001
+          AGENT_LISTEN_ADDR: tcp://
 
     - name: Configure frpc.ini
       blockinfile:
@@ -155,7 +162,7 @@
         create: true
         block: |
           [common]
-          server_addr = {{ subdomain_host }}
+          server_addr = {{ frp_subdomain_host }}
           server_port = {{ frps_bind_port }}
           tls_enable = true
           token = {{ frps_token }}
@@ -171,14 +178,6 @@
           local_ip = 127.0.0.1
           local_port  = {{ client_local_port }}
           remote_port = {{ client_remote_port }}
-          use_encryption = true
-          use_compression = true
-
-          [pi4bportainer]
-          type = tcp
-          local_ip = 127.0.0.1
-          local_port  = {{ portainer_local_port }}
-          remote_port = {{ portainer_remote_port }}
           use_encryption = true
           use_compression = true
 
@@ -215,6 +214,7 @@
 - name: Configure Server
   hosts: linode
   become: true
+  tags: server
 
   vars:
     variables_to_prompt:
@@ -222,16 +222,15 @@
       - frps_dashboard_password
       - frps_bind_port
       - frps_dashboard_port
-      - subdomain_host
+      - frp_subdomain_host
       - client_subdomain
-      - portainer_subdomain
-      - portainer_remote_port
+      - portainer_host
 
   tasks:
     - name: Get variables from vars.yml
-      include_tasks: ./src/get_vars.yml
+      include_tasks: ../src/get_vars.yml
       vars:
-        path: vars.yml
+        path: ../vars.yml
 
     - name: Install required packages
       apt:
@@ -252,7 +251,7 @@
         create: true
         marker: "# {mark} ANSIBLE MANAGED CADDY BLOCK"
         block: |
-          dashboard.{{ subdomain_host }} {
+          dashboard.{{ frp_subdomain_host }} {
             reverse_proxy localhost:{{ frps_dashboard_port }} {
               transport http {
                 keepalive 60m
@@ -261,7 +260,7 @@
             }
           }
 
-          {{ client_subdomain }}.{{ subdomain_host }} {
+          {{ client_subdomain }}.{{ frp_subdomain_host }} {
             reverse_proxy localhost:{{ client_remote_port }} {
               transport http {
                 keepalive 60m
@@ -270,8 +269,8 @@
             }
           }
 
-          {{ portainer_subdomain }}.{{ subdomain_host }} {
-            reverse_proxy localhost:{{ portainer_remote_port }} {
+          {{ portainer_host }} {
+            reverse_proxy localhost:9000 {
               transport http {
                 keepalive 60m
                 keepalive_interval 10s
@@ -286,7 +285,7 @@
         block: |
           [common]
           bind_port = {{ frps_bind_port }}
-          subdomain_host = {{ subdomain_host }}
+          frp_subdomain_host = {{ frp_subdomain_host }}
           tls_enable = true
           token = "{{ frps_token }}"
           dashboard_port = {{ frps_dashboard_port }}
@@ -340,3 +339,20 @@
         entrypoint: ["/usr/bin/frps", "-c", "/etc/frp/frps.ini"]
         volumes:
           - "/root/frps.ini:/etc/frp/frps.ini:ro"
+
+    - name: Create Portainer Volume
+      docker_volume:
+        name: portainer_data
+
+    - name: Start Portainer Container
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "9000:9000"
+          - "8000:8000"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "portainer_data:/data"
