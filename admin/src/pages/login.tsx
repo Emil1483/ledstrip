@@ -27,6 +27,7 @@ const Login: React.FC = () => {
                 const data = await response.json();
                 const expirationDate = addHours(new Date(), 8);
                 Cookies.set('portainerJwtToken', data.jwt, { expires: expirationDate });
+                console.log('Login successful, redirecting to /')
                 router.push('/');
             } else {
                 setError('Invalid username or password');
