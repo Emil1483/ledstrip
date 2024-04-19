@@ -1,6 +1,18 @@
 import { PortainerEnvironment } from "@/models/portainerModels";
+import * as cookie from "cookie";
+import { GetServerSidePropsContext, PreviewData } from "next";
+import { ParsedUrlQuery } from "querystring";
 
 export class InvalidPortainerToken extends Error {}
+
+export function getPortainerJwtTokenFromCookie(
+    context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
+) {
+    const { req } = context;
+    const unparsedCookies = req.headers.cookie!;
+    const parsedCookies = cookie.parse(unparsedCookies);
+    return parsedCookies.portainerJwtToken;
+}
 
 export async function fetchEnvironments(
     token: string
