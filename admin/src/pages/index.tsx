@@ -37,7 +37,7 @@ const Home: React.FC<PageProps> = ({ environments }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-    const token = getPortainerJwtTokenFromCookie(context);
+    const token = getPortainerJwtTokenFromCookie(context.req);
     return {
         props: {
             environments: await fetchEnvironments(token)

@@ -1,14 +1,16 @@
 import { Container, PortainerEnvironment } from "@/models/portainerModels";
 import * as cookie from "cookie";
-import { GetServerSidePropsContext, PreviewData } from "next";
-import { ParsedUrlQuery } from "querystring";
+import { IncomingMessage } from "http";
 
 export class InvalidPortainerToken extends Error {}
 
 export function getPortainerJwtTokenFromCookie(
-    context: GetServerSidePropsContext<ParsedUrlQuery, PreviewData>
+    req: IncomingMessage & {
+        cookies: Partial<{
+            [key: string]: string;
+        }>;
+    }
 ) {
-    const { req } = context;
     const unparsedCookies = req.headers.cookie!;
     const parsedCookies = cookie.parse(unparsedCookies);
     return parsedCookies.portainerJwtToken;
@@ -54,4 +56,48 @@ export async function fetchContainers(
     }
 
     return response.json();
+}
+
+export async function stopContainer(
+    token: string,
+    environmentId: string,
+    containerId: string
+): Promise<void> {
+    const PORTAINER_URL = process.env.PORTAINER_URL;
+    const response = await fetch(
+        `${PORTAINER_URL}/api/endpoints/${environmentId}/docker/containers/${containerId}/stop`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (response.status == 401) {
+        throw new InvalidPortainerToken();
+    }
+}
+
+export async function startContainer(
+    token: string,
+    environmentId: string,
+    containerId: string
+): Promise<void> {
+    const PORTAINER_URL = process.env.PORTAINER_URL;
+    const response = await fetch(
+        `${PORTAINER_URL}/api/endpoints/${environmentId}/docker/containers/${containerId}/start`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+        }
+    );
+
+    if (response.status == 401) {
+        throw new InvalidPortainerToken();
+    }
 }
