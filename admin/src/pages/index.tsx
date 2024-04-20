@@ -3,7 +3,7 @@ import { fetchEnvironments, getPortainerJwtTokenFromCookie } from "@/services/po
 import { GetServerSideProps } from "next";
 import React from "react";
 
-import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
+import { Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { Global } from "@emotion/react";
 
 
@@ -16,16 +16,22 @@ const Home: React.FC<PageProps> = ({ environments }) => {
     return (
         <>
             <Global styles={"body {margin: 0;}"} />
-            <div>
-                <h2>Environments</h2>
-                <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                    {environments.map((environment) => (
-                        <ListItemButton component="a" href={`/environments/${environment.Id}`} key={environment.Id}>
+            <div style={{ textAlign: 'center', padding: '20px' }}>
+                <Typography component="h2" variant="h6" color="primary" gutterBottom>
+                    Environments
+                </Typography>
+            </div>
+            <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
+                {environments.map((environment, index) => (
+                    <React.Fragment key={environment.Id}>
+                        <ListItemButton component="a" href={`/environments/${environment.Id}`}>
                             <ListItemText primary={environment.Name} secondary={environment.Id} />
                         </ListItemButton>
-                    ))}
-                </List>
-            </div>
+                        {index < environments.length - 1 && <Divider />}
+                    </React.Fragment>
+                ))}
+            </List>
+
         </>
     );
 };

@@ -1,4 +1,4 @@
-import { PortainerEnvironment } from "@/models/portainerModels";
+import { Container, PortainerEnvironment } from "@/models/portainerModels";
 import * as cookie from "cookie";
 import { GetServerSidePropsContext, PreviewData } from "next";
 import { ParsedUrlQuery } from "querystring";
@@ -33,7 +33,10 @@ export async function fetchEnvironments(
     return response.json();
 }
 
-export async function getContainers(token: string, environmentId: string) {
+export async function fetchContainers(
+    token: string,
+    environmentId: string
+): Promise<Container[]> {
     const PORTAINER_URL = process.env.PORTAINER_URL;
     const response = await fetch(
         `${PORTAINER_URL}/api/endpoints/${environmentId}/docker/containers/json?all=true`,
@@ -49,4 +52,6 @@ export async function getContainers(token: string, environmentId: string) {
     if (response.status == 401) {
         throw new InvalidPortainerToken();
     }
+
+    return response.json();
 }
