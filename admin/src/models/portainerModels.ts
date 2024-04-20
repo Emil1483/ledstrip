@@ -245,6 +245,7 @@ export interface Port {
 export enum State {
     Exited = "exited",
     Running = "running",
+    Created = "created",
 }
 
 export interface Image {

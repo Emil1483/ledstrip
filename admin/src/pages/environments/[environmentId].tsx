@@ -43,7 +43,8 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
     function openChangeVersionModal(tag: string) {
         const allRunning = imageTags[tag].every(c => c.State === "running")
         const allExited = imageTags[tag].every(c => c.State === "exited")
-        assert(allRunning || allExited, "All containers must be in the same state")
+        const allCreated = imageTags[tag].every(c => c.State === "created")
+        assert(allRunning || allExited || allCreated, "All containers must be in the same state")
 
         if (allRunning) {
             return
@@ -181,10 +182,14 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
                                                     fontWeight: "bold",
                                                     backgroundColor: {
                                                         running: "green",
-                                                        exited: "red"
+                                                        exited: "red",
+                                                        created: "blue"
                                                     }[container.State]
                                                 }} />
-                                            <ListItemText primary={container.friendlyName} />
+                                            <ListItemText
+                                                primary={container.friendlyName}
+                                                secondary={(new Date(container.Created * 1000)).toUTCString()}
+                                            />
                                         </ListItem>
                                     ))}
                                 </List>
