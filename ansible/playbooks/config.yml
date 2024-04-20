@@ -286,6 +286,8 @@
                 keepalive 60m
                 keepalive_interval 10s
               }
+            }
+          }
 
     - name: Configure frps.ini
       blockinfile:
