@@ -35,11 +35,6 @@
         containers: yes
       register: docker_containers
 
-    - name: Stop Existing Containers
-      command: docker stop {{ item.Id }}
-      loop: "{{ docker_containers.containers }}"
-      when: "'ledstrip-api' in item.Image or 'ledstrip-client' in item.Image"
-
     - name: Set Tag Fact
       include_tasks: ../src/set_tag_fact.yml
 
