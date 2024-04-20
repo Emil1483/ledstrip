@@ -61,7 +61,7 @@
       docker_container:
         name: "api-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
-        state: started
+        state: present
         restart_policy: unless-stopped
         privileged: true
         networks:
@@ -73,7 +73,7 @@
       docker_container:
         name: "client-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
-        state: started
+        state: present
         restart_policy: unless-stopped
         privileged: true
         ports:
