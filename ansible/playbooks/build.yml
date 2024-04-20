@@ -45,3 +45,10 @@
       loop:
         - client
         - api
+
+    - name: Build and Push Admin Docker Images
+      command: >
+        docker buildx build \
+        --platform linux/amd64 \
+        --push -t {{ docker_hub_username }}/ledstrip-admin:{{ tag }} \
+        ../../admin

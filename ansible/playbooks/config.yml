@@ -225,6 +225,8 @@
       - frp_subdomain_host
       - client_subdomain
       - portainer_host
+      - admin_host
+      - admin_port
 
   tasks:
     - name: Get variables from vars.yml
@@ -277,6 +279,13 @@
               }
             }
           }
+
+          {{ admin_host }} {
+            reverse_proxy localhost:{{ admin_port }} {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
 
     - name: Configure frps.ini
       blockinfile:

@@ -15,15 +15,18 @@ interface PageProps {
     };
 }
 
-export type ChangeTagState =
+interface Operation {
+    state: "pending" | "workingOn" | "completed";
+    message: string;
+}
+
+type ChangeTagState =
     | { type: "notStarted" }
     | { type: "finished" }
     | { type: "error" }
     | {
         type: "started";
-        pendingOperations: string[];
-        workingOnOperations: string[];
-        completedOperations: string[];
+        operations: Operation[];
     };
 
 
@@ -71,11 +74,7 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
             }
         }
 
-        if (foundTag) {
-            return foundTag;
-        } else {
-            throw new Error("No running tag found");
-        }
+        return foundTag;
     }
 
     async function initiateTagChange() {
@@ -87,40 +86,64 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
             return containers.filter((c) => c.Image.endsWith(tag));
         }
 
-        const containersToStop = containersWithTag(runningTag);
         const containersToStart = containersWithTag(targetTag);
+        const containersToStop = runningTag ? containersWithTag(runningTag) : [];
+
+        const operations: Operation[] = []
+        containersToStop.forEach((c) => {
+            operations.push({
+                message: `Stop ${c.Names[0]}`,
+                state: "workingOn",
+            });
+        });
+        containersToStart.forEach((c) => {
+            operations.push({
+                message: `Start ${c.Names[0]}`,
+                state: "pending",
+            });
+        });
 
         setChangeTagState({
             type: "started",
-            pendingOperations: containersToStop.map((c) => `Start container ${c.Image}`),
-            workingOnOperations: containersToStart.map((c) => `Stop container ${c.Image}`),
-            completedOperations: [],
+            operations: operations,
         });
 
-        let response = await fetch(`/api/environment/${environmentId}/containers/stop`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                containers: containersWithTag(runningTag).map((c) => c.Id),
-            }),
-        });
-
-        if (!response.ok) {
-            return setChangeTagState({
-                type: "error",
+        if (containersToStop) {
+            let response = await fetch(`/api/environment/${environmentId}/containers/stop`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    containers: containersToStop.map((c) => c.Id),
+                }),
             });
+
+            if (!response.ok) {
+                return setChangeTagState({
+                    type: "error",
+                });
+            }
+
+            for (const operation of operations) {
+                if (operation.state === "workingOn") {
+                    operation.state = "completed";
+                }
+            }
+        }
+
+        for (const operation of operations) {
+            if (operation.state === "pending") {
+                operation.state = "workingOn";
+            }
         }
 
         setChangeTagState({
             type: "started",
-            pendingOperations: [],
-            workingOnOperations: containersToStop.map((c) => `Start container ${c.Image}`),
-            completedOperations: containersToStart.map((c) => `Stop container ${c.Image}`),
+            operations: operations,
         });
 
-        response = await fetch(`/api/environment/${environmentId}/containers/start`, {
+        const response = await fetch(`/api/environment/${environmentId}/containers/start`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -136,14 +159,15 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
             });
         }
 
+        for (const operation of operations) {
+            if (operation.state === "workingOn") {
+                operation.state = "completed";
+            }
+        }
+
         setChangeTagState({
             type: "started",
-            pendingOperations: [],
-            workingOnOperations: [],
-            completedOperations: [
-                ...containersToStart.map((c) => `Start container ${c.Image}`),
-                ...containersToStop.map((c) => `Stop container ${c.Image}`),
-            ],
+            operations: operations,
         });
 
         // TODO: This is a hack to force a reload of the page
@@ -216,35 +240,22 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
                     <DialogTitle>Are you sure you want to switch from {getRunningTag()} to {targetTag}</DialogTitle>
                     {changeTagState.type === "started" && (
                         <List>
-                            {changeTagState.completedOperations.map((operation) => (
-                                <ListItem key={operation}>
+                            {changeTagState.operations.map((operation) => (
+                                <ListItem key={operation.message}>
                                     <Chip
-                                        label={operation}
+                                        label={operation.message}
                                         sx={{
-                                            color: "white",
                                             fontWeight: "bold",
-                                            backgroundColor: "green",
-                                        }} />
-                                </ListItem>
-                            ))}
-                            {changeTagState.workingOnOperations.map((operation) => (
-                                <ListItem key={operation}>
-                                    <Chip
-                                        label={operation}
-                                        sx={{
-                                            color: "black",
-                                            fontWeight: "bold",
-                                            backgroundColor: "orange",
-                                        }} />
-                                </ListItem>
-                            ))}
-                            {changeTagState.pendingOperations.map((operation) => (
-                                <ListItem key={operation}>
-                                    <Chip
-                                        label={operation}
-                                        sx={{
-                                            color: "black",
-                                            fontWeight: "bold",
+                                            color: {
+                                                completed: "white",
+                                                pending: "black",
+                                                workingOn: "black"
+                                            }[operation.state],
+                                            backgroundColor: {
+                                                completed: "green",
+                                                pending: undefined,
+                                                workingOn: "orange"
+                                            }[operation.state],
                                         }} />
                                 </ListItem>
                             ))}

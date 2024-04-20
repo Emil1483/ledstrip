@@ -3,8 +3,9 @@ import { fetchEnvironments, getPortainerJwtTokenFromCookie } from "@/services/po
 import { GetServerSideProps } from "next";
 import React from "react";
 
-import { Divider, List, ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { Divider, List, ListItemButton, ListItemText, Typography } from '@mui/material';
 import { Global } from "@emotion/react";
+import Head from "next/head";
 
 
 
@@ -15,7 +16,13 @@ interface PageProps {
 const Home: React.FC<PageProps> = ({ environments }) => {
     return (
         <>
+            <Head>
+                <link rel="manifest" href="/manifest.json" />
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+
             <Global styles={"body {margin: 0;}"} />
+
             <div style={{ textAlign: 'center', padding: '20px' }}>
                 <Typography component="h2" variant="h6" color="primary" gutterBottom>
                     Environments
