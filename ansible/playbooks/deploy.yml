@@ -47,7 +47,7 @@
         name: ledstrip-network
         state: present
 
-    - name: Run API Docker container
+    - name: Initiate API Docker container
       docker_container:
         name: "api-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
@@ -59,7 +59,7 @@
         env:
           LED_COUNT: "109"
 
-    - name: Run Client Docker container
+    - name: Initiate Client Docker container
       docker_container:
         name: "client-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"

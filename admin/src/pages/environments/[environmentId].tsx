@@ -214,6 +214,7 @@ const EnvironmentRoute: React.FC<PageProps> = ({ imageTags }) => {
                                                 primary={container.friendlyName}
                                                 secondary={(new Date(container.Created * 1000)).toUTCString()}
                                             />
+                                            <Typography variant="caption" gutterBottom >{container.ImageID.slice(7, 14)}</Typography>
                                         </ListItem>
                                     ))}
                                 </List>
