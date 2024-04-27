@@ -1,12 +1,10 @@
-from time import sleep
-from src.lights_service.lights_service import LightsService
+from src.models import Color, LedstripState
 from src.modes.lights_mode import LightsMode
 
 
 class Off(LightsMode):
-    def __init__(self, pixels: LightsService) -> None:
-        super().__init__(pixels)
+    def __init__(self, led_count: int) -> None:
+        self.led_count = led_count
 
-    def __call__(self, dt: float) -> None:
-        self.pixels.fill((0, 0, 0))
-        self.pixels.show()
+    def update_state(self, _: float) -> LedstripState:
+        return LedstripState(colors=[Color.black()] * self.led_count)

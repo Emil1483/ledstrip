@@ -1,16 +1,14 @@
 from abc import ABC, abstractmethod
 
-from src.lights_service.lights_service import LightsService
+from src.models import LedstripState
 
 #! Each impmementation of LightsMode should have publicly available
 #! attributes with same names as the custom kwargs of the __init__ method
+#! Their __init__ function should take the form of:
+#! def __init__(self, led_count, **kwargs) -> None:
 
 
 class LightsMode(ABC):
     @abstractmethod
-    def __init__(self, lights_service: LightsService) -> None:
-        self.pixels = lights_service
-
-    @abstractmethod
-    def __call__(self, dt: float) -> None:
+    def update_state(self, dt: float) -> LedstripState:
         raise NotImplementedError()

@@ -1,10 +1,10 @@
-import board
-import neopixel
+import board  # type: ignore
+import neopixel  # type: ignore
 
-from src.lights_service.lights_service import LightsService
+from src.ledstrip_services.ledstrip_service import LedstripService
 
 
-class NeopixelService(LightsService):
+class NeopixelService(LedstripService):
     def __init__(self, num_pixels: int = 109) -> None:
         self._pixels = neopixel.NeoPixel(board.D18, num_pixels, auto_write=False)
         self._num_pixels = num_pixels

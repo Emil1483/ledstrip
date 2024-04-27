@@ -1,9 +1,10 @@
 import inspect
 
+from src.transitioner import Transitioner
 from src.modes.debug import Debug
-from src.modes.models import KwargType
+from src.models import KwargType
 from src.modes.lights_mode import LightsMode
-from src.lights_service.lights_service import lights_serivce
+from src.ledstrip_services.ledstrip_service import ledstrip_service
 
 from src.modes.off import Off
 from src.modes.rainbow import Rainbow
@@ -26,7 +27,9 @@ class ModeService:
             "off": Off,
         }
 
-        self.mode = Static(lights_serivce)
+        self.mode = Static(len(ledstrip_service))
+
+        self.transitioner = Transitioner(None, self.mode)
 
     def set_mode(self, mode: str, decode_kwargs=True, **kwargs) -> None:
         if mode not in self.modes:
@@ -56,7 +59,10 @@ class ModeService:
 
         logger.info(f"Setting mode to {mode} with kwargs: {genned_kwargs}")
 
-        self.mode = self.modes[mode](lights_serivce, **genned_kwargs)
+        prev_mode = self.mode
+        self.mode = self.modes[mode](len(ledstrip_service), **genned_kwargs)
+
+        self.transitioner = Transitioner(prev_mode, self.mode)
 
     def status(self):
         def gen_status():

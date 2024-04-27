@@ -5,3 +5,4 @@ rpi-ws281x==5.0.0
 Flask==3.0.2
 pygame==2.5.2
 python-dotenv==0.21.1
+pydantic==2.7.1

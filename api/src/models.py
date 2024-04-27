@@ -1,5 +1,7 @@
 from abc import ABC
 
+from pydantic import BaseModel
+
 
 class KwargType(ABC):
     @classmethod
@@ -14,11 +16,10 @@ class KwargType(ABC):
         raise NotImplementedError()
 
 
-class Color(KwargType):
-    def __init__(self, r: int, g: int, b: int) -> None:
-        self.r = r
-        self.g = g
-        self.b = b
+class Color(KwargType, BaseModel):
+    r: int
+    g: int
+    b: int
 
     @classmethod
     def label(self) -> str:
@@ -26,7 +27,7 @@ class Color(KwargType):
 
     @classmethod
     def decode(cls, value: dict) -> "Color":
-        return Color(value["r"], value["g"], value["b"])
+        return Color(r=value["r"], g=value["g"], b=value["b"])
 
     def encode(self):
         return {
@@ -35,5 +36,14 @@ class Color(KwargType):
             "b": self.b,
         }
 
-    def __str__(self) -> str:
-        return f"Color(r={self.r}, g={self.g}, b={self.b})"
+    @classmethod
+    def black(cls) -> "Color":
+        return Color(r=0, g=0, b=0)
+
+    @classmethod
+    def white(cls) -> "Color":
+        return Color(r=255, g=255, b=255)
+
+
+class LedstripState(BaseModel):
+    colors: list[Color]

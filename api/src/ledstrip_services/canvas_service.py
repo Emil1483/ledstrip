@@ -2,13 +2,14 @@ import threading
 from flask import Flask, render_template
 import logging
 
-from src.lights_service.lights_service import LightsService
+from src.ledstrip_services.ledstrip_service import LedstripService
+from src.logging_helper import logger
 
 log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)
 
 
-class CanvasService(LightsService):
+class CanvasService(LedstripService):
     def __init__(self, num_pixels: int = 109) -> None:
         self._pixels = [(0, 0, 0)] * num_pixels
         self._num_pixels = num_pixels
@@ -29,7 +30,7 @@ class CanvasService(LightsService):
 
         self.thread.daemon = True
         self.thread.start()
-        print("CanvasService running at port 3001")
+        logger.info("CanvasService running at port 3001")
 
     def __setitem__(self, key: int, value: tuple[int, int, int]) -> None:
         self._pixels[key] = value

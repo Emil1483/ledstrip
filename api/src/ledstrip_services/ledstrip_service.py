@@ -3,10 +3,11 @@ from os import getenv
 
 from dotenv import load_dotenv
 
+from src.models import LedstripState
 from src.logging_helper import logger
 
 
-class LightsService(ABC):
+class LedstripService(ABC):
     @abstractmethod
     def show(self) -> None:
         raise NotImplementedError()
@@ -31,25 +32,31 @@ class LightsService(ABC):
     def __len__(self) -> int:
         raise NotImplementedError()
 
+    def set_state(self, state: LedstripState) -> None:
+        for i, color in enumerate(state.colors):
+            self[i] = color.r, color.g, color.b
+
 
 load_dotenv()
 
-target_service = getenv("LIGHTS_SERVICE", "neopixel")
+target_service = getenv("LEDSTRIP_SERVICE", "neopixel")
 led_count = int(getenv("LED_COUNT", "109"))
 
 if target_service == "canvas":
-    from src.lights_service.canvas_service import CanvasService
+    from src.ledstrip_services.canvas_service import CanvasService
 
-    lights_serivce = CanvasService(led_count)
+    ledstrip_service = CanvasService(led_count)
 elif target_service == "pygame":
-    from src.lights_service.pygame_service import PygameService
+    from src.ledstrip_services.pygame_service import PygameService
 
-    lights_serivce = PygameService(led_count)
+    ledstrip_service = PygameService(led_count)
 elif target_service == "neopixel":
-    from src.lights_service.neopixel_service import NeopixelService
+    from src.ledstrip_services.neopixel_service import NeopixelService
 
-    lights_serivce = NeopixelService(led_count)
+    ledstrip_service = NeopixelService(led_count)
 else:
     raise ValueError(f'Invalid lights service: "{target_service}"')
 
-logger.info(f"Using lights service: {target_service} with {len(lights_serivce)} pixels")
+logger.info(
+    f"Using lights service: {target_service} with {len(ledstrip_service)} pixels"
+)

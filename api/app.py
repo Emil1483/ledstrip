@@ -7,7 +7,7 @@ from time import time
 import traceback
 
 from src.modes.mode_service import ModeService, UnexpectedKwarg
-from src.lights_service.lights_service import lights_serivce
+from src.ledstrip_services.ledstrip_service import ledstrip_service
 
 
 class LightsHTTPHandler(SimpleHTTPRequestHandler):
@@ -91,9 +91,10 @@ if __name__ == "__main__":
                 now = time()
                 dt = now - t
                 t = now
-                mode_service.mode(dt)
+
+                mode_service.transitioner.update_lights(ledstrip_service, dt)
         finally:
-            print("\nServer stopped")
-            lights_serivce.fill((0, 0, 0))
-            lights_serivce.show()
-            lights_serivce.teardown()
+            print("Server stopped")
+            ledstrip_service.fill((0, 0, 0))
+            ledstrip_service.show()
+            ledstrip_service.teardown()

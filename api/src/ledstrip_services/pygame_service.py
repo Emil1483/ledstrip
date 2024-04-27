@@ -3,14 +3,14 @@ import random
 from time import sleep, time
 import pygame
 
-from src.lights_service.lights_service import LightsService
+from src.ledstrip_services.ledstrip_service import LedstripService
 
 
 class PygameQuit(Exception):
     pass
 
 
-class PygameService(LightsService):
+class PygameService(LedstripService):
     def __init__(self, num_pixels: int = 109) -> None:
         self.WINDOW_WIDTH = 1500
         self.WINDOW_HEIGHT = 200
