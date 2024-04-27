@@ -8,7 +8,6 @@ class Debug(LightsMode):
     def __init__(
         self,
         pixels: LightsService,
-        previous_mode: LightsMode | None,
         index: int = 0,
     ) -> None:
         super().__init__(pixels)
@@ -21,3 +20,4 @@ class Debug(LightsMode):
                 self.pixels[i] = 255, 255, 255
             else:
                 self.pixels[i] = 0, 0, 0
+        self.pixels.show()

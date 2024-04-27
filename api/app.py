@@ -92,7 +92,6 @@ if __name__ == "__main__":
                 dt = now - t
                 t = now
                 mode_service.mode(dt)
-                lights_serivce.show()
         finally:
             print("\nServer stopped")
             lights_serivce.fill((0, 0, 0))
