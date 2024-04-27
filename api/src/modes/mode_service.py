@@ -26,7 +26,7 @@ class ModeService:
             "off": Off,
         }
 
-        self.mode = Static(lights_serivce)
+        self.mode = Static(lights_serivce, None)
 
     def set_mode(self, mode: str, decode_kwargs=True, **kwargs) -> None:
         if mode not in self.modes:
@@ -54,9 +54,12 @@ class ModeService:
 
         genned_kwargs = {k: v for k, v in gen_kwargs()}
 
-        logger.info(f"Setting mode to {mode} with kwargs: {genned_kwargs}")
+        logger.info(
+            f"Setting mode to {mode} with kwargs: {genned_kwargs}, "
+            f"from previous mode {self.mode}"
+        )
 
-        self.mode = self.modes[mode](lights_serivce, **genned_kwargs)
+        self.mode = self.modes[mode](lights_serivce, self.mode, **genned_kwargs)
 
     def status(self):
         def gen_status():

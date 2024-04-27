@@ -8,6 +8,7 @@ class Static(LightsMode):
     def __init__(
         self,
         pixels: LightsService,
+        previous_mode: LightsMode | None,
         color: Color = Color(42, 31, 255),
         startup_time: float = 0.6,
     ) -> None:
@@ -15,7 +16,14 @@ class Static(LightsMode):
         self.color = color
 
         self.startup_time = startup_time
+
         self.current_time = 0.0
+
+        if isinstance(previous_mode, Static):
+            self.prev = previous_mode
+            self.prev.prev = None  #! Prevents memory leak
+        else:
+            self.prev = None
 
         logger.info(
             f"Static mode initialized with color: {color} and startup_time: {startup_time}"
@@ -25,21 +33,16 @@ class Static(LightsMode):
         def curve(t):
             return -t * (t - 2)
 
+        self.pixels.fill((0, 0, 0))
+        if self.prev:
+            self.prev(dt)
+
         if self.current_time < self.startup_time:
             self.current_time += dt
-            logger.info(f"current_time: {self.current_time}")
 
-            last_pixel = int(
-                len(self.pixels) * curve(self.current_time / self.startup_time)
-            )
-            for i in range(len(self.pixels)):
-                if i < last_pixel:
-                    self.pixels[i] = self.color.r, self.color.g, self.color.b
-                else:
-                    self.pixels[i] = 0, 0, 0
-            self.pixels.show()
-
-        else:
-            for i in range(len(self.pixels)):
+        last_pixel = int(
+            len(self.pixels) * curve(self.current_time / self.startup_time)
+        )
+        for i in range(len(self.pixels)):
+            if i < last_pixel:
                 self.pixels[i] = self.color.r, self.color.g, self.color.b
-            self.pixels.show()

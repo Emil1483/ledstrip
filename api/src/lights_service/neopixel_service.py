@@ -1,5 +1,5 @@
-import board
-import neopixel
+import board  # type: ignore
+import neopixel  # type: ignore
 
 from src.lights_service.lights_service import LightsService
 

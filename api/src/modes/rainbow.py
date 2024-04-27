@@ -4,7 +4,13 @@ import colorsys
 
 
 class Rainbow(LightsMode):
-    def __init__(self, pixels: LightsService, frequency=1.0, speed=0.1) -> None:
+    def __init__(
+        self,
+        pixels: LightsService,
+        previous_mode: LightsMode | None,
+        frequency=1.0,
+        speed=0.1,
+    ) -> None:
         super().__init__(pixels)
         self.t = 0
         self.frequency = frequency
@@ -18,4 +24,3 @@ class Rainbow(LightsMode):
             h = (self.f * i + self.speed * self.t) % 1
             r, g, b = colorsys.hsv_to_rgb(h, 1, 1)
             self.pixels[i] = (r * 255, g * 255, b * 255)
-        self.pixels.show()
