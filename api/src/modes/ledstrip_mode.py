@@ -7,8 +7,11 @@ from src.models import LedstripState
 #! Their __init__ function should take the form of:
 #! def __init__(self, led_count, **kwargs) -> None:
 
+#! Optionally, it may implement an update_kwargs with
+#! Same kwargs as __init__ to allow for dynamic updates
 
-class LightsMode(ABC):
+
+class LedstripMode(ABC):
     @abstractmethod
     def update_state(self, dt: float) -> LedstripState:
         raise NotImplementedError()

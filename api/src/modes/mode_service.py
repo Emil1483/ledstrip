@@ -3,7 +3,7 @@ import inspect
 from src.transitioner import Transitioner
 from src.modes.debug import Debug
 from src.models import KwargType
-from src.modes.lights_mode import LightsMode
+from src.modes.ledstrip_mode import LedstripMode
 from src.ledstrip_services.ledstrip_service import ledstrip_service
 
 from src.modes.off import Off
@@ -20,7 +20,7 @@ class UnexpectedKwarg(Exception):
 
 class ModeService:
     def __init__(self) -> None:
-        self.modes: dict[str, type[LightsMode]] = {
+        self.modes: dict[str, type[LedstripMode]] = {
             "debug": Debug,
             "rainbow": Rainbow,
             "static": Static,
@@ -58,6 +58,10 @@ class ModeService:
         genned_kwargs = {k: v for k, v in gen_kwargs()}
 
         logger.info(f"Setting mode to {mode} with kwargs: {genned_kwargs}")
+
+        if self.modes[mode] == type(self.mode) and hasattr(self.mode, "update_kwargs"):
+            self.mode.update_kwargs(**genned_kwargs)
+            return
 
         prev_mode = self.mode
         self.mode = self.modes[mode](len(ledstrip_service), **genned_kwargs)

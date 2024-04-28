@@ -1,13 +1,13 @@
 from src.models import Color, LedstripState
 from src.ledstrip_services.ledstrip_service import LedstripService
-from src.modes.lights_mode import LightsMode
+from src.modes.ledstrip_mode import LedstripMode
 
 
 class Transitioner:
     def __init__(
         self,
-        prev_mode: LightsMode,
-        new_mode: LightsMode,
+        prev_mode: LedstripMode,
+        new_mode: LedstripMode,
     ) -> None:
         self.prev_mode = prev_mode
         self.new_mode = new_mode

@@ -1,10 +1,10 @@
 from src.models import Color, LedstripState
 from src.ledstrip_services.ledstrip_service import LedstripService
-from src.modes.lights_mode import LightsMode
+from src.modes.ledstrip_mode import LedstripMode
 from src.logging_helper import logger
 
 
-class Static(LightsMode):
+class Static(LedstripMode):
     def __init__(
         self,
         led_count,
