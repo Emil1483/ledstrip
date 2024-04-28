@@ -9,10 +9,11 @@ interface Mode {
 }
 
 interface ModeKwargs {
-    [key: string]: Kwarg;
+    [key: string]: {
+        type: "str" | "float" | "int" | "color";
+        default?: string | number | Color;
+    };
 }
-
-type Kwarg = "str" | "float" | "int" | "color";
 
 interface ModeState {
     [key: string]: string | number | Color;

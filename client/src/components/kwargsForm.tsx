@@ -11,12 +11,21 @@ import { isColor } from "@/models/typeCheckers";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
-    defaultData: ModeState
+    currentState: ModeState
     onDataChanged: (data: ModeState) => void
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, defaultData }) => {
+const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentState }) => {
+    const defaultData: ModeState = {}
+    for (const [key, value] of Object.entries(kwargs)) {
+        if (key in currentState) {
+            defaultData[key] = currentState[key]
+        } else if (value.default !== undefined) {
+            defaultData[key] = value.default
+        }
+    }
+
     const [data, setData] = useState<ModeState>(defaultData)
 
     useEffect(() => {
@@ -55,7 +64,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, defaultD
 
     function* generateInputs(kwargs: ModeKwargs) {
         for (const [key, value] of Object.entries(kwargs)) {
-            switch (value) {
+            switch (value.type) {
                 case 'str':
                     yield <FormControl key={key}>
                         <FormLabel

@@ -21,9 +21,9 @@ class UnexpectedKwarg(Exception):
 class ModeService:
     def __init__(self) -> None:
         self.modes: dict[str, type[LightsMode]] = {
+            "debug": Debug,
             "rainbow": Rainbow,
             "static": Static,
-            "debug": Debug,
             "off": Off,
         }
 
@@ -70,13 +70,39 @@ class ModeService:
                 init_signature = inspect.signature(self.modes[mode].__init__)
                 params = init_signature.parameters
 
+                assert (
+                    "led_count" in params
+                ), "All modes must have a 'led_count' parameter"
+
+                assert (
+                    "self" in params
+                ), "All modes must have a 'self' parameter (the instance itself)"
+
                 kwargs_info = {}
                 for param_name, param in params.items():
-                    if param.default is not inspect.Parameter.empty:
-                        if isinstance(param.default, KwargType):
-                            kwargs_info[param_name] = param.default.label()
+                    if param_name in ("self", "led_count"):
+                        continue
+
+                    if param.default == inspect.Parameter.empty:
+                        if issubclass(param.annotation, KwargType):
+                            kwarg_type = param.annotation.label()
                         else:
-                            kwargs_info[param_name] = type(param.default).__name__
+                            kwarg_type = param.annotation.__name__
+                        kwargs_info[param_name] = {
+                            "type": kwarg_type,
+                        }
+                        continue
+
+                    if isinstance(param.default, KwargType):
+                        kwarg_type = param.default.label()
+                        default = param.default.encode()
+                    else:
+                        kwarg_type = type(param.default).__name__
+                        default = param.default
+                    kwargs_info[param_name] = {
+                        "type": kwarg_type,
+                        "default": default,
+                    }
 
                 on = isinstance(self.mode, self.modes[mode])
 

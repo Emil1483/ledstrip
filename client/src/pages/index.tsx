@@ -47,8 +47,13 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     );
 
 
-    const handleSubmit = async (mode: string) => {
+    const onModeClicked = async (mode: string) => {
         if (modes[mode].on) return
+
+        if (Object.values(modes[mode].kwargs).map(v => v.default).some(v => v === undefined)) {
+            setSelectedMode(mode);
+            return
+        }
 
         try {
             await setMode({ mode: mode, kwargs: {} })
@@ -112,7 +117,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                             {...longPressAttrs}
                             variant="contained"
                             id={key}
-                            onClick={() => handleSubmit(key)}
+                            onClick={() => onModeClicked(key)}
                             sx={{
                                 width: '100%',
                                 height: '128px',
@@ -180,7 +185,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                         }}>
                             <KwargsForm
                                 kwargs={modes[selectedMode].kwargs}
-                                defaultData={modes[selectedMode].state}
+                                currentState={modes[selectedMode].state}
                                 onDataChanged={setKwargsFormData}
                             ></KwargsForm>
                             <Button

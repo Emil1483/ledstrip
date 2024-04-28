@@ -8,7 +8,7 @@ class Debug(LightsMode):
     def __init__(
         self,
         led_count: int,
-        index: int = 0,
+        index: int,
     ) -> None:
         self.led_count = led_count
         self.index = index
