@@ -42,12 +42,11 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                     return d
                 })
             }
-            return
+        } else {
+            setData((data) => {
+                return { ...data, [key]: value }
+            })
         }
-
-        setData((data) => {
-            return { ...data, [key]: value }
-        })
     }
 
     function asString(value: any): string | undefined {

@@ -1,6 +1,6 @@
 import { GetServerSideProps } from "next";
 import Head from 'next/head';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Grid, Button, Modal, DialogTitle, alpha } from '@mui/material';
 import { Global } from "@emotion/react";
 import { useLongPress } from "@uidotdev/usehooks";
@@ -29,6 +29,28 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
 
+    function canAutoChange() {
+        if (selectedMode === null) return false
+
+        return Object.values(modes[selectedMode].kwargs).every(v => ["color"].includes(v.type))
+    }
+
+    async function changeMode(mode: string) {
+        try {
+            await setMode({ mode: mode, kwargs: kwargsFormData })
+            const newModes = await getModes()
+            setModes(newModes)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    useEffect(() => {
+        if (selectedMode && canAutoChange()) {
+            changeMode(selectedMode)
+        }
+    }, [kwargsFormData])
+
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {
             return element
@@ -37,11 +59,17 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
         return getButtonElement(element.parentElement)
     }
 
+    function selectMode(mode: string) {
+        assert(mode in modes, `Mode ${mode} not found`)
+        setKwargsFormData({})
+        setSelectedMode(mode)
+    }
+
     const longPressAttrs = useLongPress(
         (e) => {
             const buttonElement = getButtonElement(e.target as HTMLElement);
             const mode = buttonElement.id
-            setSelectedMode(mode);
+            selectMode(mode);
         },
         { threshold: 500 }
     );
@@ -51,7 +79,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
         if (modes[mode].on) return
 
         if (Object.values(modes[mode].kwargs).map(v => v.default).some(v => v === undefined)) {
-            setSelectedMode(mode);
+            selectMode(mode);
             return
         }
 
@@ -167,15 +195,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                     <form
                         onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
                             event.preventDefault();
-
-                            try {
-                                await setMode({ mode: selectedMode, kwargs: kwargsFormData })
-                                const newModes = await getModes()
-                                setModes(newModes)
-                            } catch (error) {
-                                console.error(error);
-                            }
-
+                            await changeMode(selectedMode)
                         }}
                     >
                         <Stack spacing={2} sx={{
@@ -188,16 +208,18 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                                 currentState={modes[selectedMode].state}
                                 onDataChanged={setKwargsFormData}
                             ></KwargsForm>
-                            <Button
-                                type="submit"
-                                sx={{
-                                    width: '100%',
-                                    backgroundColor: '#1835F2',
-                                    borderRadius: '8px',
-                                    color: 'white',
-                                    fontWeight: 'bold',
-                                }}
-                            >Submit</Button>
+                            {!canAutoChange() &&
+                                <Button
+                                    type="submit"
+                                    sx={{
+                                        width: '100%',
+                                        backgroundColor: '#1835F2',
+                                        borderRadius: '8px',
+                                        color: 'white',
+                                        fontWeight: 'bold',
+                                    }}
+                                >Submit</Button>
+                            }
                         </Stack>
                     </form>
 
@@ -205,7 +227,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
 
                 : <></>}
 
-        </Modal>
+        </Modal >
     </>;
 };
 
