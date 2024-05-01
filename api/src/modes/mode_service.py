@@ -90,22 +90,30 @@ class ModeService:
                     if param.default == inspect.Parameter.empty:
                         if issubclass(param.annotation, KwargType):
                             kwarg_type = param.annotation.label()
+                            metadata = param.annotation.metadata()
                         else:
                             kwarg_type = param.annotation.__name__
+                            metadata = {}
+
                         kwargs_info[param_name] = {
                             "type": kwarg_type,
+                            "metadata": metadata,
                         }
                         continue
 
                     if isinstance(param.default, KwargType):
                         kwarg_type = param.default.label()
                         default = param.default.encode()
+                        metadata = param.default.metadata()
                     else:
                         kwarg_type = type(param.default).__name__
                         default = param.default
+                        metadata = {}
+
                     kwargs_info[param_name] = {
                         "type": kwarg_type,
                         "default": default,
+                        "metadata": metadata,
                     }
 
                 on = isinstance(self.mode, self.modes[mode])

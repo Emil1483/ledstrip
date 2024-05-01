@@ -14,7 +14,7 @@ import { getModes, setMode } from "@/services/modes";
 import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";
-import { isColor } from "@/models/typeCheckers";
+import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import assert from "assert";
 
 
@@ -32,7 +32,9 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     function canAutoChange() {
         if (selectedMode === null) return false
 
-        return Object.values(modes[selectedMode].kwargs).every(v => ["color"].includes(v.type))
+        const autoChangeable = ["color", "ranged_float"]
+
+        return Object.values(modes[selectedMode].kwargs).every(v => autoChangeable.includes(v.type))
     }
 
     async function changeMode(mode: string) {
@@ -114,6 +116,12 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                 </Stack>
                 continue
             }
+
+            if (isRangedFloat(value)) {
+                yield <Typography key={key} level="body-sm" textColor="common.white">{key}: {value.value}</Typography>
+                continue
+            }
+
             yield <Typography key={key} level="body-sm" textColor="common.white">{key}: {value}</Typography>
         }
     }

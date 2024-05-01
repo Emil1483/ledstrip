@@ -3,17 +3,21 @@ from abc import ABC
 from pydantic import BaseModel
 
 
-class KwargType(ABC):
+class KwargType(ABC, BaseModel):
     @classmethod
     def label(self) -> str:
         raise NotImplementedError()
 
     @classmethod
     def decode(cls, value) -> "KwargType":
-        raise NotImplementedError()
+        return cls.model_validate(value)
 
     def encode(self):
-        raise NotImplementedError()
+        return self.model_dump()
+
+    @classmethod
+    def metadata(self):
+        return {}
 
 
 class Color(KwargType, BaseModel):
@@ -26,23 +30,30 @@ class Color(KwargType, BaseModel):
         return "color"
 
     @classmethod
-    def decode(cls, value: dict) -> "Color":
-        return Color(r=value["r"], g=value["g"], b=value["b"])
-
-    def encode(self):
-        return {
-            "r": self.r,
-            "g": self.g,
-            "b": self.b,
-        }
-
-    @classmethod
     def black(cls) -> "Color":
         return Color(r=0, g=0, b=0)
 
     @classmethod
     def white(cls) -> "Color":
         return Color(r=255, g=255, b=255)
+
+
+def ranged_float(min_value: float, max_value: float):
+    class RangedFloat(KwargType, BaseModel):
+        value: float
+
+        @classmethod
+        def label(self) -> str:
+            return "ranged_float"
+
+        @classmethod
+        def metadata(self):
+            return {
+                "min": min_value,
+                "max": max_value,
+            }
+
+    return RangedFloat
 
 
 class LedstripState(BaseModel):

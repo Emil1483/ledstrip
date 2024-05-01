@@ -7,7 +7,8 @@ import FloatInput from "@/components/floatInput";
 import IntInput from "@/components/intInput";
 import StrInput from "@/components/strInput";
 import ColorInput from "@/components/colorInput";
-import { isColor } from "@/models/typeCheckers";
+import { isColor, isRangedFloat } from "@/models/typeCheckers";
+import RangedFloatInput from "@/components/rangedFloat";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
@@ -61,6 +62,10 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
         return isColor(value) ? value : undefined
     }
 
+    function asRangedFloat(value: any): RangedFloat | undefined {
+        return isRangedFloat(value) ? value : undefined
+    }
+
     function* generateInputs(kwargs: ModeKwargs) {
         for (const [key, value] of Object.entries(kwargs)) {
             switch (value.type) {
@@ -99,6 +104,20 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             {key}
                         </FormLabel>
                         <ColorInput defaultValue={asColor(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
+                    </FormControl>
+                    break
+
+                case 'ranged_float':
+                    yield <FormControl key={key}>
+                        <FormLabel
+                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            {key}
+                        </FormLabel>
+                        <RangedFloatInput
+                            defaultValue={asRangedFloat(defaultData[key])}
+                            onChange={(value) => { handleChange(key, value) }}
+                            min={value.metadata.min}
+                            max={value.metadata.max} />
                     </FormControl>
                     break
                 default:
