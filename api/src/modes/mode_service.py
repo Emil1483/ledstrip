@@ -28,8 +28,8 @@ class ModeService:
         }
 
         self.mode = Static(len(ledstrip_service))
-
-        self.transitioner = Transitioner(None, self.mode)
+        self.transitioner = Transitioner()
+        self.transitioner.add_to_stack(self.mode)
 
     def set_mode(self, mode: str, decode_kwargs=True, **kwargs) -> None:
         if mode not in self.modes:
@@ -63,10 +63,9 @@ class ModeService:
             self.mode.update_kwargs(**genned_kwargs)
             return
 
-        prev_mode = self.mode
         self.mode = self.modes[mode](len(ledstrip_service), **genned_kwargs)
 
-        self.transitioner = Transitioner(prev_mode, self.mode)
+        self.transitioner.add_to_stack(self.mode)
 
     def status(self):
         def gen_status():
