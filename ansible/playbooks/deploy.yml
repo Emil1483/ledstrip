@@ -10,6 +10,8 @@
       - docker_hub_password
       - client_local_port
       - api_local_port
+      - clerk_publishable_key
+      - clerk_secret_key
 
   tasks:
     - name: Get variables from vars.yml
@@ -71,6 +73,8 @@
           - name: ledstrip-network
         env:
           API_URL: "http://api-{{ tag }}:{{ api_local_port }}"
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: "{{ clerk_publishable_key }}"
+          CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
 
 - name: Deploy Docker Containers on Linode
   hosts: linode
