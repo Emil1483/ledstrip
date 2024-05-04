@@ -1,7 +1,6 @@
 import { GetServerSideProps } from "next";
 import { useEffect, useState } from "react";
 import { Grid, Button, Modal, DialogTitle, alpha, AppBar, Toolbar, Box } from '@mui/material';
-import { Global } from "@emotion/react";
 import { useLongPress } from "@uidotdev/usehooks";
 
 import Stack from '@mui/joy/Stack';
@@ -241,6 +240,14 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
+    if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY) {
+        return {
+            props: {
+                initialModes: {}
+            }
+        };
+    }
+
     const { userId } = getAuth(context.req);
 
     if (!userId) {

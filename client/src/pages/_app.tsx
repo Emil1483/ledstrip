@@ -5,6 +5,7 @@ import { Global } from '@emotion/react';
 
 
 export default function home({ Component, pageProps }: AppProps) {
+    const hasClerkVariables = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
     return (<>
         <Global styles={"body {margin: 0;}"} />
@@ -14,8 +15,10 @@ export default function home({ Component, pageProps }: AppProps) {
             <link rel="manifest" href="/manifest.json" />
             <link rel="icon" href="/favicon.ico" />
         </Head>
-        <ClerkProvider>
-            <Component {...pageProps} />
-        </ClerkProvider>
+        {hasClerkVariables
+            ? <ClerkProvider>
+                <Component {...pageProps} />
+            </ClerkProvider>
+            : <p>Missing environment variables</p>}
     </>);
 }
