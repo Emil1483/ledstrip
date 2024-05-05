@@ -126,16 +126,18 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
         }
     }
 
-    return <AppBar sx={{ backgroundColor: "#1835F2" }}>
-        < Toolbar >
-            <Box sx={{ flexGrow: 1 }}></Box>
-            <SignedOut>
-                <SignInButton />
-            </SignedOut>
-            <SignedIn>
-                <UserButton />
-            </SignedIn>
-        </ Toolbar>
+    return <>
+        <AppBar sx={{ backgroundColor: "#1835F2" }}>
+            < Toolbar >
+                <Box sx={{ flexGrow: 1 }}></Box>
+                <SignedOut>
+                    <SignInButton />
+                </SignedOut>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
+            </ Toolbar>
+        </AppBar >
         <Grid
             container
             sx={{
@@ -144,7 +146,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                 paddingLeft: '20px',
                 paddingRight: '20px',
                 paddingBottom: '42px',
-                height: '93.25vh',
+                height: '100vh',
                 alignItems: 'flex-end',
             }}>
             <Grid container spacing={4} sx={{ padding: '20px', justifyContent: 'flex-end' }}>
@@ -235,7 +237,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                     : <></>}
             </Modal >
         </Grid>
-    </AppBar >
+    </>
 
 };
 
