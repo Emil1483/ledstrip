@@ -240,14 +240,6 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
 };
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (context) => {
-    if (!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || !process.env.CLERK_SECRET_KEY) {
-        return {
-            props: {
-                initialModes: {}
-            }
-        };
-    }
-
     const { userId } = getAuth(context.req);
 
     if (!userId) {

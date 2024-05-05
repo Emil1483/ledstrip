@@ -1,5 +1,9 @@
 FROM node:18-alpine AS base
 
+ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cm9idXN0LWphdmVsaW4tNzguY2xlcmsuYWNjb3VudHMuZGV2JA
+ENV NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 
