@@ -3,14 +3,14 @@ import { Slider } from "@mui/joy";
 
 interface RangedFloatInputProps {
     onChange: (value: RangedFloat | null) => void;
-    defaultValue: RangedFloat | undefined;
+    value: RangedFloat | undefined;
     min: number;
     max: number;
 }
 
-const RangedFloatInput: React.FC<RangedFloatInputProps> = ({ onChange, defaultValue, min, max }) => {
+const RangedFloatInput: React.FC<RangedFloatInputProps> = ({ onChange, value, min, max }) => {
     return <Slider
-        value={defaultValue?.value}
+        value={value?.value}
         min={min}
         max={max}
         onChange={(_, result) => onChange({ value: typeof result === 'number' ? result : result[0] })}

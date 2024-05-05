@@ -3,14 +3,14 @@ import { Input } from '@mui/joy';
 
 interface StrInputProps {
     onChange: (value: string | null) => void;
-    defaultValue: string | undefined;
+    value: string | undefined;
 }
 
-const StrInput: React.FC<StrInputProps> = ({ onChange, defaultValue }) => {
+const StrInput: React.FC<StrInputProps> = ({ onChange, value }) => {
     return (
         <Input
             type='text'
-            defaultValue={defaultValue}
+            value={value}
             onChange={(event) => {
                 if (event.target.value === "") {
                     onChange(null)

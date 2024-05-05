@@ -1,5 +1,9 @@
 interface Modes {
-    [name: string]: Mode;
+    [mode: string]: Mode;
+}
+
+interface SavedStates {
+    [mode: string]: ModeState[];
 }
 
 interface Mode {
@@ -38,12 +42,6 @@ interface ModeState {
     [key: string]: string | number | Color | RangedFloat;
 }
 
-interface Color {
-    r: number;
-    g: number;
-    b: number;
-}
+type Color = { r: number; g: number; b: number };
 
-interface RangedFloat {
-    value: number;
-}
+type RangedFloat = { value: number };

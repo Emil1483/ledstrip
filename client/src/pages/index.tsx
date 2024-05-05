@@ -8,7 +8,7 @@ import ModalClose from '@mui/joy/ModalClose';
 import Typography from '@mui/joy/Typography';
 
 
-import { getModes, setMode } from "@/services/modes";
+import { getModes as fetchModes, setMode } from "@/services/modes";
 import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";
@@ -16,14 +16,16 @@ import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import assert from "assert";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
+import { fetchSavedStates } from "@/services/users";
 
 
 interface PageProps {
     initialModes: Modes;
+    savedStates: SavedStates;
 }
 
 
-const Home: React.FC<PageProps> = ({ initialModes }) => {
+const Home: React.FC<PageProps> = ({ initialModes, savedStates }) => {
     const [modes, setModes] = useState(initialModes);
 
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
@@ -40,7 +42,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
     async function changeMode(mode: string) {
         try {
             await setMode({ mode: mode, kwargs: kwargsFormData })
-            const newModes = await getModes()
+            const newModes = await fetchModes()
             setModes(newModes)
         } catch (error) {
             console.error(error);
@@ -87,7 +89,7 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
 
         try {
             await setMode({ mode: mode, kwargs: {} })
-            const newModes = await getModes()
+            const newModes = await fetchModes()
             setModes(newModes)
         } catch (error) {
             console.error(error);
@@ -218,6 +220,8 @@ const Home: React.FC<PageProps> = ({ initialModes }) => {
                                     kwargs={modes[selectedMode].kwargs}
                                     currentState={modes[selectedMode].state}
                                     onDataChanged={setKwargsFormData}
+                                    mode={selectedMode}
+                                    initialSavedStates={savedStates[selectedMode] || []}
                                 ></KwargsForm>
                                 {!canAutoChange() &&
                                     <Button
@@ -255,7 +259,8 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
 
     return {
         props: {
-            initialModes: await getModes()
+            initialModes: await fetchModes(),
+            savedStates: await fetchSavedStates(userId),
         }
     };
 };

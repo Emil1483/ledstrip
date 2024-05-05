@@ -9,42 +9,69 @@ import StrInput from "@/components/strInput";
 import ColorInput from "@/components/colorInput";
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import RangedFloatInput from "@/components/rangedFloat";
+import { Button, Grid } from "@mui/material";
+import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
     currentState: ModeState
     onDataChanged: (data: ModeState) => void
+    mode: string
+    initialSavedStates: ModeState[]
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentState }) => {
-    const defaultData: ModeState = {}
+const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateChanged, currentState, mode, initialSavedStates }) => {
+    const defaultState: ModeState = {}
     for (const [key, value] of Object.entries(kwargs)) {
         if (key in currentState) {
-            defaultData[key] = currentState[key]
+            defaultState[key] = currentState[key]
         } else if (value.default !== undefined) {
-            defaultData[key] = value.default
+            defaultState[key] = value.default
         }
     }
 
-    const [data, setData] = useState<ModeState>(defaultData)
+    const [state, setState] = useState<ModeState>(defaultState)
+    const [savedStates, setSavedStates] = useState<ModeState[]>(initialSavedStates)
 
     useEffect(() => {
-        onDataChanged(data)
-    }, [data])
+        onStateChanged(state)
+    }, [state])
+
+    async function handleSaveState() {
+        const result = await fetch(`/api/saveState`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                mode: mode,
+                state: state
+            }),
+        })
+
+        const savedStates = await result.json()
+
+        if (result.ok) {
+            setSavedStates(savedStates[mode])
+        } else {
+            console.error('Failed to save state')
+        }
+    }
 
 
     function handleChange(key: string, value: any) {
         if (value === null) {
-            if (key in data) {
-                setData((data) => {
+            if (key in state) {
+                setState((data) => {
                     let d = { ...data }
                     delete d[key]
                     return d
                 })
             }
         } else {
-            setData((data) => {
+            setState((data) => {
                 return { ...data, [key]: value }
             })
         }
@@ -66,7 +93,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
         return isRangedFloat(value) ? value : undefined
     }
 
-    function* generateInputs(kwargs: ModeKwargs) {
+    function* generateInputs() {
         for (const [key, value] of Object.entries(kwargs)) {
             switch (value.type) {
                 case 'str':
@@ -75,7 +102,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <StrInput defaultValue={asString(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <StrInput value={asString(state[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 case 'int':
@@ -84,7 +111,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <IntInput defaultValue={asNumber(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <IntInput value={asNumber(state[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
                 case 'float':
@@ -93,7 +120,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <FloatInput defaultValue={asNumber(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <FloatInput value={asNumber(state[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
 
@@ -103,7 +130,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <ColorInput defaultValue={asColor(defaultData[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <ColorInput value={asColor(state[key])} onChange={(value) => { handleChange(key, value) }} />
                     </FormControl>
                     break
 
@@ -114,7 +141,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
                             {key}
                         </FormLabel>
                         <RangedFloatInput
-                            defaultValue={asRangedFloat(defaultData[key])}
+                            value={asRangedFloat(state[key])}
                             onChange={(value) => { handleChange(key, value) }}
                             min={value.metadata.min}
                             max={value.metadata.max} />
@@ -126,8 +153,36 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged, currentS
         }
     }
 
+    function* generateSavedStates() {
+        for (const state of savedStates) {
+            yield <Button onClick={() => setState(state)} variant="outlined" color="primary" sx={{
+                marginRight: '8px',
+                marginLeft: '8px',
+                marginBottom: '8px',
+            }}>
+                <BookmarkIcon />
+            </Button>
+
+        }
+    }
+
     return <>
-        {Array.from(generateInputs(kwargs))}
+        {Array.from(generateInputs())}
+        <Grid
+            container
+            sx={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+            }}>
+            {Array.from(generateSavedStates())}
+            <Button onClick={handleSaveState} variant="contained" color="primary" sx={{
+                marginRight: '8px',
+                marginLeft: '8px',
+                marginBottom: '8px',
+            }}>
+                <BookmarkAddIcon />
+            </Button>
+        </Grid>
     </>
 };
 

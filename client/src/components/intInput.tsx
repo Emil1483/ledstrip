@@ -3,14 +3,14 @@ import { Input } from '@mui/joy';
 
 interface IntInputProps {
     onChange: (value: number | null) => void;
-    defaultValue: number | undefined;
+    value: number | undefined;
 }
 
-const IntInput: React.FC<IntInputProps> = ({ onChange, defaultValue }) => {
+const IntInput: React.FC<IntInputProps> = ({ onChange, value }) => {
     return (
         <Input
             type='number'
-            defaultValue={defaultValue}
+            value={value}
             onChange={(event) => {
                 const value = parseFloat(event.target.value)
                 if (isNaN(value)) {

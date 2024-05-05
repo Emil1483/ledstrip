@@ -5,44 +5,41 @@ import parseColor from 'parse-color'
 
 interface ColorInputProps {
     onChange: (value: Color | null) => void;
-    defaultValue: Color | undefined;
+    value: Color | undefined;
 }
 
-function toHSVA(color: Color): { h: number, s: number, v: number, a: number } {
+function toHSVA(color: Color | undefined): { h: number, s: number, v: number, a: number } {
+    if (!color) {
+        return { h: 0, s: 0, v: 0, a: 0 }
+    }
     const cString = `rgba(${color.r}, ${color.g}, ${color.b}, 1)`
     const [h, s, v, a] = parseColor(cString).hsva
     return { h, s, v, a }
 }
 
-const ColorInput: React.FC<ColorInputProps> = ({ onChange, defaultValue }) => {
-    const [color, setColor] = useState(toHSVA(defaultValue || { r: 131, g: 174, b: 230 }))
-
+const ColorInput: React.FC<ColorInputProps> = ({ onChange, value }) => {
     return <Fragment>
-        <Wheel color={color} onChange={(c) => {
-            setColor((color) => {
-                const newColor = { ...color, ...c.hsva }
+        <Wheel color={toHSVA(value)} onChange={(c) => {
+            const newColor = { ...toHSVA(value), ...c.hsva }
+
+            const cString = `hsva(${newColor.h}, ${newColor.s}%, ${newColor.v}%, ${newColor.a})`
+            const [r, g, b] = parseColor(cString).rgb
+            onChange({ r, g, b })
+
+            return newColor
+
+        }} />
+        <ShadeSlider
+            hsva={toHSVA(value)}
+            style={{ width: 210, marginTop: 20 }}
+            onChange={(c) => {
+                const newColor = { ...toHSVA(value), ...c }
 
                 const cString = `hsva(${newColor.h}, ${newColor.s}%, ${newColor.v}%, ${newColor.a})`
                 const [r, g, b] = parseColor(cString).rgb
                 onChange({ r, g, b })
 
                 return newColor
-            })
-
-        }} />
-        <ShadeSlider
-            hsva={color}
-            style={{ width: 210, marginTop: 20 }}
-            onChange={(c) => {
-                setColor((color) => {
-                    const newColor = { ...color, ...c }
-
-                    const cString = `hsva(${newColor.h}, ${newColor.s}%, ${newColor.v}%, ${newColor.a})`
-                    const [r, g, b] = parseColor(cString).rgb
-                    onChange({ r, g, b })
-
-                    return newColor
-                })
 
             }} />
     </Fragment>
