@@ -137,6 +137,15 @@
       docker_volume:
         name: portainer_agent_data
 
+    - name: Create Postgres Volume
+      docker_volume:
+        name: postgres_data
+
+    - name: Create Ledstrip network
+      docker_network:
+        name: ledstrip-network
+        state: present
+
     - name: Start Portainer Agent Container
       docker_container:
         name: portainer_edge_agent
@@ -192,6 +201,23 @@
         entrypoint: ["/usr/bin/frpc", "-c", "/etc/frpc/frpc.ini"]
         volumes:
           - "/root/.config/frpc.ini:/etc/frpc/frpc.ini:ro"
+
+    - name: Start Postgres container
+      docker_container:
+        name: postgres
+        image: postgres:latest
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: ledstrip
+        volumes:
+          - "postgres_data:/var/lib/postgresql/data"
+        networks:
+          - name: ledstrip-network
 
 - name: Install Github Actions Runner
   hosts: pi-local

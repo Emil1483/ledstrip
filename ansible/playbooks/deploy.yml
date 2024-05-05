@@ -43,11 +43,6 @@
         - client
         - api
 
-    - name: Create Docker network
-      docker_network:
-        name: ledstrip-network
-        state: present
-
     - name: Initiate API Docker container
       docker_container:
         name: "api-{{ tag }}"
@@ -73,6 +68,7 @@
         env:
           API_URL: "http://api-{{ tag }}:{{ api_local_port }}"
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
+          DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
 
 - name: Deploy Docker Containers on Linode
   hosts: linode
