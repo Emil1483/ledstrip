@@ -12,6 +12,9 @@ import RangedFloatInput from "@/components/rangedFloat";
 import { Button, Grid } from "@mui/material";
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
+import { useLongPress } from "@uidotdev/usehooks";
+import assert from "assert";
+import useConfirm from "@/hooks/useConfirm";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
@@ -34,10 +37,12 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
 
     const [state, setState] = useState<ModeState>(defaultState)
     const [savedStates, setSavedStates] = useState<ModeState[]>(initialSavedStates)
+    const [Dialog, confirmDelete] = useConfirm()
 
     useEffect(() => {
         onStateChanged(state)
     }, [state])
+
 
     async function handleSaveState() {
         const result = await fetch(`/api/saveState`, {
@@ -153,18 +158,47 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
         }
     }
 
-    function* generateSavedStates() {
-        for (const state of savedStates) {
-            yield <Button onClick={() => setState(state)} variant="outlined" color="primary" sx={{
-                marginRight: '8px',
-                marginLeft: '8px',
-                marginBottom: '8px',
-            }}>
-                <BookmarkIcon />
-            </Button>
+    async function handleDeleteState(index: number) {
+        assert(index >= 0 && index < savedStates.length)
 
+        const result = await fetch(`/api/deleteState`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                mode: mode,
+                index: index
+            }),
+        })
+
+        if (result.ok) {
+            const savedStates = await result.json()
+            console.log(savedStates)
+            setSavedStates(savedStates[mode])
+        } else {
+            console.error('Failed to delete state')
         }
     }
+
+    function getButtonElement(element: HTMLElement): HTMLElement {
+        if (element.tagName === 'BUTTON') {
+            return element
+        }
+        assert(element.parentElement, `Could not find button element`)
+        return getButtonElement(element.parentElement)
+    }
+
+    const longPressAttrs = useLongPress(
+        async (e) => {
+            const buttonElement = getButtonElement(e.target as HTMLElement);
+            const index = parseInt(buttonElement.id)
+            const confirmed = await confirmDelete(`Are you sure you want to delete saved state nr ${index}`)
+            if (!confirmed) return
+            await handleDeleteState(index)
+        },
+        { threshold: 500 }
+    )
 
     return <>
         {Array.from(generateInputs())}
@@ -174,7 +208,21 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
                 flexDirection: 'row',
                 justifyContent: 'center',
             }}>
-            {Array.from(generateSavedStates())}
+            {savedStates.map((state, i) => <Button
+                {...longPressAttrs}
+                onClick={() => setState(state)}
+                variant="outlined"
+                color="primary"
+                key={i}
+                id={i.toString()}
+                sx={{
+                    marginRight: '8px',
+                    marginLeft: '8px',
+                    marginBottom: '8px',
+                }}>
+                <BookmarkIcon />
+            </Button>
+            )}
             <Button onClick={handleSaveState} variant="contained" color="primary" sx={{
                 marginRight: '8px',
                 marginLeft: '8px',
@@ -183,6 +231,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
                 <BookmarkAddIcon />
             </Button>
         </Grid>
+        <Dialog />
     </>
 };
 

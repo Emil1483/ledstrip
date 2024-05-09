@@ -57,3 +57,22 @@ export async function saveState(
 
     return savedStates;
 }
+
+export async function deleteState(userId: string, mode: string, index: number) {
+    const savedStates = await fetchSavedStates(userId);
+
+    if (mode in savedStates) {
+        savedStates[mode].splice(index, 1);
+    }
+
+    await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            savedStates: savedStates,
+        },
+    });
+
+    return savedStates;
+}
