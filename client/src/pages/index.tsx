@@ -34,7 +34,8 @@ const Home: React.FC<PageProps> = ({ initialModes, savedStates }) => {
     function canAutoChange() {
         if (selectedMode === null) return false
 
-        const autoChangeable = ["color", "ranged_float"]
+        // const autoChangeable = ["color", "ranged_float"]
+        const autoChangeable: string[] = []
 
         return Object.values(modes[selectedMode].kwargs).every(v => autoChangeable.includes(v.type))
     }
