@@ -47,6 +47,15 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
         onStateChanged(state)
     }, [state])
 
+    function currentStateIsSaved(): boolean {
+        for (const savedState of savedStates[mode]) {
+            if (JSON.stringify(savedState) === JSON.stringify(state)) {
+                return true
+            }
+        }
+        return false
+    }
+
 
     async function handleSaveState() {
         const result = await fetch(`/api/saveState`, {
@@ -219,13 +228,15 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                 onClick={() => setState(state)}
                 longPressFns={longPressAttrs}
             />)}
-            <Button onClick={handleSaveState} variant="outlined" color="primary" sx={{
-                marginRight: '8px',
-                marginLeft: '8px',
-                marginBottom: '8px',
-            }}>
-                <BookmarkAddIcon />
-            </Button>
+            {!currentStateIsSaved()
+                && <Button onClick={handleSaveState} variant="outlined" color="primary" sx={{
+                    marginRight: '8px',
+                    marginLeft: '8px',
+                    marginBottom: '8px',
+                }}>
+                    <BookmarkAddIcon />
+                </Button>}
+
         </Grid>
         <Dialog />
     </>
