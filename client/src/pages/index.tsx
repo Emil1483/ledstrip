@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Grid, Button, Modal, DialogTitle, alpha, AppBar, Toolbar, Box } from '@mui/material';
 import { useLongPress } from "@uidotdev/usehooks";
 
@@ -17,19 +17,25 @@ import assert from "assert";
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { fetchSavedStates } from "@/services/users";
+import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 
 
 interface PageProps {
     initialModes: Modes;
-    savedStates: SavedStates;
+    initialSavedStates: SavedStates;
 }
 
 
-const Home: React.FC<PageProps> = ({ initialModes, savedStates }) => {
+const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
     const [modes, setModes] = useState(initialModes);
 
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
+
+    const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
+    useEffect(() => {
+        setSavedStates(initialSavedStates);
+    }, [setSavedStates, initialSavedStates]);
 
     function canAutoChange() {
         if (selectedMode === null) return false
@@ -220,9 +226,8 @@ const Home: React.FC<PageProps> = ({ initialModes, savedStates }) => {
                                 <KwargsForm
                                     kwargs={modes[selectedMode].kwargs}
                                     currentState={modes[selectedMode].state}
-                                    onDataChanged={setKwargsFormData}
+                                    onStateChanged={setKwargsFormData}
                                     mode={selectedMode}
-                                    initialSavedStates={savedStates[selectedMode] || []}
                                 ></KwargsForm>
                                 {!canAutoChange() &&
                                     <Button
@@ -261,7 +266,7 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
     return {
         props: {
             initialModes: await fetchModes(),
-            savedStates: await fetchSavedStates(userId),
+            initialSavedStates: await fetchSavedStates(userId),
         }
     };
 };

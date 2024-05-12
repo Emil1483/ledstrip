@@ -15,17 +15,18 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useLongPress } from "@uidotdev/usehooks";
 import assert from "assert";
 import useConfirm from "@/hooks/useConfirm";
+import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
+import { useShallow } from "zustand/react/shallow";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
     currentState: ModeState
-    onDataChanged: (data: ModeState) => void
+    onStateChanged: (data: ModeState) => void
     mode: string
-    initialSavedStates: ModeState[]
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateChanged, currentState, mode, initialSavedStates }) => {
+const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, currentState, mode }) => {
     const defaultState: ModeState = {}
     for (const [key, value] of Object.entries(kwargs)) {
         if (key in currentState) {
@@ -36,8 +37,11 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
     }
 
     const [state, setState] = useState<ModeState>(defaultState)
-    const [savedStates, setSavedStates] = useState<ModeState[]>(initialSavedStates)
     const [Dialog, confirmDelete] = useConfirm()
+
+    const { savedStates, setSavedStates } = useSavedStatesStore(
+        useShallow((state) => ({ savedStates: state.savedStates, setSavedStates: state.setSavedStates })
+        ))
 
     useEffect(() => {
         onStateChanged(state)
@@ -59,7 +63,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
         const savedStates = await result.json()
 
         if (result.ok) {
-            setSavedStates(savedStates[mode])
+            setSavedStates(savedStates)
         } else {
             console.error('Failed to save state')
         }
@@ -159,7 +163,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
     }
 
     async function handleDeleteState(index: number) {
-        assert(index >= 0 && index < savedStates.length)
+        assert(index >= 0 && index < savedStates[mode].length)
 
         const result = await fetch(`/api/deleteState`, {
             method: 'POST',
@@ -174,8 +178,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
 
         if (result.ok) {
             const savedStates = await result.json()
-            console.log(savedStates)
-            setSavedStates(savedStates[mode])
+            setSavedStates(savedStates)
         } else {
             console.error('Failed to delete state')
         }
@@ -208,7 +211,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onDataChanged: onStateC
                 flexDirection: 'row',
                 justifyContent: 'center',
             }}>
-            {savedStates.map((state, i) => <Button
+            {savedStates[mode].map((state, i) => <Button
                 {...longPressAttrs}
                 onClick={() => setState(state)}
                 variant="outlined"
