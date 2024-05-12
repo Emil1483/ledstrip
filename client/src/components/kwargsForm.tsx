@@ -11,12 +11,12 @@ import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import RangedFloatInput from "@/components/rangedFloat";
 import { Button, Grid } from "@mui/material";
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { useLongPress } from "@uidotdev/usehooks";
 import assert from "assert";
 import useConfirm from "@/hooks/useConfirm";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
+import { SavedStateComponent } from "@/components/SavedStateComponent";
 
 interface KwargsFormProps {
     kwargs: ModeKwargs
@@ -211,22 +211,15 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                 flexDirection: 'row',
                 justifyContent: 'center',
             }}>
-            {savedStates[mode].map((state, i) => <Button
-                {...longPressAttrs}
-                onClick={() => setState(state)}
-                variant="outlined"
-                color="primary"
-                key={i}
+            {savedStates[mode].map((state, i) => <SavedStateComponent
                 id={i.toString()}
-                sx={{
-                    marginRight: '8px',
-                    marginLeft: '8px',
-                    marginBottom: '8px',
-                }}>
-                <BookmarkIcon />
-            </Button>
-            )}
-            <Button onClick={handleSaveState} variant="contained" color="primary" sx={{
+                index={i}
+                state={state}
+                key={i}
+                onClick={() => setState(state)}
+                longPressFns={longPressAttrs}
+            />)}
+            <Button onClick={handleSaveState} variant="outlined" color="primary" sx={{
                 marginRight: '8px',
                 marginLeft: '8px',
                 marginBottom: '8px',
