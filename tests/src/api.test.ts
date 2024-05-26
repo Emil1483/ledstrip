@@ -1,12 +1,12 @@
 import { GenericContainer, StartedTestContainer, Wait } from "testcontainers";
 
 class ErrorLoggingContainer extends GenericContainer {
-  private containerLogs: string[];
+  public containerLogs: string;
 
   constructor(image: string) {
     super(image);
 
-    this.containerLogs = [];
+    this.containerLogs = "";
     this.withLogConsumer((stream) => {
       stream.on("data", (line) => (this.containerLogs += line.toString()));
       stream.on("err", (line) => (this.containerLogs += line.toString()));
@@ -32,17 +32,22 @@ describe("Ledstrip API", () => {
     )
       .withExposedPorts(8080)
       .withWaitStrategy(Wait.forListeningPorts())
+      .withEnvironment({
+        LEDSTRIP_SERVICE: "canvas",
+      })
       .start();
   }, 3 * 60 * 1000);
 
   afterAll(async () => {
-    await container.stop();
+    if (container) await container.stop();
   });
 
   it("starts", async () => {
     expect(container).toBeDefined();
-    // console.log(container);
-    // const logs = await container.logs();
-    // console.log(logs);
+
+    let logs = "";
+    (await container.logs())
+      .on("data", (line) => (logs += line))
+      .on("end", () => console.log(logs));
   });
 });
