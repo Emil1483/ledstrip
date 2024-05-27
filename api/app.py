@@ -1,11 +1,13 @@
 from http.server import SimpleHTTPRequestHandler
 import json
+import logging
 from os import getenv
 import socketserver
 import threading
 from time import time
 import traceback
 
+from src.logging_helper import logger
 from src.modes.mode_service import ModeService, UnexpectedKwarg
 from src.ledstrip_services.ledstrip_service import ledstrip_service
 
@@ -77,7 +79,7 @@ if __name__ == "__main__":
         ("", PORT),
         lambda *args: LightsHTTPHandler(mode_service, *args),
     ) as httpd:
-        print("Server running at port", PORT)
+        logger.info(f"Server running at port {PORT}")
 
         server_thread = threading.Thread(target=httpd.serve_forever)
 
