@@ -13,7 +13,7 @@ servers:
         3434
 
     pi-local:
-      ansible_host: 192.168.68.60
+      ansible_host: 192.168.68.65
       ansible_user: pi
       ansible_password: !vault |
         $ANSIBLE_VAULT;1.1;AES256

@@ -51,6 +51,7 @@
 - name: Configure pi
   hosts: pi-local
   become: true
+  gather_facts: false
 
   vars:
     variables_to_prompt:
