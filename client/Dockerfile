@@ -9,7 +9,7 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.docker.json package.json
+COPY package.json package.json
 COPY package-lock.json package-lock.json
 RUN npm ci
 
