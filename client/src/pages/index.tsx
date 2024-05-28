@@ -1,5 +1,5 @@
 import { GetServerSideProps } from "next";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Grid, Button, Modal, DialogTitle, alpha, AppBar, Toolbar, Box } from '@mui/material';
 import { useLongPress } from "@uidotdev/usehooks";
 
@@ -165,6 +165,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                             {...longPressAttrs}
                             variant="contained"
                             id={key}
+                            className="mode-button"
                             onClick={() => onModeClicked(key)}
                             sx={{
                                 width: '100%',
@@ -209,7 +210,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                             backgroundColor: '#242635',
                         }}
                     >
-                        <ModalClose onClick={() => setSelectedMode(null)} />
+                        <ModalClose id="modal-close" onClick={() => setSelectedMode(null)} />
                         <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
 
                         <form

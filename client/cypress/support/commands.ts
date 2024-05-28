@@ -18,6 +18,20 @@ declare global {
 
 Cypress.Commands.add(`signIn`, () => {
     cy.log(`Signing in.`);
+
+    const userEmail = Cypress.env("TEST_USER_EMAIL");
+    const userPassword = Cypress.env("TEST_USER_PASSWORD");
+
+    if (!userEmail) {
+        throw new Error("Environment variable TEST_USER_EMAIL must be defined");
+    }
+
+    if (!userPassword) {
+        throw new Error(
+            "Environment variable TEST_USER_PASSWORD must be defined"
+        );
+    }
+
     cy.visit("/sign-in");
     cy.window()
         .should((window) => {
@@ -26,8 +40,8 @@ Cypress.Commands.add(`signIn`, () => {
         })
         .then(async (window) => {
             const res = await (window as any).Clerk.client.signIn.create({
-                identifier: Cypress.env(`TEST_USER_EMAIL`),
-                password: Cypress.env(`TEST_USER_PASSWORD`),
+                identifier: userEmail,
+                password: userPassword,
             });
 
             await (window as any).Clerk.setActive({

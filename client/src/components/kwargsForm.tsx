@@ -48,7 +48,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
     }, [state])
 
     function currentStateIsSaved(): boolean {
-        for (const savedState of savedStates[mode]) {
+        for (const savedState of currentSavedStates()) {
             if (JSON.stringify(savedState) === JSON.stringify(state)) {
                 return true
             }
@@ -172,7 +172,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
     }
 
     async function handleDeleteState(index: number) {
-        assert(index >= 0 && index < savedStates[mode].length)
+        assert(index >= 0 && index < currentSavedStates().length)
 
         const result = await fetch(`/api/deleteState`, {
             method: 'POST',
@@ -212,6 +212,10 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
         { threshold: 500 }
     )
 
+    function currentSavedStates(): ModeState[] {
+        return savedStates[mode] ?? []
+    }
+
     return <>
         {Array.from(generateInputs())}
         <Grid
@@ -220,7 +224,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                 flexDirection: 'row',
                 justifyContent: 'center',
             }}>
-            {savedStates[mode].map((state, i) => <SavedStateComponent
+            {currentSavedStates().map((state, i) => <SavedStateComponent
                 id={i.toString()}
                 index={i}
                 state={state}
