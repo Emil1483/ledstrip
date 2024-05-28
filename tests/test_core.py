@@ -24,12 +24,18 @@ load_dotenv()
 
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
+TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
+TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 
 assert (
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not None
 ), "Environment variable NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required"
 
 assert CLERK_SECRET_KEY is not None, "Environment variable CLERK_SECRET_KEY is required"
+assert TEST_USER_EMAIL is not None, "Environment variable TEST_USER_EMAIL is required"
+assert (
+    TEST_USER_PASSWORD is not None
+), "Environment variable TEST_USER_PASSWORD is required"
 
 
 class LogNotFoundError(Exception):
@@ -55,8 +61,8 @@ def make_tar_archive(src_path: DjupPath, ignore_spec: PathSpec):
     return tar_stream
 
 
-class NodeContainer(DockerContainer):
-    def __init__(self, image: str = "node:16", **kwargs):
+class CypressContainer(DockerContainer):
+    def __init__(self, image: str = "cypress/browsers:latest", **kwargs):
         super().__init__(image=image, **kwargs)
         self.with_command("tail -f /dev/null")
 
@@ -81,6 +87,19 @@ class NodeContainer(DockerContainer):
         )
 
 
+class DjupPostgresContainer(PostgresContainer):
+    def start(self):
+        super().start()
+        self.public_url = self.get_connection_url()
+
+        container_id = self.get_wrapped_container().id
+        ip = self.get_docker_client().bridge_ip(container_id)
+        self.exposed_port = self.get_exposed_port(self.port)
+        self.private_url = self.get_connection_url(host=ip).replace(
+            str(self.exposed_port), str(self.port)
+        )
+
+
 class ApiContainer(DockerContainer):
     def __init__(self, tag: str):
         super().__init__(image=f"superemil64/ledstrip-api:{tag}")
@@ -97,22 +116,11 @@ class ApiContainer(DockerContainer):
         ip = self.get_docker_client().bridge_ip(container_id)
         self.private_url = f"http://{ip}:8080"
 
+        self._connect()
+
     @wait_container_is_ready(requests.exceptions.ConnectionError)
-    def wait_until_ready(self):
+    def _connect(self):
         requests.get(self.public_url)
-
-
-class DjupPostgresContainer(PostgresContainer):
-    def start(self):
-        super().start()
-        self.public_url = self.get_connection_url()
-
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.exposed_port = self.get_exposed_port(self.port)
-        self.private_url = self.get_connection_url(host=ip).replace(
-            str(self.exposed_port), str(self.port)
-        )
 
 
 class ClientContainer(DockerContainer):
@@ -135,8 +143,10 @@ class ClientContainer(DockerContainer):
         ip = self.get_docker_client().bridge_ip(container_id)
         self.private_url = f"http://{ip}:3000"
 
+        self._connect()
+
     @wait_container_is_ready(requests.exceptions.ConnectionError)
-    def wait_until_ready(self):
+    def _connect(self):
         requests.get(self.public_url)
 
 
@@ -148,7 +158,7 @@ class TestCore(unittest.TestCase):
         client_dir = root_dir / "client"
 
         self.postgres = DjupPostgresContainer(driver=None)
-        self.node_container = NodeContainer()
+        self.cypress_container = CypressContainer()
         self.api_container = ApiContainer(tag)
         self.client_container = ClientContainer(tag)
 
@@ -156,35 +166,38 @@ class TestCore(unittest.TestCase):
             self.postgres.start()
 
             self.api_container.start()
-            self.api_container.wait_until_ready()
 
             self.client_container.with_env("API_URL", self.api_container.private_url)
             self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
             self.client_container.start()
-            self.client_container.wait_until_ready()
 
-            self.node_container.with_env("DATABASE_URL", self.postgres.private_url)
-            self.node_container.start()
+            self.cypress_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.cypress_container.with_env(
+                "BASE_URL", self.client_container.private_url
+            )
+            self.cypress_container.with_env("CYPRESS_TEST_USER_EMAIL", TEST_USER_EMAIL)
+            self.cypress_container.with_env(
+                "CYPRESS_TEST_USER_PASSWORD", TEST_USER_PASSWORD
+            )
+            self.cypress_container.start()
 
-            self.node_container.execute("mkdir /client")
+            self.cypress_container.execute("mkdir /client")
 
             git_ignores = [client_dir / ".gitignore", root_dir / ".gitignore"]
             gitignore_pathspec = pathspec_from_gitignores(git_ignores)
-            self.node_container.copy(client_dir, "/client", gitignore_pathspec)
+            self.cypress_container.copy(client_dir, "/client", gitignore_pathspec)
 
-            self.node_container.execute("npm install", workdir="/client")
-            self.node_container.execute("npx prisma db push", workdir="/client")
+            self.cypress_container.execute("npm install", workdir="/client")
+            self.cypress_container.execute("npx prisma db push", workdir="/client")
 
-            print(f"client is ready at {self.client_container.public_url}")
-            print(f"client is ready at {self.client_container.public_url}")
-            print(f"client is ready at {self.client_container.public_url}")
+            self.cypress_container.execute("npm run cy:run", workdir="/client")
         except Exception as e:
             self.tearDown()
             raise e
 
     def tearDown(self):
         self.postgres.stop()
-        self.node_container.stop()
+        self.cypress_container.stop()
         self.api_container.stop()
         self.client_container.stop()
 
