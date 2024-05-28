@@ -1,12 +1,12 @@
 # python -m unittest tests.test_core
 
 import os
-import re
 import unittest
 import tarfile
 import io
 
 from dotenv import load_dotenv
+import requests
 from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
@@ -87,19 +87,34 @@ class ApiContainer(DockerContainer):
     def __init__(self, tag: str):
         super().__init__(image=f"superemil64/ledstrip-api:{tag}")
         self.with_env("LEDSTRIP_SERVICE", "canvas")
-        self.with_network_aliases("client-api")
+        self.with_exposed_ports(8080)
+        self.with_network_aliases("api")
 
-    @wait_container_is_ready(LogNotFoundError)
+    def start(self):
+        super().start()
+        self.port = self.get_exposed_port(8080)
+        self.public_url = f"http://localhost:{self.port}"
+
+        container_id = self.get_wrapped_container().id
+        ip = self.get_docker_client().bridge_ip(container_id)
+        self.private_url = f"http://{ip}:8080"
+
+    @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_until_ready(self):
-        predicate = re.compile("mode initialized", re.MULTILINE).search
-        stderr, stdout = self.get_logs()
-        if "Traceback" in stderr.decode():
-            raise ContainerStartException(stderr.decode())
-        if "Traceback" in stdout.decode():
-            raise ContainerStartException(stdout.decode())
+        requests.get(self.public_url)
 
-        if not predicate(stdout.decode()) and not predicate(stderr.decode()):
-            raise LogNotFoundError()
+
+class DjupPostgresContainer(PostgresContainer):
+    def start(self):
+        super().start()
+        self.public_url = self.get_connection_url()
+
+        container_id = self.get_wrapped_container().id
+        ip = self.get_docker_client().bridge_ip(container_id)
+        self.exposed_port = self.get_exposed_port(self.port)
+        self.private_url = self.get_connection_url(host=ip).replace(
+            str(self.exposed_port), str(self.port)
+        )
 
 
 class ClientContainer(DockerContainer):
@@ -113,21 +128,18 @@ class ClientContainer(DockerContainer):
         self.with_env("NEXT_PUBLIC_CLERK_SIGN_IN_URL", "/sign-in")
         self.with_env("NEXT_PUBLIC_CLERK_SIGN_UP_URL", "/sign-up")
 
-    def url(self):
-        port = self.get_exposed_port(3000)
-        return f"http://localhost:{port}"
+    def start(self):
+        super().start()
+        self.port = self.get_exposed_port(3000)
+        self.public_url = f"http://localhost:{self.port}"
 
-    @wait_container_is_ready(LogNotFoundError)
+        container_id = self.get_wrapped_container().id
+        ip = self.get_docker_client().bridge_ip(container_id)
+        self.private_url = f"http://{ip}:3000"
+
+    @wait_container_is_ready(requests.exceptions.ConnectionError)
     def wait_until_ready(self):
-        predicate = re.compile("Ready", re.MULTILINE).search
-        stderr, stdout = self.get_logs()
-        if "Traceback" in stderr.decode():
-            raise ContainerStartException(stderr.decode())
-        if "Traceback" in stdout.decode():
-            raise ContainerStartException(stdout.decode())
-
-        if not predicate(stdout.decode()) and not predicate(stderr.decode()):
-            raise LogNotFoundError()
+        requests.get(self.public_url)
 
 
 class TestCore(unittest.TestCase):
@@ -137,34 +149,23 @@ class TestCore(unittest.TestCase):
         root_dir = DjupPath.to_path_parent(__file__).parent()
         client_dir = root_dir / "client"
 
-        self.network = Network()
-        self.network.__enter__()
-
-        self.postgres = PostgresContainer(driver=None)
+        self.postgres = DjupPostgresContainer(driver=None)
         self.node_container = NodeContainer()
         self.api_container = ApiContainer(tag)
         self.client_container = ClientContainer(tag)
 
         try:
-
-            self.postgres.with_network(self.network)
-            self.postgres.with_network_aliases("postgres")
             self.postgres.start()
 
-            self.postgres_url = f"postgres://{self.postgres.username}:{self.postgres.password}@postgres:{self.postgres.port}/{self.postgres.dbname}"
-
-            self.api_container.with_network(self.network)
             self.api_container.start()
             self.api_container.wait_until_ready()
 
-            self.client_container.with_network(self.network)
-            self.client_container.with_env("API_URL", f"http://client-api:8080")
-            self.client_container.with_env("DATABASE_URL", self.postgres_url)
+            self.client_container.with_env("API_URL", self.api_container.private_url)
+            self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
             self.client_container.start()
             self.client_container.wait_until_ready()
 
-            self.node_container.with_env("DATABASE_URL", self.postgres_url)
-            self.node_container.with_network(self.network)
+            self.node_container.with_env("DATABASE_URL", self.postgres.private_url)
             self.node_container.start()
 
             self.node_container.execute("mkdir /client")
@@ -176,21 +177,18 @@ class TestCore(unittest.TestCase):
             self.node_container.execute("npm install", workdir="/client")
             self.node_container.execute("npx prisma db push", workdir="/client")
 
-            print(f"client is ready at {self.client_container.url()}")
-            print(f"client is ready at {self.client_container.url()}")
-            print(f"client is ready at {self.client_container.url()}")
+            print(f"client is ready at {self.client_container.public_url}")
+            print(f"client is ready at {self.client_container.public_url}")
+            print(f"client is ready at {self.client_container.public_url}")
         except Exception as e:
             self.tearDown()
             raise e
 
     def tearDown(self):
-        try:
-            self.postgres.stop()
-            self.node_container.stop()
-            self.api_container.stop()
-            self.client_container.stop()
-        finally:
-            self.network.__exit__(None, None, None)
+        self.postgres.stop()
+        self.node_container.stop()
+        self.api_container.stop()
+        self.client_container.stop()
 
     def test_postgres(self):
         print("hello world")
