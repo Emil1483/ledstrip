@@ -38,7 +38,7 @@
     - name: Build and Push Docker Images
       command: >
         docker buildx build \
-        --platform linux/amd64 \
+        --platform linux/arm64 \
         --push -t {{ docker_hub_username }}/ledstrip-{{ item }}:{{ tag }} \
         ../../{{ item }}
       loop:
