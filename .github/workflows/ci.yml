@@ -25,11 +25,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Run ansible script
-        shell: bash
+      - name: Install dependencies
         run: |
-          cd ansible/playbooks
-          sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private test.yml --diff
+          pip install -r tests/requirements.txt
+
+      - name: Test Core
+        run: |
+          python -m unittest tests.test_core
 
   build-admin:
     runs-on: ubuntu-latest
