@@ -1,5 +1,5 @@
 ---
-- name: Get last 7 characters of git commit hash
+- name: Get git commit hash
   delegate_to: localhost
   command: git rev-parse HEAD
   register: git_commit_hash
