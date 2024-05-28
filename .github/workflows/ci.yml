@@ -64,6 +64,7 @@ jobs:
     needs:
       - build
       - build-admin
+      - test
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
