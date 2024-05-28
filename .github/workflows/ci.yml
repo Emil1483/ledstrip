@@ -25,12 +25,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Install dependencies
+      - name: Create virtual environment
+        run: python -m venv venv
+
+      - name: Activate virtual environment and install dependencies
         run: |
+          source venv/bin/activate
           pip install -r tests/requirements.txt
 
       - name: Test Core
         run: |
+          source venv/bin/activate
           python -m unittest tests.test_core
 
   build-admin:
