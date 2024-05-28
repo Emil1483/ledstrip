@@ -50,6 +50,7 @@
         cmd: "/usr/bin/python3 {{ root_dir }}/tests/test_core.py"
       environment:
         PYTHONPATH: "{{ root_dir }}"
+        TAG: "{{ tag }}"
         CLERK_SECRET_KEY: "{{ clerk_secret_key}}"
         TEST_USER_EMAIL: emil@djupvik.nev
         TEST_USER_PASSWORD: "{{ test_user_password }}"

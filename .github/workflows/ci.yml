@@ -11,18 +11,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setting ansible vault password
-        run: echo '${{ secrets.ANSIBLE_VAULT_PASS }}' | sudo tee /etc/ansible_pass_private
-        shell: bash
-
       - name: Run ansible script
         shell: bash
         run: |
           cd ansible/playbooks
           sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
-        env:
-          PY_COLORS: "1"
-          ANSIBLE_FORCE_COLOR: "1"
+
+  test:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Run ansible script
+        shell: bash
+        run: |
+          cd ansible/playbooks
+          sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private test.yml --diff
 
   build-admin:
     runs-on: ubuntu-latest
@@ -51,9 +56,6 @@ jobs:
         run: |
           cd ansible/playbooks
           sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private build_admin.yml --diff
-        env:
-          PY_COLORS: "1"
-          ANSIBLE_FORCE_COLOR: "1"
 
   deploy:
     runs-on: ubuntu-latest
@@ -85,6 +87,3 @@ jobs:
         run: |
           cd ansible/playbooks
           sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
-        env:
-          PY_COLORS: "1"
-          ANSIBLE_FORCE_COLOR: "1"
