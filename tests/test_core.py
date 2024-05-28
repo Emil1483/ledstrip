@@ -7,11 +7,9 @@ import io
 
 from dotenv import load_dotenv
 import requests
-from testcontainers.core.exceptions import ContainerStartException
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
 from testcontainers.core.container import DockerContainer
-from testcontainers.core.network import Network
 from docker.models.containers import ExecResult
 from pathspec import PathSpec
 
