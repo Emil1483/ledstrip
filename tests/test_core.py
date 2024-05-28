@@ -4,9 +4,10 @@ import os
 import unittest
 import tarfile
 import io
+import requests
 
 from dotenv import load_dotenv
-import requests
+import pygit2
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
 from testcontainers.core.container import DockerContainer
@@ -22,12 +23,10 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
-TAG = os.getenv("TAG")
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
 TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 
-assert TAG is not None, "Environment variable TAG is required"
 assert CLERK_SECRET_KEY is not None, "Environment variable CLERK_SECRET_KEY is required"
 assert TEST_USER_EMAIL is not None, "Environment variable TEST_USER_EMAIL is required"
 assert (
@@ -144,13 +143,17 @@ class ClientContainer(DockerContainer):
 
 class TestCore(unittest.TestCase):
     def setUp(self) -> None:
+        repo = pygit2.Repository(".")
+        tag = repo.head.target
+        logging.info(f"Running tests for tag {tag}")
+
         root_dir = DjupPath.to_path_parent(__file__).parent()
         client_dir = root_dir / "client"
 
         self.postgres = DjupPostgresContainer(driver=None)
         self.cypress_container = CypressContainer()
-        self.api_container = ApiContainer(TAG)
-        self.client_container = ClientContainer(TAG)
+        self.api_container = ApiContainer(tag)
+        self.client_container = ClientContainer(tag)
 
         try:
             self.postgres.start()
