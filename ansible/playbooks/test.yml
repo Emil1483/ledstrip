@@ -1,0 +1,60 @@
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private test.yml --diff
+
+- name: Test API and Client
+  hosts: localhost
+  become: true
+
+  vars:
+    variables_to_prompt:
+      - docker_hub_username
+      - docker_hub_password
+      - clerk_secret_key
+      - test_user_password
+
+  tasks:
+    - name: Get variables from vars.yml
+      include_tasks: ../src/get_vars.yml
+      loop:
+        - ../vars.yml
+      loop_control:
+        loop_var: path
+
+    - name: Loop through undefined variables and prompt the user
+      include_tasks: ../src/prompt_undefined_vars.yml
+      loop: "{{ variables_to_prompt }}"
+      loop_control:
+        loop_var: var_name
+
+    - name: Update apt package cache
+      apt:
+        update_cache: true
+
+    - name: Login to Docker Hub
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+
+    - name: Set Tag Fact
+      include_tasks: ../src/set_tag_fact.yml
+
+    - name: Get root directory of repository
+      set_fact:
+        root_dir: "{{ playbook_dir.split('/')[:-2] | join('/') }}"
+
+    - name: Pip install requirements
+      pip:
+        requirements: "{{ root_dir }}/tests/requirements.txt"
+
+    - name: Run e2e tests against the API and Client
+      script:
+        cmd: "/usr/bin/python3 {{ root_dir }}/tests/test_core.py"
+      environment:
+        PYTHONPATH: "{{ root_dir }}"
+        CLERK_SECRET_KEY: "{{ clerk_secret_key}}"
+        TEST_USER_EMAIL: emil@djupvik.nev
+        TEST_USER_PASSWORD: "{{ test_user_password }}"
+      register: tests_result
+
+    - name: Debug test results
+      debug:
+        var: tests_result

@@ -63,6 +63,7 @@
       - client_remote_port
       - portainer_edge_id
       - portainer_edge_key
+      - ansible_vault_pass
 
   tasks:
     - name: Get variables from vars.yml
@@ -109,30 +110,39 @@
         state: present
         name: docker
 
-    - name: Add Docker's official GPG key
-      apt_key:
+    - name: Install Ansible
+      pip:
         state: present
-        url: https://download.docker.com/linux/raspbian/gpg
+        name: ansible
 
-    - name: Add Docker repository
-      apt_repository:
-        state: present
-        repo: deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable
+    - name: Create ansible_pass
+      copy:
+        content: "{{ ansible_vault_pass }}"
+        dest: /etc/ansible_pass_private
+        mode: 0644
 
-    - name: Update apt package cache
-      apt:
-        update_cache: true
+    - name: Create Ansible configuration directory
+      file:
+        path: /etc/ansible
+        state: directory
+        mode: 0755
+
+    - name: Create Ansible configuration file
+      copy:
+        content: |
+          [defaults]
+          host_key_checking = False
+        dest: /etc/ansible/ansible.cfg
+        mode: 0644
+
+    - name: Check if Docker is installed
+      shell: docker --version
+      register: docker_installed
+      ignore_errors: yes
 
     - name: Install Docker
-      apt:
-        state: present
-        name: docker-ce
-
-    - name: Ensure Docker service is started
-      service:
-        name: docker
-        state: started
-        enabled: true
+      when: docker_installed.rc != 0
+      shell: curl -fsSL https://get.docker.com | sh
 
     - name: Create Portainer Volume
       docker_volume:
@@ -227,6 +237,9 @@
     - github_account: Emil1483
     - github_repo: ledstrip
     - runner_user: pi
+    - reinstall_runner: true
+    - hide_sensitive_logs: false
+    - ansible_check_mode: true
     - access_token: !vault |
         $ANSIBLE_VAULT;1.1;AES256
         31616564653466616365653038646234393437383663306130393234306239656362616437373362

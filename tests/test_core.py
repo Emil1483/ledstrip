@@ -22,15 +22,12 @@ logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = os.getenv("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY")
+TAG = os.getenv("TAG")
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
 TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 
-assert (
-    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is not None
-), "Environment variable NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY is required"
-
+assert TAG is not None, "Environment variable TAG is required"
 assert CLERK_SECRET_KEY is not None, "Environment variable CLERK_SECRET_KEY is required"
 assert TEST_USER_EMAIL is not None, "Environment variable TEST_USER_EMAIL is required"
 assert (
@@ -127,12 +124,7 @@ class ClientContainer(DockerContainer):
     def __init__(self, tag: str):
         super().__init__(image=f"superemil64/ledstrip-client:{tag}")
         self.with_exposed_ports(3000)
-        self.with_env(
-            "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY", NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-        )
         self.with_env("CLERK_SECRET_KEY", CLERK_SECRET_KEY)
-        self.with_env("NEXT_PUBLIC_CLERK_SIGN_IN_URL", "/sign-in")
-        self.with_env("NEXT_PUBLIC_CLERK_SIGN_UP_URL", "/sign-up")
 
     def start(self):
         super().start()
@@ -152,15 +144,13 @@ class ClientContainer(DockerContainer):
 
 class TestCore(unittest.TestCase):
     def setUp(self) -> None:
-        tag = "main-b57d4ba"
-
         root_dir = DjupPath.to_path_parent(__file__).parent()
         client_dir = root_dir / "client"
 
         self.postgres = DjupPostgresContainer(driver=None)
         self.cypress_container = CypressContainer()
-        self.api_container = ApiContainer(tag)
-        self.client_container = ClientContainer(tag)
+        self.api_container = ApiContainer(TAG)
+        self.client_container = ClientContainer(TAG)
 
         try:
             self.postgres.start()
@@ -189,8 +179,6 @@ class TestCore(unittest.TestCase):
 
             self.cypress_container.execute("npm install", workdir="/client")
             self.cypress_container.execute("npx prisma db push", workdir="/client")
-
-            self.cypress_container.execute("npm run cy:run", workdir="/client")
         except Exception as e:
             self.tearDown()
             raise e
@@ -201,8 +189,8 @@ class TestCore(unittest.TestCase):
         self.api_container.stop()
         self.client_container.stop()
 
-    def test_postgres(self):
-        print("hello world")
+    def test_with_cypress(self):
+        self.cypress_container.execute("npm run cy:run", workdir="/client")
 
 
 if __name__ == "__main__":

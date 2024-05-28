@@ -1,0 +1,5 @@
+pathspec==0.12.1
+python-dotenv==0.21.1
+Requests==2.32.2
+testcontainers==4.4.1
+docker==7.1.0
