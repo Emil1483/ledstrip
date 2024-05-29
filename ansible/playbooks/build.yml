@@ -2,7 +2,6 @@
 
 - name: Build and deploy Docker images
   hosts: localhost
-  become: true
 
   vars:
     variables_to_prompt:
@@ -23,10 +22,6 @@
       loop_control:
         loop_var: var_name
 
-    - name: Update apt package cache
-      apt:
-        update_cache: true
-
     - name: Login to Docker Hub
       docker_login:
         username: "{{ docker_hub_username }}"
@@ -38,7 +33,7 @@
     - name: Build and Push Docker Images
       command: >
         docker buildx build \
-        --platform linux/arm64 \
+        --platform linux/arm64,linux/amd64 \
         --push -t {{ docker_hub_username }}/ledstrip-{{ item }}:{{ tag }} \
         ../../{{ item }}
       loop:
