@@ -18,24 +18,26 @@ jobs:
           sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private build.yml --diff
 
   test:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     needs:
       - build
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Create virtual environment
-        run: python -m venv venv
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
 
-      - name: Activate virtual environment and install dependencies
+      - name: Install dependencies
         run: |
-          source venv/bin/activate
+          python -m pip install --upgrade pip
           pip install -r tests/requirements.txt
 
       - name: Test Core
         run: |
-          source venv/bin/activate
           python -m unittest tests.test_core
         env:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
