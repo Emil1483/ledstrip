@@ -116,6 +116,14 @@ class ApiContainer(DockerContainer):
 
     @wait_container_is_ready(requests.exceptions.ConnectionError)
     def _connect(self):
+        self.get_wrapped_container().reload()
+        status = self.get_wrapped_container().status
+        if status == "exited":
+            stderr, stdout = self.get_logs()
+            raise RuntimeError(
+                f"Container exited with logs\n" f"{stdout.decode()}\n{stderr.decode()}"
+            )
+
         requests.get(self.public_url)
 
 
@@ -138,6 +146,14 @@ class ClientContainer(DockerContainer):
 
     @wait_container_is_ready(requests.exceptions.ConnectionError)
     def _connect(self):
+        self.get_wrapped_container().reload()
+        status = self.get_wrapped_container().status
+        if status == "exited":
+            stderr, stdout = self.get_logs()
+            raise RuntimeError(
+                f"Container exited with logs\n" f"{stdout.decode()}\n{stderr.decode()}"
+            )
+
         requests.get(self.public_url)
 
 
