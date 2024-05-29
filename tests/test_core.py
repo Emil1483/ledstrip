@@ -1,20 +1,25 @@
 # python -m unittest tests.test_core
 
 import os
+from time import sleep
+import traceback
+from typing import Any, Callable
 import unittest
 import tarfile
 import io
 import requests
-
+import logging
+import wrapt
 from dotenv import load_dotenv
 import pygit2
+
+from testcontainers.core.config import testcontainers_config as config
 from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
-from testcontainers.core.container import DockerContainer
+from testcontainers.core.container import DockerContainer, inside_container
 from docker.models.containers import ExecResult
 from pathspec import PathSpec
 
-import logging
 
 from tests.djup_path import DjupPath
 
@@ -57,6 +62,72 @@ def make_tar_archive(src_path: DjupPath, ignore_spec: PathSpec):
     return tar_stream
 
 
+def djup_wait_container_is_ready(*transient_exceptions) -> Callable:
+    """
+    Wait until container is ready.
+
+    Function that spawn container should be decorated by this method Max wait is configured by
+    config. Default is 120 sec. Polling interval is 1 sec.
+
+    Args:
+        *transient_exceptions: Additional transient exceptions that should be retried if raised. Any
+            non-transient exceptions are fatal, and the exception is re-raised immediately.
+    """
+    transient_exceptions = (TimeoutError, ConnectionError) + tuple(transient_exceptions)
+
+    @wrapt.decorator
+    def wrapper(wrapped: Callable, instance: Any, args: list, kwargs: dict) -> Any:
+        from testcontainers.core.container import DockerContainer
+
+        if isinstance(instance, DockerContainer):
+            logging.info(
+                "Waiting for container %s with image %s to be ready ...",
+                instance._container,
+                instance.image,
+            )
+        else:
+            logging.info("Waiting for %s to be ready ...", instance)
+
+        exception = None
+        for attempt_no in range(config.max_tries):
+            if isinstance(instance, DockerContainer):
+                instance.get_wrapped_container().reload()
+                status = instance.get_wrapped_container().status
+                if status == "exited":
+                    stderr, stdout = instance.get_logs()
+                    raise RuntimeError(
+                        f"Container exited with logs\n{stdout.decode()}\n{stderr.decode()}"
+                    )
+            try:
+                return wrapped(*args, **kwargs)
+            except transient_exceptions as e:
+                logging.debug(
+                    f"Connection attempt '{attempt_no + 1}' of '{config.max_tries + 1}' "
+                    f"failed: {traceback.format_exc()}"
+                )
+                sleep(1)
+                exception = e
+        raise TimeoutError(
+            f"Wait time ({config.timeout}s) exceeded for {wrapped.__name__}(args: {args}, kwargs: "
+            f"{kwargs}). Exception: {exception}"
+        )
+
+    return wrapper
+
+
+class DjupDockerContainer(DockerContainer):
+    @djup_wait_container_is_ready()
+    def get_exposed_port(self, port: int) -> str:
+        mapped_port = self.get_docker_client().port(self._container.id, port)
+        if inside_container():
+            gateway_ip = self.get_docker_client().gateway_ip(self._container.id)
+            host = self.get_docker_client().host()
+
+            if gateway_ip == host:
+                return port
+        return mapped_port
+
+
 class CypressContainer(DockerContainer):
     def __init__(self, image: str = "cypress/browsers:latest", **kwargs):
         super().__init__(image=image, **kwargs)
@@ -96,7 +167,7 @@ class DjupPostgresContainer(PostgresContainer):
         )
 
 
-class ApiContainer(DockerContainer):
+class ApiContainer(DjupDockerContainer):
     def __init__(self, tag: str):
         super().__init__(image=f"superemil64/ledstrip-api:{tag}")
         self.with_env("LEDSTRIP_SERVICE", "canvas")
@@ -114,20 +185,12 @@ class ApiContainer(DockerContainer):
 
         self._connect()
 
-    @wait_container_is_ready(requests.exceptions.ConnectionError)
+    @djup_wait_container_is_ready(requests.exceptions.ConnectionError)
     def _connect(self):
-        self.get_wrapped_container().reload()
-        status = self.get_wrapped_container().status
-        if status == "exited":
-            stderr, stdout = self.get_logs()
-            raise RuntimeError(
-                f"Container exited with logs\n" f"{stdout.decode()}\n{stderr.decode()}"
-            )
-
         requests.get(self.public_url)
 
 
-class ClientContainer(DockerContainer):
+class ClientContainer(DjupDockerContainer):
     def __init__(self, tag: str):
         super().__init__(image=f"superemil64/ledstrip-client:{tag}")
         self.with_exposed_ports(3000)
@@ -144,16 +207,8 @@ class ClientContainer(DockerContainer):
 
         self._connect()
 
-    @wait_container_is_ready(requests.exceptions.ConnectionError)
+    @djup_wait_container_is_ready(requests.exceptions.ConnectionError)
     def _connect(self):
-        self.get_wrapped_container().reload()
-        status = self.get_wrapped_container().status
-        if status == "exited":
-            stderr, stdout = self.get_logs()
-            raise RuntimeError(
-                f"Container exited with logs\n" f"{stdout.decode()}\n{stderr.decode()}"
-            )
-
         requests.get(self.public_url)
 
 
