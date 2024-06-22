@@ -6,7 +6,7 @@ function getApiBaseUrl(): string {
     }
 }
 
-export async function getModes(): Promise<Modes> {
+export async function fetchModes(): Promise<Modes> {
     const response = await fetch(`${getApiBaseUrl()}/modes`);
     if (!response.ok) {
         throw new Error("Failed to fetch modes");

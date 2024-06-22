@@ -8,7 +8,7 @@ import ModalClose from '@mui/joy/ModalClose';
 import Typography from '@mui/joy/Typography';
 
 
-import { getModes as fetchModes, setMode } from "@/services/modes";
+import { fetchModes as fetchModes, setMode } from "@/services/modes";
 import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";
@@ -18,6 +18,8 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { getAuth } from "@clerk/nextjs/server";
 import { fetchSavedStates } from "@/services/users";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
+import { useShallow } from "zustand/react/shallow";
+import { useCurrentModes } from "@/hooks/useCurrentModes";
 
 
 interface PageProps {
@@ -27,40 +29,17 @@ interface PageProps {
 
 
 const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
-    const [modes, setModes] = useState(initialModes);
-
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
-    const [kwargsFormData, setKwargsFormData] = useState<ModeState>({});
 
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
+    const [modes, setModes] = useCurrentModes(
+        useShallow((state) => [state.currentModes, state.setCurrentModes])
+    )
+
     useEffect(() => {
         setSavedStates(initialSavedStates);
-    }, [setSavedStates, initialSavedStates]);
-
-    function canAutoChange() {
-        if (selectedMode === null) return false
-
-        // const autoChangeable = ["color", "ranged_float"]
-        const autoChangeable: string[] = []
-
-        return Object.values(modes[selectedMode].kwargs).every(v => autoChangeable.includes(v.type))
-    }
-
-    async function changeMode(mode: string) {
-        try {
-            await setMode({ mode: mode, kwargs: kwargsFormData })
-            const newModes = await fetchModes()
-            setModes(newModes)
-        } catch (error) {
-            console.error(error);
-        }
-    }
-
-    useEffect(() => {
-        if (selectedMode && canAutoChange()) {
-            changeMode(selectedMode)
-        }
-    }, [kwargsFormData])
+        setModes(initialModes);
+    }, [setSavedStates, setModes, initialModes, initialSavedStates]);
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {
@@ -72,7 +51,6 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
 
     function selectMode(mode: string) {
         assert(mode in modes, `Mode ${mode} not found`)
-        setKwargsFormData({})
         setSelectedMode(mode)
     }
 
@@ -159,7 +137,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                 alignItems: 'flex-end',
             }}>
             <Grid container spacing={4} sx={{ padding: '20px', justifyContent: 'flex-end' }}>
-                {Object.entries(modes).map(([key, value]) => (
+                {Object.entries(modes).map(([key, mode]) => (
                     <Grid item xs={6} sm={6} md={4} key={key}>
                         <Button
                             {...longPressAttrs}
@@ -170,7 +148,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                             sx={{
                                 width: '100%',
                                 height: '128px',
-                                backgroundColor: value.on ? '#1835F2' : '#3E4051',
+                                backgroundColor: mode.on ? '#1835F2' : '#3E4051',
                                 borderRadius: '8px',
                                 flexDirection: 'column'
                             }}
@@ -182,7 +160,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                             <Grid sx={{
                                 flexDirection: 'column',
                             }}>
-                                {Array.from(generateStateComponents(value.state))}
+                                {Array.from(generateStateComponents(mode.state))}
                             </Grid>
                         </Button>
                     </Grid>
@@ -213,37 +191,16 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                         <ModalClose id="modal-close" onClick={() => setSelectedMode(null)} />
                         <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
 
-                        <form
-                            onSubmit={async (event: React.FormEvent<HTMLFormElement>) => {
-                                event.preventDefault();
-                                await changeMode(selectedMode)
-                            }}
-                        >
-                            <Stack spacing={2} sx={{
-                                paddingRight: '16px',
-                                paddingLeft: '16px',
-                                paddingBottom: '16px',
-                            }}>
-                                <KwargsForm
-                                    kwargs={modes[selectedMode].kwargs}
-                                    currentState={modes[selectedMode].state}
-                                    onStateChanged={setKwargsFormData}
-                                    mode={selectedMode}
-                                ></KwargsForm>
-                                {!canAutoChange() &&
-                                    <Button
-                                        type="submit"
-                                        sx={{
-                                            width: '100%',
-                                            backgroundColor: '#1835F2',
-                                            borderRadius: '8px',
-                                            color: 'white',
-                                            fontWeight: 'bold',
-                                        }}
-                                    >Submit</Button>
-                                }
-                            </Stack>
-                        </form>
+                        <Stack spacing={2} sx={{
+                            paddingRight: '16px',
+                            paddingLeft: '16px',
+                            paddingBottom: '16px',
+                        }}>
+                            <KwargsForm
+                                mode={selectedMode}
+                            ></KwargsForm>
+
+                        </Stack>
                     </ModalDialog>
                     : <></>}
             </Modal >

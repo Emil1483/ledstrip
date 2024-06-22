@@ -1,9 +1,6 @@
 import BookmarkIcon from '@mui/icons-material/Bookmark';
-import useConfirm from "@/hooks/useConfirm"
-import { useSavedStatesStore } from "@/hooks/useSavedStatesStore"
 import { Button, ThemeProvider, createTheme } from "@mui/material"
 import { LongPressFns } from "@uidotdev/usehooks"
-import { useShallow } from "zustand/react/shallow"
 import { isColor } from '@/models/typeCheckers';
 
 interface SavedStateComponentProps {

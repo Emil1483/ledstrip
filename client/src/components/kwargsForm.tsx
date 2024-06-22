@@ -17,34 +17,54 @@ import useConfirm from "@/hooks/useConfirm";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
+import { useCurrentModes } from "@/hooks/useCurrentModes";
+import { fetchModes, setMode } from "@/services/modes";
 
 interface KwargsFormProps {
-    kwargs: ModeKwargs
-    currentState: ModeState
-    onStateChanged: (data: ModeState) => void
     mode: string
 }
 
-
-const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, currentState, mode }) => {
+function getDefaultState(mode: Mode) {
     const defaultState: ModeState = {}
-    for (const [key, value] of Object.entries(kwargs)) {
-        if (key in currentState) {
-            defaultState[key] = currentState[key]
+    for (const [key, value] of Object.entries(mode.kwargs)) {
+        if (key in mode.state) {
+            defaultState[key] = mode.state[key]
         } else if (value.default !== undefined) {
             defaultState[key] = value.default
         }
     }
+    return defaultState
+}
 
-    const [state, setState] = useState<ModeState>(defaultState)
+
+const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
+    const [modes, setModes] = useCurrentModes(
+        useShallow((state) => [state.currentModes, state.setCurrentModes])
+    )
+
+    assert(mode in modes, `Mode ${mode} not found`)
+
+    const [state, setState] = useState<ModeState>(getDefaultState(modes[mode]))
     const [Dialog, confirmDelete] = useConfirm()
 
     const { savedStates, setSavedStates } = useSavedStatesStore(
         useShallow((state) => ({ savedStates: state.savedStates, setSavedStates: state.setSavedStates })
         ))
 
+    async function updateMode() {
+        try {
+            await setMode({ mode: mode, kwargs: state })
+            const newModes = await fetchModes()
+            setModes(newModes)
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
     useEffect(() => {
-        onStateChanged(state)
+        if (canAutoChange()) {
+            updateMode()
+        }
     }, [state])
 
     function currentStateIsSaved(): boolean {
@@ -78,8 +98,29 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
         }
     }
 
+    async function handleDeleteState(index: number) {
+        assert(index >= 0 && index < currentSavedStates().length)
 
-    function handleChange(key: string, value: any) {
+        const result = await fetch(`/api/deleteState`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                mode: mode,
+                index: index
+            }),
+        })
+
+        if (result.ok) {
+            const savedStates = await result.json()
+            setSavedStates(savedStates)
+        } else {
+            console.error('Failed to delete state')
+        }
+    }
+
+    function handleStateChange(key: string, value: any) {
         if (value === null) {
             if (key in state) {
                 setState((data) => {
@@ -112,7 +153,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
     }
 
     function* generateInputs() {
-        for (const [key, value] of Object.entries(kwargs)) {
+        for (const [key, value] of Object.entries(modes[mode].kwargs)) {
             switch (value.type) {
                 case 'str':
                     yield <FormControl key={key}>
@@ -120,7 +161,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <StrInput value={asString(state[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <StrInput value={asString(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
                     </FormControl>
                     break
                 case 'int':
@@ -129,7 +170,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <IntInput value={asNumber(state[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <IntInput value={asNumber(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
                     </FormControl>
                     break
                 case 'float':
@@ -138,7 +179,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <FloatInput value={asNumber(state[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <FloatInput value={asNumber(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
                     </FormControl>
                     break
 
@@ -148,7 +189,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                             sx={{ color: 'white', fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
-                        <ColorInput value={asColor(state[key])} onChange={(value) => { handleChange(key, value) }} />
+                        <ColorInput value={asColor(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
                     </FormControl>
                     break
 
@@ -160,7 +201,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                         </FormLabel>
                         <RangedFloatInput
                             value={asRangedFloat(state[key])}
-                            onChange={(value) => { handleChange(key, value) }}
+                            onChange={(value) => { handleStateChange(key, value) }}
                             min={value.metadata.min}
                             max={value.metadata.max} />
                     </FormControl>
@@ -168,28 +209,6 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                 default:
                     throw new Error(`Unknown input type: ${value}`)
             }
-        }
-    }
-
-    async function handleDeleteState(index: number) {
-        assert(index >= 0 && index < currentSavedStates().length)
-
-        const result = await fetch(`/api/deleteState`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                mode: mode,
-                index: index
-            }),
-        })
-
-        if (result.ok) {
-            const savedStates = await result.json()
-            setSavedStates(savedStates)
-        } else {
-            console.error('Failed to delete state')
         }
     }
 
@@ -216,7 +235,16 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
         return savedStates[mode] ?? []
     }
 
-    return <>
+    function canAutoChange() {
+        // const autoChangeable = ["color", "ranged_float"]
+        const autoChangeable: string[] = []
+        return Object.values(modes[mode].kwargs).every(v => autoChangeable.includes(v.type))
+    }
+
+    return <form onSubmit={(event) => {
+        event.preventDefault()
+        updateMode()
+    }}>
         {Array.from(generateInputs())}
         <Grid
             container
@@ -241,9 +269,22 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ kwargs, onStateChanged, current
                     <BookmarkAddIcon />
                 </Button>}
 
+            {!canAutoChange() &&
+                <Button
+                    type="submit"
+                    sx={{
+                        width: '100%',
+                        backgroundColor: '#1835F2',
+                        borderRadius: '8px',
+                        color: 'white',
+                        fontWeight: 'bold',
+                    }}
+                >Submit</Button>
+            }
+
         </Grid>
         <Dialog />
-    </>
+    </form>
 };
 
 export default KwargsForm

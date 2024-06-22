@@ -1,8 +1,8 @@
-import { getModes, setMode } from "../src/services/modes";
+import { fetchModes, setMode } from "../src/services/modes";
 
 describe("Mode Service", () => {
     test("getModes", async () => {
-        const modes = await getModes();
+        const modes = await fetchModes();
         expect(modes).toBeDefined();
 
         console.log("getModes() returns", modes);
@@ -16,14 +16,14 @@ describe("Mode Service", () => {
     });
 
     test("setMode", async () => {
-        const modes = await getModes();
+        const modes = await fetchModes();
         const mode = Object.keys(modes)[0];
         const kwargs = modes[mode].kwargs;
         const payload = {
             mode,
             kwargs: Object.fromEntries(
                 Object.entries(kwargs).map(([key, value]) => {
-                    switch (value) {
+                    switch (value.type) {
                         case "float":
                             return [key, 1.0];
                         case "int":
