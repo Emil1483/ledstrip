@@ -2,6 +2,8 @@ from queue import Queue
 import uuid
 from paho.mqtt.client import Client, MQTT_ERR_SUCCESS, MQTTMessage
 
+from src.logging_helper import logger
+
 from .mqtt_rpc_response import MQTTRPCResponse
 from .mqtt_rpc_error import MQTTRPCError
 
@@ -20,6 +22,8 @@ class MQTTRPCServer:
 
     def start(self, client: Client):
         def on_message(_, __, message):
+            logger.info(f"Received {message.payload} on topic {message.topic}")
+
             try:
                 *_, function_name, message_id = message.topic.split("/")
 
@@ -43,7 +47,14 @@ class MQTTRPCServer:
                 )
 
         client.on_message = on_message
-        client.subscribe(f"{self.server_name}/rpc/request/#")
+
+        topic = f"{self.server_name}/rpc/request/#"
+        status, _ = client.subscribe(topic)
+
+        if status != MQTT_ERR_SUCCESS:
+            raise ValueError(f"Failed to subscribe to response topic: {status}")
+
+        logger.info(f"Subscribed to {topic}")
 
     def call(self, client: Client, function_name: str, payload: bytes):
         message_id = str(uuid.uuid4())
