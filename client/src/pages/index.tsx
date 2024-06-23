@@ -8,7 +8,7 @@ import ModalClose from '@mui/joy/ModalClose';
 import Typography from '@mui/joy/Typography';
 
 
-import { fetchModes as fetchModes, setMode } from "@/services/modes";
+import { fetchModes } from "@/services/modes";
 import ModalDialog from "@mui/joy/ModalDialog";
 import React from "react";
 import KwargsForm from "@/components/kwargsForm";

@@ -18,7 +18,6 @@ import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
 import { useCurrentModes } from "@/hooks/useCurrentModes";
-import { fetchModes, setMode } from "@/services/modes";
 import { MqttClient } from "mqtt";
 
 interface KwargsFormProps {
