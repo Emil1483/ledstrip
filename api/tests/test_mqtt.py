@@ -2,15 +2,22 @@
 
 import unittest
 
+from src.mqtt_helpers.mqtt_rpc_response import MQTTRPCResponse
+from src.mqtt_helpers.mqtt_rpc_error import MQTTRPCError
 from src.mqtt_helpers.mqtt_rpc_server import MQTTRPCServer
 from src.mqtt_helpers.mqtt_wrapper import MQTTWrapper
 
 mqtt1_rpc = MQTTRPCServer("mqtt1")
 
 
-@mqtt1_rpc.register("reverse_echo")  # foo = function name
+@mqtt1_rpc.register("reverse_echo")
 def reverse_echo(payload: bytes):
-    return payload.decode("UTF-8")[::-1]
+    return MQTTRPCResponse(payload.decode("UTF-8")[::-1], 200)
+
+
+@mqtt1_rpc.register("exceptional_function")
+def exceptional_function(_: bytes):
+    raise MQTTRPCError(MQTTRPCResponse("Something went wrong", 500))
 
 
 class TestMQTT(unittest.TestCase):
@@ -19,5 +26,16 @@ class TestMQTT(unittest.TestCase):
             mqtt1_rpc.start(mqtt1.client)
 
             with MQTTWrapper("localhost") as mqtt2:
-                response = mqtt1_rpc.call(mqtt2.client, "reverse_echo", b"hello world")
-                self.assertEqual(response, b"dlrow olleh")
+                response = mqtt1_rpc.call(mqtt2.client, "reverse_echo", "hello world")
+                self.assertEqual(response.message, "dlrow olleh")
+
+    def test_mqtt_exception(self):
+        with MQTTWrapper("localhost") as mqtt1:
+            mqtt1_rpc.start(mqtt1.client)
+
+            with MQTTWrapper("localhost") as mqtt2:
+                with self.assertRaises(MQTTRPCError):
+                    mqtt1_rpc.call(mqtt2.client, "unknown_function", b"hello world")
+
+                with self.assertRaises(MQTTRPCError):
+                    mqtt1_rpc.call(mqtt2.client, "exceptional_function", b"")
