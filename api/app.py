@@ -1,6 +1,5 @@
 from http.server import SimpleHTTPRequestHandler
 import json
-import logging
 from os import getenv
 import socketserver
 import threading
