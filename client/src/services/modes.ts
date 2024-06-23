@@ -1,3 +1,5 @@
+import mqtt from "mqtt";
+
 function getApiBaseUrl(): string {
     if (process.env.API_URL) {
         return `${process.env.API_URL}`;
@@ -7,12 +9,38 @@ function getApiBaseUrl(): string {
 }
 
 export async function fetchModes(): Promise<Modes> {
-    const response = await fetch(`${getApiBaseUrl()}/modes`);
-    if (!response.ok) {
-        throw new Error("Failed to fetch modes");
-    }
+    return new Promise((resolve, reject) => {
+        const client = mqtt.connect(
+            `mqtt://${process.env.NEXT_PUBLIC_MQTT_HOST}:1883`
+        );
 
-    return await response.json();
+        const topic = "lights/status";
+
+        client.on("connect", () => {
+            console.log("Connected to broker");
+            client.subscribe(topic, (err) => {
+                if (err) {
+                    reject(
+                        `Failed to subscribe to topic ${topic}: ${err.message}`
+                    );
+                }
+            });
+        });
+
+        client.on("message", (topic, message) => {
+            try {
+                const jsonMessage: Modes = JSON.parse(message.toString());
+                client.end(); // Close the connection after receiving the first message
+                resolve(jsonMessage);
+            } catch (error) {
+                reject(`Failed to decode message: ${error}`);
+            }
+        });
+
+        client.on("error", (err) => {
+            reject(`MQTT client error: ${err.message}`);
+        });
+    });
 }
 
 export async function setMode(params: {

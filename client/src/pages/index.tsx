@@ -20,6 +20,7 @@ import { fetchSavedStates } from "@/services/users";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { useCurrentModes } from "@/hooks/useCurrentModes";
+import mqtt, { MqttClient } from "mqtt";
 
 
 interface PageProps {
@@ -40,6 +41,36 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
         setSavedStates(initialSavedStates);
         setModes(initialModes);
     }, [setSavedStates, setModes, initialModes, initialSavedStates]);
+
+    const [mqttClient, setMqttClient] = useState<MqttClient | null>(null);
+
+    useEffect(() => {
+        const client = mqtt.connect(`ws://${process.env.NEXT_PUBLIC_MQTT_HOST}:9001`);
+
+        const topic = "lights/status";
+
+        client.on("connect", () => {
+            console.log("Connected to broker");
+            client.subscribe(topic, (err) => {
+                if (err) {
+                    console.error(
+                        `Failed to subscribe to topic ${topic}: ${err.message}`
+                    );
+                }
+            });
+        });
+
+        client.on('error', (error) => {
+            console.error('Connection error: ', error);
+        });
+
+        client.on("message", (topic, message) => {
+            const jsonMessage: Modes = JSON.parse(message.toString());
+            setModes(jsonMessage);
+        });
+
+        setMqttClient(client);
+    }, []);
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {
@@ -73,9 +104,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
         }
 
         try {
-            await setMode({ mode: mode, kwargs: {} })
-            const newModes = await fetchModes()
-            setModes(newModes)
+            mqttClient!.publish("lights/rpc/request/set_mode/a", JSON.stringify({ mode: mode, kwargs: {} }))
         } catch (error) {
             console.error(error);
         }
@@ -198,6 +227,7 @@ const Home: React.FC<PageProps> = ({ initialModes, initialSavedStates }) => {
                         }}>
                             <KwargsForm
                                 mode={selectedMode}
+                                mqttClient={mqttClient!}
                             ></KwargsForm>
 
                         </Stack>

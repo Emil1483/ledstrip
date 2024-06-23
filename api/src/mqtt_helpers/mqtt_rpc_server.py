@@ -35,10 +35,10 @@ class MQTTRPCServer:
                 response = self._functions[function_name](message.payload)
                 assert isinstance(response, MQTTRPCResponse)
 
-                client.publish(
-                    f"{self.server_name}/rpc/response/{function_name}/{message_id}",
-                    response.to_payload(),
-                )
+                topic = f"{self.server_name}/rpc/response/{function_name}/{message_id}"
+                client.publish(topic, response.to_payload())
+
+                logger.info(f"Published {response.to_payload()} to topic {topic}")
 
             except MQTTRPCError as e:
                 client.publish(

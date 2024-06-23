@@ -19,9 +19,11 @@ import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
 import { useCurrentModes } from "@/hooks/useCurrentModes";
 import { fetchModes, setMode } from "@/services/modes";
+import { MqttClient } from "mqtt";
 
 interface KwargsFormProps {
     mode: string
+    mqttClient: MqttClient
 }
 
 function getDefaultState(mode: Mode) {
@@ -37,7 +39,7 @@ function getDefaultState(mode: Mode) {
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
+const KwargsForm: React.FC<KwargsFormProps> = ({ mode, mqttClient }) => {
     const [modes, setModes] = useCurrentModes(
         useShallow((state) => [state.currentModes, state.setCurrentModes])
     )
@@ -53,9 +55,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
 
     async function updateMode() {
         try {
-            await setMode({ mode: mode, kwargs: state })
-            const newModes = await fetchModes()
-            setModes(newModes)
+            mqttClient!.publish("lights/rpc/request/set_mode/a", JSON.stringify({ mode: mode, kwargs: state }))
         } catch (error) {
             console.error(error);
         }
