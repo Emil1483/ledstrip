@@ -17,12 +17,10 @@ import useConfirm from "@/hooks/useConfirm";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
-import { useCurrentModes } from "@/hooks/useCurrentModes";
-import { MqttClient } from "mqtt";
+import { useChangeMode, useCurrentModes } from "@/contexts/ModesContext";
 
 interface KwargsFormProps {
     mode: string
-    mqttClient: MqttClient
 }
 
 function getDefaultState(mode: Mode) {
@@ -38,31 +36,26 @@ function getDefaultState(mode: Mode) {
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ mode, mqttClient }) => {
-    const [modes, setModes] = useCurrentModes(
-        useShallow((state) => [state.currentModes, state.setCurrentModes])
-    )
+const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
+    const currentModes = useCurrentModes()
+    const changeMode = useChangeMode()
 
-    assert(mode in modes, `Mode ${mode} not found`)
+    assert(mode in currentModes, `Mode ${mode} not found`)
 
-    const [state, setState] = useState<ModeState>(getDefaultState(modes[mode]))
+    const [state, setState] = useState<ModeState>(getDefaultState(currentModes[mode]))
     const [Dialog, confirmDelete] = useConfirm()
 
     const { savedStates, setSavedStates } = useSavedStatesStore(
         useShallow((state) => ({ savedStates: state.savedStates, setSavedStates: state.setSavedStates })
         ))
 
-    async function updateMode() {
-        try {
-            mqttClient!.publish("lights/rpc/request/set_mode/a", JSON.stringify({ mode: mode, kwargs: state }))
-        } catch (error) {
-            console.error(error);
-        }
+    async function updateModeToState() {
+        changeMode(mode, state)
     }
 
     useEffect(() => {
         if (canAutoChange()) {
-            updateMode()
+            updateModeToState()
         }
     }, [state])
 
@@ -152,7 +145,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode, mqttClient }) => {
     }
 
     function* generateInputs() {
-        for (const [key, value] of Object.entries(modes[mode].kwargs)) {
+        for (const [key, value] of Object.entries(currentModes[mode].kwargs)) {
             switch (value.type) {
                 case 'str':
                     yield <FormControl key={key}>
@@ -235,14 +228,13 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode, mqttClient }) => {
     }
 
     function canAutoChange() {
-        // const autoChangeable = ["color", "ranged_float"]
-        const autoChangeable: string[] = []
-        return Object.values(modes[mode].kwargs).every(v => autoChangeable.includes(v.type))
+        const autoChangeable = ["color", "ranged_float"]
+        return Object.values(currentModes[mode].kwargs).every(v => autoChangeable.includes(v.type))
     }
 
     return <form onSubmit={(event) => {
         event.preventDefault()
-        updateMode()
+        updateModeToState()
     }}>
         {Array.from(generateInputs())}
         <Grid
