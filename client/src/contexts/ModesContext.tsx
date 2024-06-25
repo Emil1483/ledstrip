@@ -34,7 +34,6 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
         client.on("message", (topic, message) => {
             const jsonMessage: Modes = JSON.parse(message.toString());
             setCurrentModes(jsonMessage);
-            console.log("Received message from topic", topic, jsonMessage)
         });
 
         setMqttClient(client);
