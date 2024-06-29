@@ -87,4 +87,4 @@
           PORT: "{{ client_port }}"
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
           DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
-          MQTT_HOST: "mosquitto"
+          NEXT_PUBLIC_MQTT_HOST: "mosquitto"
