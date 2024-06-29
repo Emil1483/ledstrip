@@ -3,7 +3,7 @@ servers:
     pi-remote:
       ansible_host: linode.djupvik.dev
       ansible_user: pi
-      ansible_port: 6004
+      ansible_port: 6005
       ansible_password: !vault |
         $ANSIBLE_VAULT;1.1;AES256
         61303238393232323239346130613135323161656262313065623763656265646139386230643937
@@ -13,7 +13,7 @@ servers:
         3434
 
     pi-local:
-      ansible_host: 192.168.68.65
+      ansible_host: 192.168.68.25
       ansible_user: pi
       ansible_password: !vault |
         $ANSIBLE_VAULT;1.1;AES256

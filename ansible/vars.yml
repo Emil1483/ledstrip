@@ -20,9 +20,11 @@ frps_dashboard_port: 7500
 frps_bind_port: 7000
 
 client_port: 3000
-pi_ssh_port: 6004
+pi_ssh_port: 6005
 
 client_host: lights.linode.djupvik.dev
+
+mosquitto_host: 172.232.157.72
 
 docker_hub_username: superemil64
 docker_hub_password: !vault |
