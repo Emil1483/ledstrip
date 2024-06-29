@@ -1,6 +1,8 @@
 # python -m unittest tests.test_core
 
 import os
+from queue import Empty, Queue
+import re
 from time import sleep
 import traceback
 from typing import Any, Callable
@@ -21,6 +23,7 @@ from docker.models.containers import ExecResult
 from pathspec import PathSpec
 
 
+from api.src.mqtt_helpers.mqtt_wrapper import MQTTWrapper
 from tests.djup_path import DjupPath
 
 logging.basicConfig(level=logging.INFO)
@@ -127,6 +130,17 @@ class DjupDockerContainer(DockerContainer):
                 return port
         return mapped_port
 
+    @djup_wait_container_is_ready(LogNotFoundError)
+    def wait_for_logs(self, message: str):
+        predicate = re.compile(message, re.MULTILINE).search
+        stderr, stdout = self.get_logs()
+        if not predicate(stdout.decode()) and not predicate(stderr.decode()):
+            raise LogNotFoundError()
+
+    def get_ip_address(self):
+        container_id = self.get_wrapped_container().id
+        return self.get_docker_client().bridge_ip(container_id)
+
 
 class CypressContainer(DockerContainer):
     def __init__(self, image: str = "cypress/browsers:latest", **kwargs):
@@ -167,27 +181,48 @@ class DjupPostgresContainer(PostgresContainer):
         )
 
 
-class ApiContainer(DjupDockerContainer):
-    def __init__(self, tag: str):
-        super().__init__(image=f"superemil64/ledstrip-api:{tag}")
-        self.with_env("LEDSTRIP_SERVICE", "canvas")
-        self.with_exposed_ports(8080)
-        self.with_network_aliases("api")
+class MosquittoContainer(DjupDockerContainer):
+    def __init__(self, image="eclipse-mosquitto:2.0.18"):
+        super().__init__(image)
+        self.with_exposed_ports(1883)
+        self.with_exposed_ports(9001)
+        self.with_volume_mapping(
+            DjupPath.to_path_parent(__file__).parent() / "mosquitto.conf",
+            "/mosquitto/config/mosquitto.conf",
+        )
 
     def start(self):
         super().start()
-        self.port = self.get_exposed_port(8080)
-        self.public_url = f"http://localhost:{self.port}"
+        self.wait_for_logs("mosquitto version 2.0.18 running")
 
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.private_url = f"http://{ip}:8080"
+        self.port_1883 = self.get_exposed_port(1883)
+        self.port_9001 = self.get_exposed_port(9001)
 
-        self._connect()
 
-    @djup_wait_container_is_ready(requests.exceptions.ConnectionError)
-    def _connect(self):
-        requests.get(self.public_url)
+class ApiContainer(DjupDockerContainer):
+    def __init__(self, tag: str, mosquitto_container: MosquittoContainer):
+        super().__init__(image=f"superemil64/ledstrip-api:{tag}")
+        self.with_env("LEDSTRIP_SERVICE", "canvas")
+
+        self.mosquitto_container = mosquitto_container
+
+    def start(self):
+        super().start()
+
+        self._wait_for_mqtt_message()
+
+    @djup_wait_container_is_ready(Empty)
+    def _wait_for_mqtt_message(self):
+        with MQTTWrapper(
+            host="localhost",
+            port=int(self.mosquitto_container.port_1883),
+        ) as mqtt:
+
+            queue = Queue()
+
+            mqtt.client.on_message = lambda *_: queue.put(True)
+            mqtt.client.subscribe("lights/status")
+            queue.get(timeout=1)
 
 
 class ClientContainer(DjupDockerContainer):
@@ -201,9 +236,7 @@ class ClientContainer(DjupDockerContainer):
         self.port = self.get_exposed_port(3000)
         self.public_url = f"http://localhost:{self.port}"
 
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.private_url = f"http://{ip}:3000"
+        self.private_url = f"http://{self.get_ip_address()}:3000"
 
         self._connect()
 
@@ -222,17 +255,30 @@ class TestCore(unittest.TestCase):
         client_dir = root_dir / "client"
 
         self.postgres = DjupPostgresContainer(driver=None)
+        self.mosquotto_container = MosquittoContainer()
         self.cypress_container = CypressContainer()
-        self.api_container = ApiContainer(tag)
+        self.api_container = ApiContainer(
+            tag,
+            mosquitto_container=self.mosquotto_container,
+        )
         self.client_container = ClientContainer(tag)
 
         try:
             self.postgres.start()
+            self.mosquotto_container.start()
+
+            self.api_container.with_env(
+                "MQTT_HOST",
+                self.mosquotto_container.get_ip_address(),
+            )
 
             self.api_container.start()
 
-            self.client_container.with_env("API_URL", self.api_container.private_url)
             self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.client_container.with_env(
+                "MQTT_HOST",
+                self.mosquotto_container.get_ip_address(),
+            )
             self.client_container.start()
 
             self.cypress_container.with_env("DATABASE_URL", self.postgres.private_url)
