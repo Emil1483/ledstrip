@@ -14,17 +14,15 @@ frps_dashboard_password: !vault |
   3035326265346634320a383035343238646232346465316335633538323837373634343963333038
   3937
 
-frp_subdomain_host: linode.djupvik.dev
+frps_host: linode.djupvik.dev
+frps_dashboard_host: dashboard.linode.djupvik.dev
 frps_dashboard_port: 7500
 frps_bind_port: 7000
 
-api_remote_port: 5005
-api_local_port: 8080
-client_remote_port: 5006
-client_local_port: 3000
+client_port: 3000
 pi_ssh_port: 6004
 
-client_subdomain: lights
+client_host: lights.linode.djupvik.dev
 
 docker_hub_username: superemil64
 docker_hub_password: !vault |

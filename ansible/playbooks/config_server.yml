@@ -1,0 +1,167 @@
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private config_server.yml --diff
+
+- name: Configure Server
+  hosts: linode
+  become: true
+  tags: server
+
+  tasks:
+    - name: Get variables from vars.yml
+      include_tasks: ../src/get_vars.yml
+      vars:
+        path: ../vars.yml
+
+    - name: Install required packages
+      apt:
+        state: present
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - git
+          - gnupg
+          - software-properties-common
+          - python3-pip
+          - python3-full
+
+    - name: Configure Caddyfile
+      blockinfile:
+        path: /root/Caddyfile
+        create: true
+        marker: "# {mark} ANSIBLE MANAGED CADDY BLOCK"
+        block: |
+          {{ frps_dashboard_host }} {
+            reverse_proxy localhost:{{ frps_dashboard_port }} {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
+            }
+          }
+
+          {{ client_host }} {
+            reverse_proxy localhost:{{ client_port }} {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
+            }
+          }
+
+          {{ portainer_host }} {
+            reverse_proxy localhost:9000 {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
+            }
+          }
+
+          {{ admin_host }} {
+            reverse_proxy localhost:{{ admin_port }} {
+              transport http {
+                keepalive 60m
+                keepalive_interval 10s
+              }
+            }
+          }
+
+    - name: Configure frps.ini
+      blockinfile:
+        path: /root/frps.ini
+        create: true
+        block: |
+          [common]
+          bind_port = {{ frps_bind_port }}
+          tls_enable = true
+          token = "{{ frps_token }}"
+          dashboard_port = {{ frps_dashboard_port }}
+          dashboard_user = admin
+          dashboard_pwd = "{{ frps_dashboard_password }}"
+
+    - name: Check if Docker is installed
+      shell: docker --version
+      register: docker_installed
+      ignore_errors: yes
+
+    - name: Install Docker
+      when: docker_installed.rc != 0
+      shell: curl -fsSL https://get.docker.com | sh
+
+    - name: Create Postgres Volume
+      docker_volume:
+        name: postgres_data
+
+    - name: Create Ledstrip network
+      docker_network:
+        name: ledstrip-network
+        state: present
+
+    - name: Start Postgres container
+      docker_container:
+        name: postgres
+        image: postgres:latest
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "5432:5432"
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: ledstrip
+        volumes:
+          - "postgres_data:/var/lib/postgresql/data"
+        networks:
+          - name: ledstrip-network
+
+    - name: Start Caddy container
+      docker_container:
+        name: caddy
+        image: caddy:latest
+        state: started
+        restart_policy: always
+        network_mode: host
+        restart: true
+        volumes:
+          - "/root/Caddyfile:/etc/caddy/Caddyfile:ro"
+
+    - name: Start frps container
+      docker_container:
+        name: frps
+        image: snowdreamtech/frps:latest
+        state: started
+        network_mode: host
+        restart: true
+        restart_policy: always
+        entrypoint: ["/usr/bin/frps", "-c", "/etc/frp/frps.ini"]
+        volumes:
+          - "/root/frps.ini:/etc/frp/frps.ini:ro"
+
+    - name: Create Portainer Volume
+      docker_volume:
+        name: portainer_data
+
+    - name: Start Portainer Container
+      docker_container:
+        name: portainer
+        image: portainer/portainer-ce:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "9000:9000"
+          - "8000:8000"
+        volumes:
+          - "/var/run/docker.sock:/var/run/docker.sock"
+          - "portainer_data:/data"
+
+    - name: Start Mosquitto container
+      docker_container:
+        name: mosquitto
+        image: eclipse-mosquitto:latest
+        state: started
+        restart_policy: unless-stopped
+        ports:
+          - "1883:1883"
+          - "9001:9001"
+        networks:
+          - name: ledstrip-network

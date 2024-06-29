@@ -4,14 +4,6 @@
   hosts: pi-remote
   become: true
 
-  vars:
-    variables_to_prompt:
-      - docker_hub_username
-      - docker_hub_password
-      - client_local_port
-      - api_local_port
-      - clerk_secret_key
-
   tasks:
     - name: Get variables from vars.yml
       include_tasks: ../src/get_vars.yml
@@ -20,12 +12,6 @@
       loop_control:
         loop_var: path
 
-    - name: Loop through undefined variables and prompt the user
-      include_tasks: ../src/prompt_undefined_vars.yml
-      loop: "{{ variables_to_prompt }}"
-      loop_control:
-        loop_var: var_name
-
     - name: Login to Docker Hub
       docker_login:
         username: "{{ docker_hub_username }}"
@@ -33,81 +19,6 @@
 
     - name: Set Tag Fact
       include_tasks: ../src/set_tag_fact.yml
-
-    - name: Pull Docker images from Docker Hub
-      docker_image:
-        name: "{{ docker_hub_username }}/ledstrip-{{ item }}"
-        tag: "{{ tag }}"
-        source: pull
-      loop:
-        - client
-        - api
-
-    - name: Initiate API Docker container
-      docker_container:
-        name: "api-{{ tag }}"
-        image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
-        state: present
-        restart_policy: unless-stopped
-        privileged: true
-        networks:
-          - name: ledstrip-network
-        env:
-          LED_COUNT: "109"
-
-    - name: Initiate Client Docker container
-      docker_container:
-        name: "client-{{ tag }}"
-        image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
-        state: present
-        restart_policy: unless-stopped
-        ports:
-          - "{{ client_local_port }}:{{ client_local_port }}"
-        networks:
-          - name: ledstrip-network
-        env:
-          API_URL: "http://api-{{ tag }}:{{ api_local_port }}"
-          CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
-          DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
-
-- name: Deploy Docker Containers on Linode
-  hosts: linode
-  become: true
-
-  vars:
-    variables_to_prompt:
-      - docker_hub_username
-      - docker_hub_password
-      - admin_port
-      - portainer_host
-
-  tasks:
-    - name: Get variables from vars.yml
-      include_tasks: ../src/get_vars.yml
-      loop:
-        - ../vars.yml
-      loop_control:
-        loop_var: path
-
-    - name: Loop through undefined variables and prompt the user
-      include_tasks: ../src/prompt_undefined_vars.yml
-      loop: "{{ variables_to_prompt }}"
-      loop_control:
-        loop_var: var_name
-
-    - name: Login to Docker Hub
-      docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password }}"
-
-    - name: Set Tag Fact
-      include_tasks: ../src/set_tag_fact.yml
-
-    - name: Pull Docker images from Docker Hub
-      docker_image:
-        name: "{{ docker_hub_username }}/ledstrip-admin"
-        tag: "{{ tag }}"
-        source: pull
 
     - name: Get running containers
       docker_host_info:
@@ -117,16 +28,61 @@
     - name: Stop Existing Containers
       command: docker stop {{ item.Id }}
       loop: "{{ docker_containers.containers }}"
-      when: "'ledstrip-admin' in item.Image"
+      when: "'ledstrip-api' in item.Image"
 
-    - name: Run Admin Docker Container
+    - name: Start API Docker container
       docker_container:
-        name: "admin-{{ tag }}"
-        image: "{{ docker_hub_username }}/ledstrip-admin:{{ tag }}"
+        name: "api-{{ tag }}"
+        image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
         state: started
         restart_policy: unless-stopped
-        ports:
-          - "{{ admin_port }}:3000"
+        privileged: true
+        networks:
+          - name: ledstrip-network
         env:
-          PORTAINER_URL: "https://{{ portainer_host }}"
-          IMAGE_NAME_PREFIX: "{{ docker_hub_username }}/ledstrip-"
+          LED_COUNT: "109"
+
+- name: Deploy Docker Containers on Linode
+  hosts: linode
+  become: true
+
+  tasks:
+    - name: Get variables from vars.yml
+      include_tasks: ../src/get_vars.yml
+      loop:
+        - ../vars.yml
+      loop_control:
+        loop_var: path
+
+    - name: Login to Docker Hub
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+
+    - name: Set Tag Fact
+      include_tasks: ../src/set_tag_fact.yml
+
+    - name: Get running containers
+      docker_host_info:
+        containers: yes
+      register: docker_containers
+
+    - name: Stop Existing Containers
+      command: docker stop {{ item.Id }}
+      loop: "{{ docker_containers.containers }}"
+      when: "'ledstrip-client' in item.Image"
+
+    - name: Start Client Docker container
+      docker_container:
+        name: "client-{{ tag }}"
+        image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
+        state: present
+        restart_policy: unless-stopped
+        ports:
+          - "{{ client_port }}:{{ client_port }}"
+        networks:
+          - name: ledstrip-network
+        env:
+          PORT: "{{ client_port }}"
+          CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
+          DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
