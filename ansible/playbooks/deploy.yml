@@ -41,7 +41,8 @@
           - name: ledstrip-network
         env:
           LED_COUNT: "109"
-          MQTT_HOST: "{{ mosquitto_host }}"
+          MQTT_HOST: "{{ mqtt_host }}"
+          MQTT_PORT: "8883"
 
 - name: Deploy Docker Containers on Linode
   hosts: linode
@@ -77,7 +78,7 @@
       docker_container:
         name: "client-{{ tag }}"
         image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
-        state: present
+        state: started
         restart_policy: unless-stopped
         ports:
           - "{{ client_port }}:{{ client_port }}"
@@ -87,4 +88,4 @@
           PORT: "{{ client_port }}"
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
           DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
-          MQTT_HOST: "mosquitto"
+          MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"

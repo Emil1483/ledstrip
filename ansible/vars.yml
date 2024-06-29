@@ -19,12 +19,12 @@ frps_dashboard_host: dashboard.linode.djupvik.dev
 frps_dashboard_port: 7500
 frps_bind_port: 7000
 
-client_port: 3000
+client_port: "3000"
 pi_ssh_port: 6005
 
 client_host: lights.linode.djupvik.dev
 
-mosquitto_host: 172.232.157.72
+mqtt_host: 0e632e7cd07e41a386d14e9e29b5a4e4.s1.eu.hivemq.cloud
 
 docker_hub_username: superemil64
 docker_hub_password: !vault |

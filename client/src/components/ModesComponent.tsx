@@ -7,23 +7,23 @@ import assert from "assert";
 import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
-import { useChangeMode, useCurrentModes, useSetMqttHost } from '@/contexts/ModesContext';
+import { useChangeMode, useCurrentModes, useSetMqttUrl } from '@/contexts/ModesContext';
 import { useEffect, useState } from 'react';
 
 interface ModesComponentProps {
-    mqttHost: string;
+    mqttUrl: string;
 }
 
 
-const ModesComponent: React.FC<ModesComponentProps> = ({ mqttHost }) => {
+const ModesComponent: React.FC<ModesComponentProps> = ({ mqttUrl }) => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
-    const setMqttHost = useSetMqttHost()
+    const setMqttUrl = useSetMqttUrl()
 
     useEffect(() => {
-        setMqttHost(mqttHost)
-    }, [mqttHost, setMqttHost])
+        setMqttUrl(mqttUrl)
+    }, [mqttUrl, setMqttUrl])
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {

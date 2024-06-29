@@ -11,6 +11,7 @@ from src.modes.mode_service import ModeService, UnexpectedKwarg
 from src.ledstrip_services.ledstrip_service import ledstrip_service
 
 MQTT_HOST = getenv("MQTT_HOST")
+MQTT_PORT = int(getenv("MQTT_PORT", "1883"))
 assert MQTT_HOST is not None, "MQTT_HOST environment variable must be set"
 
 
@@ -19,7 +20,7 @@ if __name__ == "__main__":
 
     lights_mqtt_rpc = MQTTRPCServer("lights")
 
-    with MQTTWrapper(MQTT_HOST) as mqtt:
+    with MQTTWrapper(MQTT_HOST, port=MQTT_PORT) as mqtt:
         logger.info(f"MQTT Server running")
 
         @lights_mqtt_rpc.register("set_mode")

@@ -13,11 +13,11 @@ import assert from "assert";
 
 interface PageProps {
     initialSavedStates: SavedStates;
-    mqttHost: string;
+    mqttUrl: string;
 }
 
 
-const Home: React.FC<PageProps> = ({ initialSavedStates, mqttHost }) => {
+const Home: React.FC<PageProps> = ({ initialSavedStates, mqttUrl }) => {
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
 
     useEffect(() => {
@@ -37,7 +37,7 @@ const Home: React.FC<PageProps> = ({ initialSavedStates, mqttHost }) => {
                 </SignedIn>
             </ Toolbar>
         </AppBar >
-        <ModesComponent mqttHost={mqttHost} />
+        <ModesComponent mqttUrl={mqttUrl} />
     </ModesProvider>
 
 };
@@ -54,14 +54,14 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (context)
         };
     }
 
-    const mqttHost = process.env.MQTT_HOST;
+    const mqttUrl = process.env.MQTT_URL;
 
-    assert(mqttHost, `environment variable MQTT_HOST not set`)
+    assert(mqttUrl, `environment variable MQTT_URL not set`)
 
     return {
         props: {
             initialSavedStates: await fetchSavedStates(userId),
-            mqttHost: mqttHost,
+            mqttUrl: mqttUrl,
         }
     };
 };
