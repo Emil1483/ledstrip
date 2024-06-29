@@ -276,7 +276,7 @@ class TestCore(unittest.TestCase):
 
             self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
             self.client_container.with_env(
-                "NEXT_PUBLIC_MQTT_HOST",
+                "MQTT_HOST",
                 self.mosquotto_container.get_ip_address(),
             )
             self.client_container.start()

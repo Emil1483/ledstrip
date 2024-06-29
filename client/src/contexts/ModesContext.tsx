@@ -4,6 +4,7 @@ import mqtt, { MqttClient } from "mqtt";
 
 const CurrentModesContext = createContext<Modes>({});
 const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
+const SetMqttHostContext = createContext<(mqttHost: string) => void>(() => { });
 
 interface ModesProviderProps {
     children: ReactNode;
@@ -12,9 +13,17 @@ interface ModesProviderProps {
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
     const [mqttClient, setMqttClient] = useState<MqttClient | null>(null);
+    const [mqttHost, setMqttHost] = useState<string | null>(null);
+
 
     useEffect(() => {
-        const client = mqtt.connect(`ws://${process.env.NEXT_PUBLIC_MQTT_HOST}:9001`);
+        if (!mqttHost) return
+        if (mqttClient) {
+            console.warn("MQTT client already initialized");
+            return;
+        }
+
+        const client = mqtt.connect(`ws://${mqttHost}:9001`);
 
         client.on("connect", () => {
             const topic = "lights/status";
@@ -37,7 +46,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
         });
 
         setMqttClient(client);
-    }, []);
+    }, [mqttHost]);
 
     function changeMode(mode: string, kwargs: ModeState) {
         if (!mqttClient) {
@@ -49,11 +58,13 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     };
 
     return (
-        <CurrentModesContext.Provider value={currentModes}>
-            <ChangeModeContext.Provider value={changeMode}>
-                {children}
-            </ChangeModeContext.Provider>
-        </CurrentModesContext.Provider>
+        <SetMqttHostContext.Provider value={setMqttHost}>
+            <CurrentModesContext.Provider value={currentModes}>
+                <ChangeModeContext.Provider value={changeMode}>
+                    {children}
+                </ChangeModeContext.Provider>
+            </CurrentModesContext.Provider>
+        </SetMqttHostContext.Provider>
     );
 };
 
@@ -69,6 +80,14 @@ export function useChangeMode() {
     const context = React.useContext(ChangeModeContext);
     if (!context) {
         throw new Error('useChangeMode must be used within a ModeProvider');
+    }
+    return context;
+}
+
+export function useSetMqttHost() {
+    const context = React.useContext(SetMqttHostContext);
+    if (!context) {
+        throw new Error('useSetMqttHost must be used within a ModeProvider');
     }
     return context;
 }
