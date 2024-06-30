@@ -1,5 +1,8 @@
+'use client'
+
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import mqtt, { MqttClient } from "mqtt";
+import { useWebSocket } from 'next-ws/client';
 
 
 const CurrentModesContext = createContext<Modes>({});
@@ -15,6 +18,14 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [mqttClient, setMqttClient] = useState<MqttClient | null>(null);
     const [mqttUrl, setMqttUrl] = useState<string | null>(null);
 
+    const ws = useWebSocket();
+
+    useEffect(() => {
+        ws?.addEventListener('open', () => {
+            console.log('WebSocket connection opened');
+        });
+    }, [])
+
 
     useEffect(() => {
         if (!mqttUrl) return
@@ -22,30 +33,6 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
             console.warn("MQTT client already initialized");
             return;
         }
-
-        const client = mqtt.connect(mqttUrl);
-
-        client.on("connect", () => {
-            const topic = "lights/status";
-            client.subscribe(topic, (err) => {
-                if (err) {
-                    console.error(
-                        `Failed to subscribe to topic ${topic}: ${err.message}`
-                    );
-                }
-            });
-        });
-
-        client.on('error', (error) => {
-            console.error('Connection error: ', error);
-        });
-
-        client.on("message", (topic, message) => {
-            const jsonMessage: Modes = JSON.parse(message.toString());
-            setCurrentModes(jsonMessage);
-        });
-
-        setMqttClient(client);
     }, [mqttUrl]);
 
     function changeMode(mode: string, kwargs: ModeState) {

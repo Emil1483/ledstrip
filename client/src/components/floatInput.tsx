@@ -1,3 +1,5 @@
+'use client'
+
 import { Input } from "@mui/joy"
 import React from "react";
 

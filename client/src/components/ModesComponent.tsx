@@ -1,3 +1,5 @@
+'use client'
+
 import { Grid, Button, Modal, DialogTitle, alpha, AppBar, Toolbar, Box } from '@mui/material';
 import ModalClose from '@mui/joy/ModalClose';
 import ModalDialog from "@mui/joy/ModalDialog";
