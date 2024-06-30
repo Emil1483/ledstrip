@@ -32,11 +32,15 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
+CLERK_PEM_PUBLIC_KEY = os.getenv("CLERK_PEM_PUBLIC_KEY")
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
 TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 
 assert CLERK_SECRET_KEY is not None, "Environment variable CLERK_SECRET_KEY is required"
 assert TEST_USER_EMAIL is not None, "Environment variable TEST_USER_EMAIL is required"
+assert (
+    CLERK_PEM_PUBLIC_KEY is not None
+), "Environment variable CLERK_PEM_PUBLIC_KEY is required"
 assert (
     TEST_USER_PASSWORD is not None
 ), "Environment variable TEST_USER_PASSWORD is required"
@@ -230,6 +234,7 @@ class ClientContainer(DjupDockerContainer):
         super().__init__(image=f"superemil64/ledstrip-client:{tag}")
         self.with_exposed_ports(3000)
         self.with_env("CLERK_SECRET_KEY", CLERK_SECRET_KEY)
+        self.with_env("CLERK_PEM_PUBLIC_KEY", CLERK_PEM_PUBLIC_KEY)
 
     def start(self):
         super().start()

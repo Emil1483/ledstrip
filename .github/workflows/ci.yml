@@ -88,6 +88,7 @@ jobs:
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           TEST_USER_EMAIL: emil@djupvik.dev
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          CLERK_PEM_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA61/yoXgzCgrZJSqQoFzm\nVgJRIpcgqFUazmJIZprdLst1DEdySB8CQ3Gmppxk3+shg426yfw76UcGGF22tkHk\nJrDawJ/qU8PPrIEmbCiznTDRsOVqaLSW11um7kMQQ7MRGaNKGJqPmWyukpBdDuOd\nXeNJsyciPK1T/GwlLM6NBn6cLrNoXeR7oVaZbuBIcVo945ywbmbFGGtzhpnM690s\nProHa0w0H8MoLSgw7STO2QCRgmmT3c5dr25shlRRmi+HIifONLaTBxyPJ27vw01e\n6MTJ9wjYMiFB3RPAZXFlwJ1bscElMtzd67u6qBD/+9PIOp43m/qIN4dLOaUxo6WJ\n7wIDAQAB\n-----END PUBLIC KEY-----"
 
   deploy:
     runs-on: ubuntu-latest
