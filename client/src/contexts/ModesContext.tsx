@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import mqtt, { MqttClient } from "mqtt";
 import { useWebSocket } from 'next-ws/client';
 
@@ -20,12 +20,20 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
 
     const ws = useWebSocket();
 
-    useEffect(() => {
-        ws?.addEventListener('open', () => {
-            console.log('WebSocket connection opened');
-        });
-    }, [])
+    const onMessage = useCallback(
+        async (event: MessageEvent<Blob>) => {
+            console.log(event.data)
+            if (event.data instanceof Blob) {
+                console.log(await event.data.text())
+            }
+        },
+        [],
+    );
 
+    useEffect(() => {
+        ws?.addEventListener('message', onMessage);
+        return () => ws?.removeEventListener('message', onMessage);
+    }, [onMessage, ws]);
 
     useEffect(() => {
         if (!mqttUrl) return

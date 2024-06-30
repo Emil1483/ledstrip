@@ -4,8 +4,8 @@ import mqtt, { MqttClient } from "mqtt";
 
 const publicKey = process.env.CLERK_PEM_PUBLIC_KEY!;
 const mqttUrl = process.env.MQTT_URL!;
-const mqttUsername = process.env.MQTT_USERNAME!;
-const mqttPassword = process.env.MQTT_PASSWORD!;
+const mqttUsername = process.env.MQTT_USERNAME;
+const mqttPassword = process.env.MQTT_PASSWORD;
 
 export async function SOCKET(
     client: import("ws").WebSocket,
@@ -50,15 +50,19 @@ export async function SOCKET(
 
         console.log(decoded);
 
+        console.log(
+            `Connecting to MQTT broker at ${mqttUrl} with username ${mqttUsername} and password ${mqttPassword}`
+        );
+
         const mqttClient = mqtt.connect(mqttUrl, {
             username: mqttUsername,
             password: mqttPassword,
         });
 
         mqttClient.on("connect", () => {
-            const topic = "lights/status";
+            console.log("Connected to MQTT broker!");
 
-            client.send("ready");
+            const topic = "lights/status";
 
             mqttClient.subscribe(topic, (err) => {
                 if (err) {
@@ -68,6 +72,8 @@ export async function SOCKET(
                     client.close();
                 }
             });
+
+            client.send("ready");
         });
 
         mqttClient.on("error", (error) => {
@@ -76,6 +82,9 @@ export async function SOCKET(
         });
 
         mqttClient.on("message", (topic, message) => {
+            console.log(
+                `Received message on topic ${topic}: ${message.toString()}`
+            );
             client.send(message);
         });
     } catch (e) {

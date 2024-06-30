@@ -22,7 +22,7 @@ export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates, mqttUrl
     }, [initialSavedStates, setSavedStates])
 
 
-    return <WebSocketProvider url="ws://localhost:3000/api/mqtt">
+    return <WebSocketProvider url="/api/mqtt">
         <ModesProvider>
             <AppBar sx={{ backgroundColor: "#1835F2" }}>
                 < Toolbar >
