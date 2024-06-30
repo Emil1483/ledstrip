@@ -12,20 +12,11 @@ import { useLongPress } from "@uidotdev/usehooks";
 import { useChangeMode, useCurrentModes, useSetMqttUrl } from '@/contexts/ModesContext';
 import { useEffect, useState } from 'react';
 
-interface ModesComponentProps {
-    mqttUrl: string;
-}
 
-
-const ModesComponent: React.FC<ModesComponentProps> = ({ mqttUrl }) => {
+const ModesComponent: React.FC = () => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
-    const setMqttUrl = useSetMqttUrl()
-
-    useEffect(() => {
-        setMqttUrl(mqttUrl)
-    }, [mqttUrl, setMqttUrl])
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {

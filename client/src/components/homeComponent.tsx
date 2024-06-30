@@ -11,10 +11,9 @@ import ModesComponent from "@/components/ModesComponent";
 
 interface PageProps {
     initialSavedStates: SavedStates;
-    mqttUrl: string;
 }
 
-export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates, mqttUrl }) => {
+export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
 
     useEffect(() => {
@@ -35,7 +34,7 @@ export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates, mqttUrl
                     </SignedIn>
                 </ Toolbar>
             </AppBar >
-            <ModesComponent mqttUrl={mqttUrl} />
+            <ModesComponent />
         </ModesProvider>
     </WebSocketProvider>
 };

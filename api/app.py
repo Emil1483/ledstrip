@@ -43,6 +43,7 @@ if __name__ == "__main__":
                 mode_service.set_mode(mode, **kwargs)
 
                 payload = json.dumps(mode_service.status())
+                mqtt.client.publish("lights/status", payload, retain=True)
                 logger.info(f"Published message {payload} to topic lights/status")
 
                 return MQTTRPCResponse(f"Set mode to {mode}", 200)

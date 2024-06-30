@@ -15,16 +15,17 @@ interface ModesProviderProps {
 
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
-    const [mqttClient, setMqttClient] = useState<MqttClient | null>(null);
-    const [mqttUrl, setMqttUrl] = useState<string | null>(null);
 
     const ws = useWebSocket();
 
     const onMessage = useCallback(
         async (event: MessageEvent<Blob>) => {
-            console.log(event.data)
+            console.log("Received message:", event.data);
             if (event.data instanceof Blob) {
-                console.log(await event.data.text())
+                const data = await event.data.text()
+                const json = JSON.parse(data);
+                console.log("Decoded message:", json);
+                setCurrentModes(json);
             }
         },
         [],
@@ -35,31 +36,27 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
         return () => ws?.removeEventListener('message', onMessage);
     }, [onMessage, ws]);
 
-    useEffect(() => {
-        if (!mqttUrl) return
-        if (mqttClient) {
-            console.warn("MQTT client already initialized");
-            return;
-        }
-    }, [mqttUrl]);
-
     function changeMode(mode: string, kwargs: ModeState) {
-        if (!mqttClient) {
-            console.error("MQTT client not initialized");
+        if (!ws) {
+            console.error("WebSocket not connected!");
             return;
         }
 
-        mqttClient.publish("lights/rpc/request/set_mode/a", JSON.stringify({ mode: mode, kwargs: kwargs }))
+        ws.send(JSON.stringify({
+            topic: "lights/rpc/request/set_mode/a",
+            message: JSON.stringify({
+                mode: mode,
+                kwargs: kwargs,
+            }),
+        }));
     };
 
     return (
-        <SetMqttUrlContext.Provider value={setMqttUrl}>
-            <CurrentModesContext.Provider value={currentModes}>
-                <ChangeModeContext.Provider value={changeMode}>
-                    {children}
-                </ChangeModeContext.Provider>
-            </CurrentModesContext.Provider>
-        </SetMqttUrlContext.Provider>
+        <CurrentModesContext.Provider value={currentModes}>
+            <ChangeModeContext.Provider value={changeMode}>
+                {children}
+            </ChangeModeContext.Provider>
+        </CurrentModesContext.Provider>
     );
 };
 

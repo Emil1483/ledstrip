@@ -18,20 +18,15 @@ async function fetchData() {
         };
     }
 
-    const mqttUrl = process.env.MQTT_URL;
-
-    assert(mqttUrl, `environment variable MQTT_URL not set`)
-
     return {
         initialSavedStates: await fetchSavedStates(userId),
-        mqttUrl: mqttUrl,
     };
 }
 
 
 
 export default async function Page() {
-    const { initialSavedStates, mqttUrl } = await fetchData();
+    const { initialSavedStates } = await fetchData();
 
-    return <HomeComponent initialSavedStates={initialSavedStates!} mqttUrl={mqttUrl!} />;
+    return <HomeComponent initialSavedStates={initialSavedStates!} />;
 }

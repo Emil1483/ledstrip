@@ -19,12 +19,16 @@
     - name: Set Tag Fact
       include_tasks: ../src/set_tag_fact.yml
 
-    - name: Build and Push Docker Images
+    - name: Build and Push API Docker Images
       command: >
         docker buildx build \
         --platform linux/arm64,linux/amd64 \
-        --push -t {{ docker_hub_username }}/ledstrip-{{ item }}:{{ tag }} \
-        ../../{{ item }}
-      loop:
-        - client
-        - api
+        --push -t {{ docker_hub_username }}/ledstrip-api:{{ tag }} \
+        ../../api
+
+    - name: Build and Push Client Docker Images
+      command: >
+        docker buildx build \
+        --platform linux/amd64 \
+        --push -t {{ docker_hub_username }}/ledstrip-client:{{ tag }} \
+        ../../client

@@ -1,3 +1,4 @@
+import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import mqtt, { MqttClient } from "mqtt";
@@ -50,9 +51,7 @@ export async function SOCKET(
 
         console.log(decoded);
 
-        console.log(
-            `Connecting to MQTT broker at ${mqttUrl} with username ${mqttUsername} and password ${mqttPassword}`
-        );
+        console.log(`Connecting to MQTT broker at ${mqttUrl}`);
 
         const mqttClient = mqtt.connect(mqttUrl, {
             username: mqttUsername,
@@ -61,6 +60,21 @@ export async function SOCKET(
 
         mqttClient.on("connect", () => {
             console.log("Connected to MQTT broker!");
+
+            client.on("message", (message) => {
+                const json = JSON.parse(message.toString());
+                assert(json.topic && json.message);
+                console.log(
+                    `Publishing message to topic ${json.topic}: ${json.message}`
+                );
+                const messageBuffer = Buffer.from(json.message, "utf8");
+                // const messageBuffer = Buffer.from(
+                //     '{"mode":"static","kwargs":{"color":{"r":42,"g":31,"b":255}}}',
+                //     "utf8"
+                // );
+                console.log(messageBuffer);
+                mqttClient.publish(json.topic, messageBuffer);
+            });
 
             const topic = "lights/status";
 
@@ -72,8 +86,6 @@ export async function SOCKET(
                     client.close();
                 }
             });
-
-            client.send("ready");
         });
 
         mqttClient.on("error", (error) => {
@@ -82,9 +94,7 @@ export async function SOCKET(
         });
 
         mqttClient.on("message", (topic, message) => {
-            console.log(
-                `Received message on topic ${topic}: ${message.toString()}`
-            );
+            console.log(`Received message from topic ${topic}: ${message}`);
             client.send(message);
         });
     } catch (e) {
