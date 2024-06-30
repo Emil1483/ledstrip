@@ -1,6 +1,12 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+const isProtectedRoute = createRouteMatcher(["/"]);
+
+export default clerkMiddleware((auth, req) => {
+    if (!auth().userId && isProtectedRoute(req)) {
+        return auth().redirectToSignIn();
+    }
+});
 
 export const config = {
     matcher: ["/((?!.*\\..*|_next|api/mqtt).*)", "/"],
