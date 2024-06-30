@@ -43,6 +43,9 @@
           LED_COUNT: "109"
           MQTT_HOST: "{{ mqtt_host }}"
           MQTT_PORT: "8883"
+          MQTT_TLS: "true"
+          MQTT_USERNAME: "{{ mqtt_username }}"
+          MQTT_PASSWORD: "{{ mqtt_password }}"
 
 - name: Deploy Docker Containers on Linode
   hosts: linode
@@ -89,3 +92,6 @@
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
           DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
           MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"
+          MQTT_USERNAME: "{{ mqtt_username }}"
+          MQTT_PASSWORD: "{{ mqtt_password }}"
+          CLERK_PEM_PUBLIC_KEY: "{{ clerk_pem_public_key }}"
