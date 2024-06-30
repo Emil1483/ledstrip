@@ -2,7 +2,7 @@ from queue import Queue
 import uuid
 from paho.mqtt.client import Client, MQTT_ERR_SUCCESS, MQTTMessage
 
-from src.logging_helper import logger
+from api.src.logging_helper import logger
 
 from .mqtt_rpc_response import MQTTRPCResponse
 from .mqtt_rpc_error import MQTTRPCError

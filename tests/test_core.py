@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 import pygit2
 
 from testcontainers.core.config import testcontainers_config as config
-from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
 from testcontainers.core.container import DockerContainer, inside_container
 from docker.models.containers import ExecResult

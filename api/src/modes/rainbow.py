@@ -1,5 +1,5 @@
-from src.models import Color, LedstripState, ranged_float
-from src.modes.ledstrip_mode import LedstripMode
+from api.src.models import Color, LedstripState, ranged_float
+from api.src.modes.ledstrip_mode import LedstripMode
 import colorsys
 
 

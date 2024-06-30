@@ -1,5 +1,5 @@
 from time import sleep
-from src.logging_helper import logger
+from api.src.logging_helper import logger
 
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import CallbackAPIVersion
