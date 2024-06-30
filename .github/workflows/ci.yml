@@ -55,7 +55,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: client
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: superemil64/ledstrip-client:${{ github.sha }}
           cache-from: type=gha
