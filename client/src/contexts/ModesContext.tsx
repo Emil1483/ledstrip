@@ -16,8 +16,8 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
     const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt", {
         shouldReconnect: (_) => true,
-        reconnectAttempts: 100,
-        reconnectInterval: 2000,
+        reconnectAttempts: 500,
+        reconnectInterval: 500,
     })
 
     useEffect(() => {
