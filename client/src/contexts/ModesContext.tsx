@@ -18,7 +18,6 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
         shouldReconnect: (_) => true,
         reconnectAttempts: 100,
         reconnectInterval: 2000,
-
     })
 
     useEffect(() => {

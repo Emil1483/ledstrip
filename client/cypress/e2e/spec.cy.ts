@@ -8,6 +8,7 @@ describe("template spec", () => {
         cy.signIn();
         cy.visit("/");
         cy.url().should("not.include", "/sign-in");
+        cy.get(".mode-button", { timeout: 120000 }).should("exist");
     });
 
     it("can click each button", () => {
