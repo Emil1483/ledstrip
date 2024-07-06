@@ -88,31 +88,14 @@
       when: docker_installed.rc != 0
       shell: curl -fsSL https://get.docker.com | sh
 
-    - name: Create Postgres Volume
+    - name: Create Client Volume
       docker_volume:
-        name: postgres_data
+        name: ledstrip_client_data
 
     - name: Create Ledstrip network
       docker_network:
         name: ledstrip-network
         state: present
-
-    - name: Start Postgres container
-      docker_container:
-        name: postgres
-        image: postgres:latest
-        state: started
-        restart_policy: unless-stopped
-        ports:
-          - "5432:5432"
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: admin
-          POSTGRES_DB: ledstrip
-        volumes:
-          - "postgres_data:/var/lib/postgresql/data"
-        networks:
-          - name: ledstrip-network
 
     - name: Start Caddy container
       docker_container:

@@ -83,6 +83,8 @@
         image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
         state: started
         restart_policy: unless-stopped
+        volumes:
+          - ledstrip_client_data:/app
         ports:
           - "{{ client_port }}:{{ client_port }}"
         networks:
@@ -90,7 +92,7 @@
         env:
           PORT: "{{ client_port }}"
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
-          DATABASE_URL: "postgresql://postgres:admin@postgres:5432/ledstrip"
+          DATABASE_URL: "file://app/sqlite.db"
           MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"
           MQTT_USERNAME: "{{ mqtt_username }}"
           MQTT_PASSWORD: "{{ mqtt_password }}"
