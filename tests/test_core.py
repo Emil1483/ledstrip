@@ -171,19 +171,6 @@ class CypressContainer(DockerContainer):
         )
 
 
-class DjupPostgresContainer(PostgresContainer):
-    def start(self):
-        super().start()
-        self.public_url = self.get_connection_url()
-
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.exposed_port = self.get_exposed_port(self.port)
-        self.private_url = self.get_connection_url(host=ip).replace(
-            str(self.exposed_port), str(self.port)
-        )
-
-
 class MosquittoContainer(DjupDockerContainer):
     def __init__(self, image="eclipse-mosquitto:2.0.18"):
         super().__init__(image)
@@ -258,7 +245,6 @@ class TestCore(unittest.TestCase):
         root_dir = DjupPath.to_path_parent(__file__).parent()
         client_dir = root_dir / "client"
 
-        self.postgres = DjupPostgresContainer(driver=None)
         self.mosquotto_container = MosquittoContainer()
         self.cypress_container = CypressContainer()
         self.api_container = ApiContainer(
@@ -268,7 +254,6 @@ class TestCore(unittest.TestCase):
         self.client_container = ClientContainer(tag)
 
         try:
-            self.postgres.start()
             self.mosquotto_container.start()
 
             self.api_container.with_env(
@@ -278,14 +263,29 @@ class TestCore(unittest.TestCase):
 
             self.api_container.start()
 
-            self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.client_container.with_volume_mapping(
+                str(client_dir),
+                "/etc/client_data",
+                mode="rw",
+            )
+
+            self.client_container.with_env(
+                "DATABASE_URL", "file://etc/client_data/sqlite.db"
+            )
             self.client_container.with_env(
                 "MQTT_URL",
                 f"ws://{self.mosquotto_container.get_ip_address()}:9001",
             )
             self.client_container.start()
 
-            self.cypress_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.cypress_container.with_volume_mapping(
+                str(client_dir),
+                "/etc/client_data",
+                mode="rw",
+            )
+            self.cypress_container.with_env(
+                "DATABASE_URL", "file://etc/client_data/sqlite.db"
+            )
             self.cypress_container.with_env(
                 "BASE_URL", self.client_container.private_url
             )
@@ -308,7 +308,6 @@ class TestCore(unittest.TestCase):
             raise e
 
     def tearDown(self):
-        self.postgres.stop()
         self.cypress_container.stop()
         self.api_container.stop()
         self.client_container.stop()
