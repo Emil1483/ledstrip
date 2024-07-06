@@ -1,8 +1,7 @@
 'use client'
 
 import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import mqtt, { MqttClient } from "mqtt";
-import { useWebSocket } from 'next-ws/client';
+import useWebSocket from 'react-use-websocket';
 
 
 const CurrentModesContext = createContext<Modes>({});
@@ -15,34 +14,20 @@ interface ModesProviderProps {
 
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
+    const { sendMessage, lastMessage } = useWebSocket("/api/mqtt")
 
-    const ws = useWebSocket();
-
-    const onMessage = useCallback(
-        async (event: MessageEvent<Blob>) => {
-            console.log("Received message:", event.data);
-            if (event.data instanceof Blob) {
-                const data = await event.data.text()
+    useEffect(() => {
+        if (lastMessage != null && lastMessage.data instanceof Blob) {
+            lastMessage.data.text().then((data) => {
                 const json = JSON.parse(data);
                 console.log("Decoded message:", json);
                 setCurrentModes(json);
-            }
-        },
-        [],
-    );
-
-    useEffect(() => {
-        ws?.addEventListener('message', onMessage);
-        return () => ws?.removeEventListener('message', onMessage);
-    }, [onMessage, ws]);
+            })
+        }
+    }, [lastMessage]);
 
     function changeMode(mode: string, kwargs: ModeState) {
-        if (!ws) {
-            console.error("WebSocket not connected!");
-            return;
-        }
-
-        ws.send(JSON.stringify({
+        sendMessage(JSON.stringify({
             topic: "lights/rpc/request/set_mode/a",
             message: JSON.stringify({
                 mode: mode,

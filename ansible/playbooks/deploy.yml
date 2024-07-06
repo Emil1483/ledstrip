@@ -84,7 +84,7 @@
         state: started
         restart_policy: unless-stopped
         volumes:
-          - ledstrip_client_data:/app
+          - ledstrip_client_data:/etc/client_data
         ports:
           - "{{ client_port }}:{{ client_port }}"
         networks:
@@ -92,7 +92,7 @@
         env:
           PORT: "{{ client_port }}"
           CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
-          DATABASE_URL: "file://app/sqlite.db"
+          DATABASE_URL: "file://etc/client_data/sqlite.db"
           MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"
           MQTT_USERNAME: "{{ mqtt_username }}"
           MQTT_PASSWORD: "{{ mqtt_password }}"

@@ -1,7 +1,7 @@
 import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
-import mqtt, { MqttClient } from "mqtt";
+import mqtt from "mqtt";
 
 const publicKey = process.env.CLERK_PEM_PUBLIC_KEY!;
 const mqttUrl = process.env.MQTT_URL!;

@@ -31,12 +31,11 @@
     "parse-color": "^1.0.0",
     "react": "^18",
     "react-dom": "^18",
-    "socket.io": "^4.7.5",
-    "socket.io-client": "^4.7.5",
-    "ws": "^8.17.1",
+    "react-use-websocket": "^4.8.1",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
+    "@types/cookie": "^0.6.0",
     "@types/cookie-parser": "^1.4.7",
     "@types/http-proxy": "^1.17.14",
     "@types/jest": "^29.5.12",

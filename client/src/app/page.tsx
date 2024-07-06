@@ -1,8 +1,7 @@
 import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { fetchSavedStates } from "@/services/users";
-import assert from "assert";
-import { HomeComponent } from '@/components/homeComponent';
+import { HomeComponent } from '@/components/HomeComponent';
 
 
 async function fetchData() {
