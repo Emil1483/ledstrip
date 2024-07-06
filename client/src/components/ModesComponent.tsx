@@ -9,8 +9,8 @@ import assert from "assert";
 import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
-import { useChangeMode, useCurrentModes, useSetMqttUrl } from '@/contexts/ModesContext';
-import { useEffect, useState } from 'react';
+import { useChangeMode, useCurrentModes } from '@/contexts/ModesContext';
+import { useState } from 'react';
 
 
 const ModesComponent: React.FC = () => {

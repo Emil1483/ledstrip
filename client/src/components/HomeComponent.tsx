@@ -4,9 +4,10 @@ import React, { useEffect } from "react";
 import { AppBar, Toolbar, Box } from '@mui/material';
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
-import { ModesProvider } from "@/contexts/ModesContext";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import ModesComponent from "@/components/ModesComponent";
+import { useWebsocketReadyState } from "@/contexts/ModesContext";
+import { ReadyState } from "react-use-websocket";
 
 interface PageProps {
     initialSavedStates: SavedStates;
@@ -14,14 +15,30 @@ interface PageProps {
 
 export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
+    const readyState = useWebsocketReadyState();
 
     useEffect(() => {
         setSavedStates(initialSavedStates)
     }, [initialSavedStates, setSavedStates])
 
+    function appbarColor() {
+        switch (readyState) {
+            case ReadyState.UNINSTANTIATED:
+                return "#a0a0a0";
+            case ReadyState.CONNECTING:
+                return "#6e7feb";
+            case ReadyState.OPEN:
+                return "#1835F2";
+            case ReadyState.CLOSING:
+                return "#FFA500";
+            case ReadyState.CLOSED:
+                return "#FF0000";
+        }
+    }
 
-    return <ModesProvider>
-        <AppBar sx={{ backgroundColor: "#1835F2" }}>
+
+    return <>
+        <AppBar sx={{ backgroundColor: appbarColor() }}>
             < Toolbar >
                 <Box sx={{ flexGrow: 1 }}></Box>
                 <SignedOut>
@@ -33,5 +50,5 @@ export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
             </ Toolbar>
         </AppBar >
         <ModesComponent />
-    </ModesProvider>
+    </>
 };

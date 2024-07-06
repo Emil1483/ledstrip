@@ -2,6 +2,7 @@ import React from "react";
 import { auth } from "@clerk/nextjs/server";
 import { fetchSavedStates } from "@/services/users";
 import { HomeComponent } from '@/components/HomeComponent';
+import { ModesProvider } from "@/contexts/ModesContext";
 
 
 async function fetchData() {
@@ -27,5 +28,7 @@ async function fetchData() {
 export default async function Page() {
     const { initialSavedStates } = await fetchData();
 
-    return <HomeComponent initialSavedStates={initialSavedStates!} />;
+    return <ModesProvider>
+        <HomeComponent initialSavedStates={initialSavedStates!} />
+    </ModesProvider>
 }

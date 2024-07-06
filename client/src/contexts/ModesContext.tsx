@@ -1,12 +1,12 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import useWebSocket from 'react-use-websocket';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import useWebSocket, { ReadyState } from 'react-use-websocket';
 
 
 const CurrentModesContext = createContext<Modes>({});
 const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
-const SetMqttUrlContext = createContext<(mqttUrl: string) => void>(() => { });
+const WebsocketReadyStateContext = createContext<ReadyState>(ReadyState.UNINSTANTIATED);
 
 interface ModesProviderProps {
     children: ReactNode;
@@ -14,7 +14,7 @@ interface ModesProviderProps {
 
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
-    const { sendMessage, lastMessage } = useWebSocket("/api/mqtt")
+    const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt")
 
     useEffect(() => {
         if (lastMessage != null && lastMessage.data instanceof Blob) {
@@ -36,19 +36,19 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
         }));
     };
 
-    return (
+    return <WebsocketReadyStateContext.Provider value={readyState}>
         <CurrentModesContext.Provider value={currentModes}>
             <ChangeModeContext.Provider value={changeMode}>
                 {children}
             </ChangeModeContext.Provider>
         </CurrentModesContext.Provider>
-    );
+    </WebsocketReadyStateContext.Provider>
 };
 
 export function useCurrentModes() {
     const context = React.useContext(CurrentModesContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModeProvider');
+        throw new Error('useCurrentModes must be used within a ModesProvider');
     }
     return context;
 }
@@ -56,15 +56,11 @@ export function useCurrentModes() {
 export function useChangeMode() {
     const context = React.useContext(ChangeModeContext);
     if (!context) {
-        throw new Error('useChangeMode must be used within a ModeProvider');
+        throw new Error('useChangeMode must be used within a ModesProvider');
     }
     return context;
 }
 
-export function useSetMqttUrl() {
-    const context = React.useContext(SetMqttUrlContext);
-    if (!context) {
-        throw new Error('useSetMqttUrl must be used within a ModeProvider');
-    }
-    return context;
+export function useWebsocketReadyState() {
+    return React.useContext(WebsocketReadyStateContext);
 }
