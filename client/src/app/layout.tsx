@@ -2,13 +2,9 @@
 
 import { ClerkProvider } from "@clerk/nextjs";
 import { Global } from '@emotion/react';
-import { Metadata } from 'next'
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
-// export const metadata: Metadata = {
-//   title: 'Led Strip',
-//   icons: '/favicon.ico',
-//   manifest: '/manifest.json',
-// }
 
 export default function RootLayout({
   children,
@@ -21,6 +17,7 @@ export default function RootLayout({
         <Global styles={"body {margin: 0;}"} />
         <body>
           {children}
+          <ToastContainer />
         </body>
       </html>
     </ClerkProvider>

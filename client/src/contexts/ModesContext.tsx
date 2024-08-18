@@ -3,6 +3,8 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidV4 } from 'uuid';
+import { toast } from 'react-toastify';
+
 import { MessageQueue } from '@/services/MessageQueue';
 
 
@@ -74,15 +76,20 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
             }
         }
 
-        const timeout = 5000;
+        const timeout = 1000;
 
-        const timeoutPromise = new Promise<never>((_, reject) => {
+        const timeoutPromise = new Promise<void>((_, reject) => {
             setTimeout(() => {
-                reject(new TimeoutError(`Timeout: No response found for topic "${replyTopic}" within ${timeout}ms`));
+                reject(new TimeoutError(`Timeout: No response found for topic "${replyTopic}" within ${timeout}ms`))
             }, timeout);
         });
 
-        const response = await Promise.race([waitForResponse(), timeoutPromise]);
+        const response = await Promise.race([waitForResponse(), timeoutPromise]).catch((error) => {
+            if (error instanceof TimeoutError) {
+                toast.error(error.message);
+            }
+        })
+
         console.log("Received response:", response);
     };
 
