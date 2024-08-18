@@ -16,13 +16,16 @@ MQTT_PORT = int(getenv("MQTT_PORT", "1883"))
 MQTT_USERNAME = getenv("MQTT_USERNAME")
 MQTT_PASSWORD = getenv("MQTT_PASSWORD")
 MQTT_TLS = getenv("MQTT_TLS", "false").lower() == "true"
+LEDSTRIP_ID = getenv("LEDSTRIP_ID")
+
 assert MQTT_HOST is not None, "MQTT_HOST environment variable must be set"
+assert LEDSTRIP_ID is not None, "LEDSTRIP_ID environment variable must be set"
 
 
 if __name__ == "__main__":
     mode_service = ModeService()
 
-    lights_mqtt_rpc = MQTTRPCServer("lights")
+    lights_mqtt_rpc = MQTTRPCServer(f"lights/{LEDSTRIP_ID}")
 
     with MQTTWrapper(
         MQTT_HOST,
@@ -34,17 +37,17 @@ if __name__ == "__main__":
         logger.info(f"MQTT Server running")
 
         @lights_mqtt_rpc.register("set_mode")
-        def set_mode(payload: bytes):
+        def set_mode(mode: str, kwargs: dict):
             try:
-                payload_dict = json.loads(payload.decode("utf-8"))
-                mode = payload_dict["mode"]
-                kwargs = payload_dict.get("kwargs", {})
-
                 mode_service.set_mode(mode, **kwargs)
 
                 payload = json.dumps(mode_service.status())
-                mqtt.client.publish("lights/status", payload, retain=True)
-                logger.info(f"Published message {payload} to topic lights/status")
+                mqtt.client.publish(
+                    f"lights/{LEDSTRIP_ID}/status", payload, retain=True
+                )
+                logger.info(
+                    f"Published message {payload} to topic lights/{LEDSTRIP_ID}/status"
+                )
 
                 return MQTTRPCResponse(f"Set mode to {mode}", 200)
 
@@ -56,14 +59,29 @@ if __name__ == "__main__":
         lights_mqtt_rpc.start(mqtt.client)
 
         payload = json.dumps(mode_service.status())
-        info = mqtt.client.publish("lights/status", payload, retain=True)
+
+        info = mqtt.client.publish(f"lights/{LEDSTRIP_ID}/status", payload, retain=True)
+
         if info.rc != MQTTErrorCode.MQTT_ERR_SUCCESS:
             logger.error(f"Failed to publish message {payload} to topic lights/status")
-        logger.info(f"Published message {payload} to topic lights/status")
+        logger.info(f"Published message {payload} to topic lights/{LEDSTRIP_ID}/status")
 
         try:
+            last_health_update = 0
             t = time()
             while True:
+                if time() - last_health_update > 10:
+                    last_health_update = time()
+                    mqtt.client.publish(
+                        f"lights/{LEDSTRIP_ID}/health",
+                        json.dumps(dict(alive_at=last_health_update)),
+                        retain=True,
+                    )
+
+                    logger.info(
+                        f"Published health update to topic lights/{LEDSTRIP_ID}/status"
+                    )
+
                 now = time()
                 dt = now - t
                 t = now

@@ -2,6 +2,8 @@
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
+import { v4 as uuidV4 } from 'uuid';
+import { MessageQueue } from '@/services/MessageQueue';
 
 
 const CurrentModesContext = createContext<Modes>({});
@@ -12,7 +14,21 @@ interface ModesProviderProps {
     children: ReactNode;
 }
 
+interface MQTTMessage {
+    topic: string;
+    message: any;
+}
+
+class TimeoutError extends Error {
+    constructor(message: string) {
+        super(message);
+        this.name = "TimeoutError";
+    }
+}
+
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
+    const [messageQueue, _] = useState<MessageQueue<MQTTMessage>>(new MessageQueue<MQTTMessage>());
+
     const [currentModes, setCurrentModes] = useState<Modes>({});
     const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt", {
         shouldReconnect: (_) => true,
@@ -21,23 +37,53 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     })
 
     useEffect(() => {
-        if (lastMessage != null && lastMessage.data instanceof Blob) {
-            lastMessage.data.text().then((data) => {
-                const json = JSON.parse(data);
-                console.log("Decoded message:", json);
-                setCurrentModes(json);
-            })
+        if (typeof lastMessage?.data === "string") {
+            const json: MQTTMessage = JSON.parse(lastMessage?.data);
+            console.log("Decoded message:", json);
+            messageQueue.enqueue(json);
+
+            if (json.topic === "lights/0/status") {
+                setCurrentModes(json.message);
+            }
         }
     }, [lastMessage]);
 
-    function changeMode(mode: string, kwargs: ModeState) {
+    async function changeMode(mode: string, kwargs: ModeState) {
+        const replyId = uuidV4();
+        const replyTopic = `lights/0/replies/${replyId}`;
+
+        messageQueue.clear();
+
         sendMessage(JSON.stringify({
-            topic: "lights/rpc/request/set_mode/a",
+            topic: "lights/0/set_mode",
             message: JSON.stringify({
-                mode: mode,
-                kwargs: kwargs,
+                reply_topic: replyTopic,
+                kwargs: {
+                    mode: mode,
+                    kwargs: kwargs,
+                }
             }),
         }));
+
+        async function waitForResponse() {
+            while (true) {
+                const response = await messageQueue.dequeue();
+                if (response.topic === replyTopic) {
+                    return response.message;
+                }
+            }
+        }
+
+        const timeout = 5000;
+
+        const timeoutPromise = new Promise<never>((_, reject) => {
+            setTimeout(() => {
+                reject(new TimeoutError(`Timeout: No response found for topic "${replyTopic}" within ${timeout}ms`));
+            }, timeout);
+        });
+
+        const response = await Promise.race([waitForResponse(), timeoutPromise]);
+        console.log("Received response:", response);
     };
 
     return <WebsocketReadyStateContext.Provider value={readyState}>

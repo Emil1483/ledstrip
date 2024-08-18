@@ -15,10 +15,6 @@ export async function SOCKET(
 ) {
     console.log("A client connected!");
 
-    client.on("close", () => {
-        console.log("A client disconnected!");
-    });
-
     if (!request.headers.cookie) {
         client.send("No cookie found!");
         client.close();
@@ -60,6 +56,10 @@ export async function SOCKET(
 
         mqttClient.on("connect", () => {
             console.log("Connected to MQTT broker!");
+            client.on("close", () => {
+                console.log("A client disconnected!");
+                mqttClient.end();
+            });
 
             client.on("message", (message) => {
                 const json = JSON.parse(message.toString());
@@ -68,15 +68,11 @@ export async function SOCKET(
                     `Publishing message to topic ${json.topic}: ${json.message}`
                 );
                 const messageBuffer = Buffer.from(json.message, "utf8");
-                // const messageBuffer = Buffer.from(
-                //     '{"mode":"static","kwargs":{"color":{"r":42,"g":31,"b":255}}}',
-                //     "utf8"
-                // );
                 console.log(messageBuffer);
                 mqttClient.publish(json.topic, messageBuffer);
             });
 
-            const topic = "lights/status";
+            const topic = "lights/0/#";
 
             mqttClient.subscribe(topic, (err) => {
                 if (err) {
@@ -95,7 +91,13 @@ export async function SOCKET(
 
         mqttClient.on("message", (topic, message) => {
             console.log(`Received message from topic ${topic}: ${message}`);
-            client.send(message);
+
+            let m = message.toString();
+            try {
+                m = JSON.parse(m);
+            } catch (e) {}
+
+            client.send(JSON.stringify({ topic, message: m }));
         });
     } catch (e) {
         if (e instanceof JsonWebTokenError) {
