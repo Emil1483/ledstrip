@@ -3,11 +3,6 @@
 - name: Build and deploy Docker images
   hosts: localhost
 
-  vars:
-    variables_to_prompt:
-      - docker_hub_username
-      - docker_hub_password
-
   tasks:
     - name: Get variables from vars.yml
       include_tasks: ../src/get_vars.yml
@@ -15,12 +10,6 @@
         - ../vars.yml
       loop_control:
         loop_var: path
-
-    - name: Loop through undefined variables and prompt the user
-      include_tasks: ../src/prompt_undefined_vars.yml
-      loop: "{{ variables_to_prompt }}"
-      loop_control:
-        loop_var: var_name
 
     - name: Login to Docker Hub
       docker_login:
@@ -30,12 +19,16 @@
     - name: Set Tag Fact
       include_tasks: ../src/set_tag_fact.yml
 
-    - name: Build and Push Docker Images
+    - name: Build and Push API Docker Images
       command: >
         docker buildx build \
         --platform linux/arm64,linux/amd64 \
-        --push -t {{ docker_hub_username }}/ledstrip-{{ item }}:{{ tag }} \
-        ../../{{ item }}
-      loop:
-        - client
-        - api
+        --push -t {{ docker_hub_username }}/ledstrip-api:{{ tag }} \
+        ../../api
+
+    - name: Build and Push Client Docker Images
+      command: >
+        docker buildx build \
+        --platform linux/amd64 \
+        --push -t {{ docker_hub_username }}/ledstrip-client:{{ tag }} \
+        ../../client

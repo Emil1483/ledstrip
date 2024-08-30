@@ -3,7 +3,7 @@ import random
 from time import sleep, time
 import pygame
 
-from src.ledstrip_services.ledstrip_service import LedstripService
+from api.src.ledstrip_services.ledstrip_service import LedstripService
 
 
 class PygameQuit(Exception):

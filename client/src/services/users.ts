@@ -13,7 +13,7 @@ export async function fetchSavedStates(userId: string): Promise<SavedStates> {
         return {};
     }
 
-    return user.savedStates as SavedStates;
+    return JSON.parse(user.savedStates) as SavedStates;
 }
 
 export async function ensureUser(userId: string) {
@@ -27,7 +27,7 @@ export async function ensureUser(userId: string) {
         await prisma.user.create({
             data: {
                 id: userId,
-                savedStates: {},
+                savedStates: JSON.stringify({}),
             },
         });
     }
@@ -51,7 +51,7 @@ export async function saveState(
             id: userId,
         },
         data: {
-            savedStates: savedStates,
+            savedStates: JSON.stringify(savedStates),
         },
     });
 
@@ -70,7 +70,7 @@ export async function deleteState(userId: string, mode: string, index: number) {
             id: userId,
         },
         data: {
-            savedStates: savedStates,
+            savedStates: JSON.stringify(savedStates),
         },
     });
 

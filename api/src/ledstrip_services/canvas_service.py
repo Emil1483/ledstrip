@@ -2,8 +2,8 @@ import threading
 from flask import Flask, render_template
 import logging
 
-from src.ledstrip_services.ledstrip_service import LedstripService
-from src.logging_helper import logger
+from api.src.ledstrip_services.ledstrip_service import LedstripService
+from api.src.logging_helper import logger
 
 log = logging.getLogger("werkzeug")
 log.setLevel(logging.ERROR)

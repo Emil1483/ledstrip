@@ -1,4 +1,6 @@
-import { SignIn } from "@clerk/nextjs";
+'use client'
+
+import { SignUp } from "@clerk/nextjs";
 import { Grid } from "@mui/material";
 
 export default function Page() {
@@ -7,6 +9,6 @@ export default function Page() {
         height: '100vh',
         justifyContent: 'center',
     }}>
-        <SignIn path="/sign-in" />
+        <SignUp path="/sign-up" />;
     </Grid>
 }

@@ -1,22 +1,9 @@
 version: "3.8"
 
 volumes:
-  postgres_data:
+  sqlite_data:
 
 services:
-  postgres:
-    image: postgres:latest
-    container_name: postgres
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=ledstrip
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   mosquitto:
     image: eclipse-mosquitto:latest
     container_name: mosquitto
@@ -26,28 +13,3 @@ services:
       - "9001:9001"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
-
-  ledstrip-client:
-    image: superemil64/ledstrip-client:main-b57d4ba
-    container_name: ledstrip-client
-    restart: unless-stopped
-    ports:
-      - "3005:3000"
-    env_file:
-      - client/.env
-    environment:
-      DATABASE_URL: postgres://postgres:admin@postgres:5432/ledstrip
-      API_URL: http://ledstrip-api:8080
-    depends_on:
-      - postgres
-
-  ledstrip-api:
-    image: superemil64/ledstrip-api:main-b57d4ba
-    container_name: ledstrip-api
-    restart: unless-stopped
-    ports:
-      - "8090:8080"
-    environment:
-      LEDSTRIP_SERVICE: canvas
-    depends_on:
-      - postgres

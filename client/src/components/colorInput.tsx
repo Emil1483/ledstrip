@@ -1,3 +1,5 @@
+'use client'
+
 import React, { Fragment, useState } from "react";
 import ShadeSlider from '@uiw/react-color-shade-slider';
 import Wheel from "@uiw/react-color-wheel";

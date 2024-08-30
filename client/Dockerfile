@@ -13,6 +13,8 @@ COPY package.json package.json
 COPY package-lock.json package-lock.json
 RUN npm ci
 
+RUN npx next-ws-cli patch
+
 COPY prisma ./prisma
 RUN npx prisma generate
 

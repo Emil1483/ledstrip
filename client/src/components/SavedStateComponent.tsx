@@ -1,3 +1,5 @@
+'use client'
+
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import { Button, ThemeProvider, createTheme } from "@mui/material"
 import { LongPressFns } from "@uidotdev/usehooks"

@@ -1,7 +1,7 @@
-from src.models import Color, LedstripState
-from src.ledstrip_services.ledstrip_service import LedstripService
-from src.modes.ledstrip_mode import LedstripMode
-from src.logging_helper import logger
+from api.src.models import Color, LedstripState
+from api.src.ledstrip_services.ledstrip_service import LedstripService
+from api.src.modes.ledstrip_mode import LedstripMode
+from api.src.logging_helper import logger
 
 
 class Static(LedstripMode):

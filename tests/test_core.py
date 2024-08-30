@@ -1,6 +1,8 @@
 # python -m unittest tests.test_core
 
 import os
+from queue import Empty, Queue
+import re
 from time import sleep
 import traceback
 from typing import Any, Callable
@@ -14,13 +16,13 @@ from dotenv import load_dotenv
 import pygit2
 
 from testcontainers.core.config import testcontainers_config as config
-from testcontainers.core.waiting_utils import wait_container_is_ready
 from testcontainers.postgres import PostgresContainer
 from testcontainers.core.container import DockerContainer, inside_container
 from docker.models.containers import ExecResult
 from pathspec import PathSpec
 
 
+from api.src.mqtt_helpers.mqtt_wrapper import MQTTWrapper
 from tests.djup_path import DjupPath
 
 logging.basicConfig(level=logging.INFO)
@@ -29,11 +31,15 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 CLERK_SECRET_KEY = os.getenv("CLERK_SECRET_KEY")
+CLERK_PEM_PUBLIC_KEY = os.getenv("CLERK_PEM_PUBLIC_KEY")
 TEST_USER_EMAIL = os.getenv("TEST_USER_EMAIL")
 TEST_USER_PASSWORD = os.getenv("TEST_USER_PASSWORD")
 
 assert CLERK_SECRET_KEY is not None, "Environment variable CLERK_SECRET_KEY is required"
 assert TEST_USER_EMAIL is not None, "Environment variable TEST_USER_EMAIL is required"
+assert (
+    CLERK_PEM_PUBLIC_KEY is not None
+), "Environment variable CLERK_PEM_PUBLIC_KEY is required"
 assert (
     TEST_USER_PASSWORD is not None
 ), "Environment variable TEST_USER_PASSWORD is required"
@@ -127,6 +133,17 @@ class DjupDockerContainer(DockerContainer):
                 return port
         return mapped_port
 
+    @djup_wait_container_is_ready(LogNotFoundError)
+    def wait_for_logs(self, message: str):
+        predicate = re.compile(message, re.MULTILINE).search
+        stderr, stdout = self.get_logs()
+        if not predicate(stdout.decode()) and not predicate(stderr.decode()):
+            raise LogNotFoundError()
+
+    def get_ip_address(self):
+        container_id = self.get_wrapped_container().id
+        return self.get_docker_client().bridge_ip(container_id)
+
 
 class CypressContainer(DockerContainer):
     def __init__(self, image: str = "cypress/browsers:latest", **kwargs):
@@ -154,40 +171,48 @@ class CypressContainer(DockerContainer):
         )
 
 
-class DjupPostgresContainer(PostgresContainer):
+class MosquittoContainer(DjupDockerContainer):
+    def __init__(self, image="eclipse-mosquitto:2.0.18"):
+        super().__init__(image)
+        self.with_exposed_ports(1883)
+        self.with_exposed_ports(9001)
+        self.with_volume_mapping(
+            DjupPath.to_path_parent(__file__).parent() / "mosquitto.conf",
+            "/mosquitto/config/mosquitto.conf",
+        )
+
     def start(self):
         super().start()
-        self.public_url = self.get_connection_url()
+        self.wait_for_logs("mosquitto version 2.0.18 running")
 
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.exposed_port = self.get_exposed_port(self.port)
-        self.private_url = self.get_connection_url(host=ip).replace(
-            str(self.exposed_port), str(self.port)
-        )
+        self.port_1883 = self.get_exposed_port(1883)
+        self.port_9001 = self.get_exposed_port(9001)
 
 
 class ApiContainer(DjupDockerContainer):
-    def __init__(self, tag: str):
+    def __init__(self, tag: str, mosquitto_container: MosquittoContainer):
         super().__init__(image=f"superemil64/ledstrip-api:{tag}")
         self.with_env("LEDSTRIP_SERVICE", "canvas")
-        self.with_exposed_ports(8080)
-        self.with_network_aliases("api")
+
+        self.mosquitto_container = mosquitto_container
 
     def start(self):
         super().start()
-        self.port = self.get_exposed_port(8080)
-        self.public_url = f"http://localhost:{self.port}"
 
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.private_url = f"http://{ip}:8080"
+        self._wait_for_mqtt_message()
 
-        self._connect()
+    @djup_wait_container_is_ready(Empty)
+    def _wait_for_mqtt_message(self):
+        with MQTTWrapper(
+            host="localhost",
+            port=int(self.mosquitto_container.port_1883),
+        ) as mqtt:
 
-    @djup_wait_container_is_ready(requests.exceptions.ConnectionError)
-    def _connect(self):
-        requests.get(self.public_url)
+            queue = Queue()
+
+            mqtt.client.on_message = lambda *_: queue.put(True)
+            mqtt.client.subscribe("lights/status")
+            queue.get(timeout=1)
 
 
 class ClientContainer(DjupDockerContainer):
@@ -195,15 +220,14 @@ class ClientContainer(DjupDockerContainer):
         super().__init__(image=f"superemil64/ledstrip-client:{tag}")
         self.with_exposed_ports(3000)
         self.with_env("CLERK_SECRET_KEY", CLERK_SECRET_KEY)
+        self.with_env("CLERK_PEM_PUBLIC_KEY", CLERK_PEM_PUBLIC_KEY)
 
     def start(self):
         super().start()
         self.port = self.get_exposed_port(3000)
         self.public_url = f"http://localhost:{self.port}"
 
-        container_id = self.get_wrapped_container().id
-        ip = self.get_docker_client().bridge_ip(container_id)
-        self.private_url = f"http://{ip}:3000"
+        self.private_url = f"http://{self.get_ip_address()}:3000"
 
         self._connect()
 
@@ -221,21 +245,47 @@ class TestCore(unittest.TestCase):
         root_dir = DjupPath.to_path_parent(__file__).parent()
         client_dir = root_dir / "client"
 
-        self.postgres = DjupPostgresContainer(driver=None)
+        self.mosquotto_container = MosquittoContainer()
         self.cypress_container = CypressContainer()
-        self.api_container = ApiContainer(tag)
+        self.api_container = ApiContainer(
+            tag,
+            mosquitto_container=self.mosquotto_container,
+        )
         self.client_container = ClientContainer(tag)
 
         try:
-            self.postgres.start()
+            self.mosquotto_container.start()
+
+            self.api_container.with_env(
+                "MQTT_HOST",
+                self.mosquotto_container.get_ip_address(),
+            )
 
             self.api_container.start()
 
-            self.client_container.with_env("API_URL", self.api_container.private_url)
-            self.client_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.client_container.with_volume_mapping(
+                str(client_dir),
+                "/etc/client_data",
+                mode="rw",
+            )
+
+            self.client_container.with_env(
+                "DATABASE_URL", "file://etc/client_data/sqlite.db"
+            )
+            self.client_container.with_env(
+                "MQTT_URL",
+                f"ws://{self.mosquotto_container.get_ip_address()}:9001",
+            )
             self.client_container.start()
 
-            self.cypress_container.with_env("DATABASE_URL", self.postgres.private_url)
+            self.cypress_container.with_volume_mapping(
+                str(client_dir),
+                "/etc/client_data",
+                mode="rw",
+            )
+            self.cypress_container.with_env(
+                "DATABASE_URL", "file://etc/client_data/sqlite.db"
+            )
             self.cypress_container.with_env(
                 "BASE_URL", self.client_container.private_url
             )
@@ -258,7 +308,6 @@ class TestCore(unittest.TestCase):
             raise e
 
     def tearDown(self):
-        self.postgres.stop()
         self.cypress_container.stop()
         self.api_container.stop()
         self.client_container.stop()

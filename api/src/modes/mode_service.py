@@ -1,16 +1,16 @@
 import inspect
 
-from src.transitioner import Transitioner
-from src.modes.debug import Debug
-from src.models import KwargType
-from src.modes.ledstrip_mode import LedstripMode
-from src.ledstrip_services.ledstrip_service import ledstrip_service
+from api.src.transitioner import Transitioner
+from api.src.modes.debug import Debug
+from api.src.models import KwargType
+from api.src.modes.ledstrip_mode import LedstripMode
+from api.src.ledstrip_services.ledstrip_service import ledstrip_service
 
-from src.modes.off import Off
-from src.modes.rainbow import Rainbow
-from src.modes.static import Static
+from api.src.modes.off import Off
+from api.src.modes.rainbow import Rainbow
+from api.src.modes.static import Static
 
-from src.logging_helper import logger
+from api.src.logging_helper import logger
 
 
 class UnexpectedKwarg(Exception):

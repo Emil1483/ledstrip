@@ -3,13 +3,6 @@
 - name: Test API and Client
   hosts: localhost
 
-  vars:
-    variables_to_prompt:
-      - docker_hub_username
-      - docker_hub_password
-      - clerk_secret_key
-      - test_user_password
-
   tasks:
     - name: Get variables from vars.yml
       include_tasks: ../src/get_vars.yml
@@ -17,12 +10,6 @@
         - ../vars.yml
       loop_control:
         loop_var: path
-
-    - name: Loop through undefined variables and prompt the user
-      include_tasks: ../src/prompt_undefined_vars.yml
-      loop: "{{ variables_to_prompt }}"
-      loop_control:
-        loop_var: var_name
 
     - name: Login to Docker Hub
       docker_login:

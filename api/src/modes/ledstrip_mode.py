@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from src.models import LedstripState
+from api.src.models import LedstripState
 
 #! Each impmementation of LightsMode should have publicly available
 #! attributes with same names as the custom kwargs of the __init__ method

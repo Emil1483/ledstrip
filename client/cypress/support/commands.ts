@@ -33,6 +33,13 @@ Cypress.Commands.add(`signIn`, () => {
     }
 
     cy.visit("/sign-in");
+
+    // cy.get("#identifier-field").type(userEmail);
+    // cy.get("[data-localization-key=formButtonPrimary]").click();
+    // cy.get("#password-field").type(userPassword);
+    // cy.log(userPassword);
+    // cy.get("[data-localization-key=formButtonPrimary]").click();
+
     cy.window()
         .should((window) => {
             expect(window).to.not.have.property(`Clerk`, undefined);

@@ -1,7 +1,7 @@
 import board  # type: ignore
 import neopixel  # type: ignore
 
-from src.ledstrip_services.ledstrip_service import LedstripService
+from api.src.ledstrip_services.ledstrip_service import LedstripService
 
 
 class NeopixelService(LedstripService):

@@ -3,8 +3,8 @@ from os import getenv
 
 from dotenv import load_dotenv
 
-from src.models import LedstripState
-from src.logging_helper import logger
+from api.src.models import LedstripState
+from api.src.logging_helper import logger
 
 
 class LedstripService(ABC):
@@ -43,15 +43,15 @@ target_service = getenv("LEDSTRIP_SERVICE", "neopixel")
 led_count = int(getenv("LED_COUNT", "109"))
 
 if target_service == "canvas":
-    from src.ledstrip_services.canvas_service import CanvasService
+    from api.src.ledstrip_services.canvas_service import CanvasService
 
     ledstrip_service = CanvasService(led_count)
 elif target_service == "pygame":
-    from src.ledstrip_services.pygame_service import PygameService
+    from api.src.ledstrip_services.pygame_service import PygameService
 
     ledstrip_service = PygameService(led_count)
 elif target_service == "neopixel":
-    from src.ledstrip_services.neopixel_service import NeopixelService
+    from api.src.ledstrip_services.neopixel_service import NeopixelService
 
     ledstrip_service = NeopixelService(led_count)
 else:
