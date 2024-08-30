@@ -40,12 +40,16 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
 
     useEffect(() => {
         if (typeof lastMessage?.data === "string") {
-            const json: MQTTMessage = JSON.parse(lastMessage?.data);
-            console.log("Decoded message:", json);
-            messageQueue.enqueue(json);
+            try {
+                const json: MQTTMessage = JSON.parse(lastMessage?.data);
+                console.log("Decoded message:", json);
+                messageQueue.enqueue(json);
 
-            if (json.topic === "lights/0/status") {
-                setCurrentModes(json.message);
+                if (json.topic === "lights/0/status") {
+                    setCurrentModes(json.message);
+                }
+            } catch (e) {
+                console.error("Could not decode message:", lastMessage?.data, e)
             }
         }
     }, [lastMessage]);

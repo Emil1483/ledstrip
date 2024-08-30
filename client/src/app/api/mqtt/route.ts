@@ -15,6 +15,18 @@ export async function SOCKET(
 ) {
     console.log("A client connected!");
 
+    if (!publicKey) {
+        console.error("Missing environment variable CLERK_PEM_PUBLIC_KEY");
+        client.send("Server is misconfigured!");
+        client.close();
+    }
+
+    if (!mqttUrl) {
+        console.error("Missing environment variable MQTT_URL");
+        client.send("Server is misconfigured!");
+        client.close();
+    }
+
     if (!request.headers.cookie) {
         client.send("No cookie found!");
         client.close();
@@ -44,8 +56,6 @@ export async function SOCKET(
             client.close();
             return;
         }
-
-        console.log(decoded);
 
         console.log(`Connecting to MQTT broker at ${mqttUrl}`);
 
