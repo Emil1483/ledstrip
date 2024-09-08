@@ -1,13 +1,13 @@
 'use client'
 
 import React, { useEffect } from "react";
-import { AppBar, Toolbar, Box } from '@mui/material';
+import { AppBar, Toolbar, Box, Button } from '@mui/material';
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import ModesComponent from "@/components/ModesComponent";
 import { ReadyState } from "react-use-websocket";
-import { useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
+import { useMQTTSubscribe, useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
 
 interface PageProps {
     initialSavedStates: SavedStates;
@@ -16,6 +16,7 @@ interface PageProps {
 export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
     const readyState = useMQTTWebsocketReadyState();
+    const subscribe = useMQTTSubscribe()
 
     useEffect(() => {
         setSavedStates(initialSavedStates)
@@ -47,6 +48,9 @@ export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
                 <SignedIn>
                     <UserButton />
                 </SignedIn>
+                <Button onClick={() => {
+                    subscribe("test", console.log)
+                }}>Test</Button>
             </ Toolbar>
         </AppBar >
         <ModesComponent />

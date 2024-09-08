@@ -1,3 +1,4 @@
+import { MessageFromWS, MessageToWS } from "@/models/mqtt";
 import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
@@ -7,6 +8,10 @@ const publicKey = process.env.CLERK_PEM_PUBLIC_KEY!;
 const mqttUrl = process.env.MQTT_URL!;
 const mqttUsername = process.env.MQTT_USERNAME;
 const mqttPassword = process.env.MQTT_PASSWORD;
+
+function sendFromWS(client: import("ws").WebSocket, message: MessageFromWS) {
+    client.send(JSON.stringify(message));
+}
 
 export async function SOCKET(
     client: import("ws").WebSocket,
@@ -72,25 +77,32 @@ export async function SOCKET(
             });
 
             client.on("message", (message) => {
-                const json = JSON.parse(message.toString());
-                assert(json.topic && json.message);
-                console.log(
-                    `Publishing message to topic ${json.topic}: ${json.message}`
-                );
-                const messageBuffer = Buffer.from(json.message, "utf8");
-                console.log(messageBuffer);
-                mqttClient.publish(json.topic, messageBuffer);
+                const wsMessage: MessageToWS = JSON.parse(message.toString());
+                console.log("handling wsMessage", wsMessage);
+
+                if (wsMessage.method == "subscribe") {
+                    mqttClient.subscribe(wsMessage.topic, (err) => {
+                        if (err) {
+                            sendFromWS(client, {
+                                type: "response",
+                                requestId: wsMessage.requestId,
+                                response: `Failed to subscribe to topic ${wsMessage.topic}: ${err.message}`,
+                                statusCode: 500,
+                            });
+                        } else {
+                            sendFromWS(client, {
+                                type: "response",
+                                requestId: wsMessage.requestId,
+                                response: "OK",
+                                statusCode: 200,
+                            });
+                        }
+                    });
+                }
             });
 
-            const topic = "lights/0/#";
-
-            mqttClient.subscribe(topic, (err) => {
-                if (err) {
-                    console.error(
-                        `Failed to subscribe to topic ${topic}: ${err.message}`
-                    );
-                    client.close();
-                }
+            sendFromWS(client, {
+                type: "MQTTReady",
             });
         });
 
@@ -107,7 +119,11 @@ export async function SOCKET(
                 m = JSON.parse(m);
             } catch (e) {}
 
-            client.send(JSON.stringify({ topic, message: m }));
+            sendFromWS(client, {
+                type: "MQTTMessage",
+                message: m,
+                topic: topic,
+            });
         });
     } catch (e) {
         if (e instanceof JsonWebTokenError) {

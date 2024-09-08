@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 import { MessageQueue } from '@/services/MessageQueue';
 import assert from 'assert';
+import { MessageFromWS, MessageToWS, MQTTMessage } from '@/models/mqtt';
 
 
 const MQTTSubscribeContext = createContext<(topic: string, callback: (message: MessageEvent) => void) => Promise<void>>(async (_, __) => { });
@@ -19,35 +20,6 @@ interface MQTTProviderProps {
     children: ReactNode;
 }
 
-interface MQTTMessage {
-    topic: string;
-    message: any;
-}
-
-type MessageToWS = {
-    method: "subscribe",
-    topic: string,
-    requestId: string,
-} | {
-    method: "unsubscribe",
-    topic: string,
-    requestId: string,
-} | {
-    method: "publish",
-    topic: string,
-    message: string,
-    requestId: string,
-}
-
-type MessageFromWS = {
-    type: "mqttMessage",
-    mqttMessage: MQTTMessage,
-} | {
-    type: "response",
-    requestId: string,
-    statusCode: number,
-    response: string,
-}
 
 class TimeoutError extends Error {
     constructor(message: string) {
@@ -74,7 +46,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }) => void) {
         setPromises((promises) => {
             assert(!(requestId in promises))
-            return { ...promises, requestId: { resolve: resolve } }
+            return { ...promises, [requestId]: { resolve: resolve } }
         })
     }
 
@@ -102,19 +74,46 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             const wsMessage: MessageFromWS = JSON.parse(lastMessage?.data);
             console.log("Decoded wsMessage:", wsMessage);
 
-            if (wsMessage.type == "mqttMessage") {
-                messageQueue.enqueue(wsMessage.mqttMessage);
+            if (wsMessage.type == "MQTTMessage") {
+                messageQueue.enqueue({
+                    message: wsMessage.message,
+                    topic: wsMessage.topic
+                });
             } else if (wsMessage.type == "response") {
                 promises[wsMessage.requestId].resolve({
                     statusCode: wsMessage.statusCode,
                     response: wsMessage.response,
                 })
+                removePromise(wsMessage.requestId)
+            } else if (wsMessage.type == "MQTTReady") {
+                for (const promiseId in promises) {
+                    if (promiseId.startsWith("MQTTReady")) {
+                        promises[promiseId].resolve({
+                            statusCode: 200,
+                            response: "Ready",
+                        })
+                        removePromise(promiseId)
+                    }
+                }
             }
         }
     }, [lastMessage]);
 
+    async function waitUntilMQTTReady() {
+        const promiseId = "MQTTReady" + uuidV4();
+        await new Promise((resolve: (value: {
+            statusCode: number,
+            response: string
+        }) => void, _) => {
+            addPromise(promiseId, resolve)
+        })
+    }
+
     async function subscribe(topic: string, callback: (message: MessageEvent) => void) {
+        await waitUntilMQTTReady()
+
         const requestId = uuidV4();
+
         const promise = new Promise((resolve: (value: {
             statusCode: number,
             response: string
@@ -129,7 +128,9 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
         const result = await promise;
 
-        console.log("subscribed!", result.response, result.statusCode)
+        if (result.statusCode != 200) {
+            throw Error(`Could not subscribe: ${result.response} (${result.statusCode})`)
+        }
     }
 
     async function unsubscribe(topic: string) {
