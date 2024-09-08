@@ -28,22 +28,21 @@ class TimeoutError extends Error {
     }
 }
 
+type ResponseResolver = (value: {
+    statusCode: number,
+    response: string
+}) => void
+
 export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     const [messageQueue, _] = useState<MessageQueue<MQTTMessage>>(new MessageQueue<MQTTMessage>());
 
     const [promises, setPromises] = useState<{
         [requestId: string]: {
-            resolve: (value: {
-                statusCode: number,
-                response: string
-            }) => void
+            resolve: ResponseResolver
         },
     }>({});
 
-    function addPromise(requestId: string, resolve: (value: {
-        statusCode: number,
-        response: string
-    }) => void) {
+    function addPromise(requestId: string, resolve: ResponseResolver) {
         setPromises((promises) => {
             assert(!(requestId in promises))
             return { ...promises, [requestId]: { resolve: resolve } }
@@ -64,10 +63,6 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         reconnectAttempts: 500,
         reconnectInterval: 500,
     })
-
-    function sendWsMessage(message: MessageToWS) {
-        sendMessage(JSON.stringify(message))
-    }
 
     useEffect(() => {
         if (typeof lastMessage?.data === "string") {
@@ -101,32 +96,28 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
     async function waitUntilMQTTReady() {
         const promiseId = "MQTTReady" + uuidV4();
-        await new Promise((resolve: (value: {
-            statusCode: number,
-            response: string
-        }) => void, _) => {
+        await new Promise((resolve: ResponseResolver, _) => {
             addPromise(promiseId, resolve)
         })
+    }
+
+    async function makeRequest(message: MessageToWS) {
+        const result = await new Promise((resolve: ResponseResolver, _) => {
+            addPromise(message.requestId, resolve)
+            sendMessage(JSON.stringify(message))
+        })
+        return result
     }
 
     async function subscribe(topic: string, callback: (message: MessageEvent) => void) {
         await waitUntilMQTTReady()
 
-        const requestId = uuidV4();
-
-        const promise = new Promise((resolve: (value: {
-            statusCode: number,
-            response: string
-        }) => void, _) => {
-            sendWsMessage({
-                method: 'subscribe',
-                requestId: requestId,
-                topic: topic,
-            })
-            addPromise(requestId, resolve)
+        const result = await makeRequest({
+            method: 'subscribe',
+            requestId: uuidV4(),
+            topic: topic,
         })
 
-        const result = await promise;
 
         if (result.statusCode != 200) {
             throw Error(`Could not subscribe: ${result.response} (${result.statusCode})`)
