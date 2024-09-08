@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { fetchSavedStates } from "@/services/users";
 import { HomeComponent } from '@/components/HomeComponent';
 import { ModesProvider } from "@/contexts/ModesContext";
+import { MQTTProvider } from "@/contexts/MQTTContext";
 
 
 async function fetchData() {
@@ -28,7 +29,9 @@ async function fetchData() {
 export default async function Page() {
     const { initialSavedStates } = await fetchData();
 
-    return <ModesProvider>
-        <HomeComponent initialSavedStates={initialSavedStates!} />
-    </ModesProvider>
+    return <MQTTProvider>
+        <ModesProvider>
+            <HomeComponent initialSavedStates={initialSavedStates!} />
+        </ModesProvider>
+    </MQTTProvider>
 }

@@ -6,8 +6,8 @@ import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import ModesComponent from "@/components/ModesComponent";
-import { useWebsocketReadyState } from "@/contexts/ModesContext";
 import { ReadyState } from "react-use-websocket";
+import { useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
 
 interface PageProps {
     initialSavedStates: SavedStates;
@@ -15,7 +15,7 @@ interface PageProps {
 
 export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
     const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
-    const readyState = useWebsocketReadyState();
+    const readyState = useMQTTWebsocketReadyState();
 
     useEffect(() => {
         setSavedStates(initialSavedStates)
