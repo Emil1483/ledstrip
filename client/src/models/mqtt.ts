@@ -7,18 +7,18 @@ export type MessageToWS =
     | {
           method: "subscribe";
           topic: string;
-          requestId: string;
+          requestId: string | undefined;
       }
     | {
           method: "unsubscribe";
           topic: string;
-          requestId: string;
+          requestId: string | undefined;
       }
     | {
           method: "publish";
           topic: string;
           message: string;
-          requestId: string;
+          requestId: string | undefined;
       };
 
 export type MessageFromWS =

@@ -83,7 +83,8 @@ class MQTTRPCServer:
                 logger.info(f"Received RPC request on topic: {message.topic}")
                 request = MQTTRPCRequest.from_message(message)
                 response = self.dispatch_function(request)
-                client.publish(request.reply_topic, response.to_payload())
+                if request.reply_topic is not None:
+                    client.publish(request.reply_topic, response.to_payload())
                 logger.info(f"Published RPC response to topic: {request.reply_topic}")
 
             logger.info(f"Registered RPC function to topic: {topic}")

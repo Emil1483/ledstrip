@@ -82,6 +82,7 @@ export async function SOCKET(
 
                 if (wsMessage.method == "subscribe") {
                     mqttClient.subscribe(wsMessage.topic, (err) => {
+                        if (!wsMessage.requestId) return;
                         if (err) {
                             sendFromWS(client, {
                                 type: "response",
@@ -100,6 +101,7 @@ export async function SOCKET(
                     });
                 } else if (wsMessage.method == "unsubscribe") {
                     mqttClient.unsubscribe(wsMessage.topic, (err) => {
+                        if (!wsMessage.requestId) return;
                         if (err) {
                             sendFromWS(client, {
                                 type: "response",
@@ -121,6 +123,7 @@ export async function SOCKET(
                         wsMessage.topic,
                         wsMessage.message,
                         (err) => {
+                            if (!wsMessage.requestId) return;
                             if (err) {
                                 sendFromWS(client, {
                                     type: "response",

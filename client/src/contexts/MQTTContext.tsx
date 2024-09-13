@@ -12,6 +12,7 @@ const MQTTSubscribeContext = createContext<(topic: string, callback: (message: M
 const MQTTUnsubscribeContext = createContext<(topic: string) => Promise<void>>(async (_) => { });
 const MQTTWebsocketReadyStateContext = createContext<ReadyState>(ReadyState.UNINSTANTIATED);
 const MQTTPublishContext = createContext<(topic: string, message: string) => Promise<void>>(async (_, __) => { });
+const MQTTPublishFastContext = createContext<(topic: string, message: string) => Promise<void>>(async (_, __) => { });
 const MQTTRPCCallContext = createContext<(topic: string, kwargs: { [key: string]: any }) => Promise<void>>(async (_, __) => { });
 
 interface MQTTProviderProps {
@@ -133,16 +134,17 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
     async function makeRequest(message: MessageToWS) {
+        const requestId = uuidV4()
         const mainPromise = new Promise((resolve: ResponseResolver) => {
-            addPromise(message.requestId, resolve)
-            sendMessage(JSON.stringify(message))
+            addPromise(requestId, resolve)
+            sendMessage(JSON.stringify({ ...message, requestId: requestId }))
         })
 
         try {
             return await pTimeout(mainPromise, { milliseconds: 5000 })
         } catch (e) {
             if (e instanceof TimeoutError) {
-                removePromise(message.requestId)
+                removePromise(requestId)
             }
             throw e
         }
@@ -181,7 +183,6 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
         removeCallback(topic)
 
-        // TODO: implement unsubscribe in the ws server
 
         if (result.statusCode != 200) {
             throw Error(`Could not unsubscribe: ${result.response} (${result.statusCode})`)
@@ -195,14 +196,22 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             method: 'publish',
             requestId: uuidV4(),
             topic: topic,
-            message: message
+            message: message,
         })
-
-        // TODO: implement publish in the ws server
 
         if (result.statusCode != 200) {
             throw Error(`Could not unsubscribe: ${result.response} (${result.statusCode})`)
         }
+    }
+
+    async function publishFast(topic: string, message: string) {
+        const wsMessage: MessageToWS = {
+            method: "publish",
+            topic: topic,
+            message: message,
+            requestId: undefined,
+        }
+        sendMessage(JSON.stringify(wsMessage))
     }
 
     async function rpcCall(topic: string, kwargs: { [key: string]: any }): Promise<any> {
@@ -230,9 +239,11 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         <MQTTUnsubscribeContext.Provider value={unsubscribe}>
             <MQTTWebsocketReadyStateContext.Provider value={readyState}>
                 <MQTTPublishContext.Provider value={publish}>
-                    <MQTTRPCCallContext.Provider value={rpcCall}>
-                        {children}
-                    </MQTTRPCCallContext.Provider>
+                    <MQTTPublishFastContext.Provider value={publishFast}>
+                        <MQTTRPCCallContext.Provider value={rpcCall}>
+                            {children}
+                        </MQTTRPCCallContext.Provider>
+                    </MQTTPublishFastContext.Provider>
                 </MQTTPublishContext.Provider>
             </MQTTWebsocketReadyStateContext.Provider>
         </MQTTUnsubscribeContext.Provider>
@@ -261,6 +272,14 @@ export function useMQTTWebsocketReadyState() {
 
 export function useMQTTPublish() {
     const context = React.useContext(MQTTPublishContext);
+    if (!context) {
+        throw new Error('useCurrentModes must be used within a ModesProvider');
+    }
+    return context;
+}
+
+export function useMQTTPublishFast() {
+    const context = React.useContext(MQTTPublishFastContext);
     if (!context) {
         throw new Error('useCurrentModes must be used within a ModesProvider');
     }
