@@ -11,7 +11,6 @@ export const LedStripsComponent: React.FC = () => {
     const ledStrips = useLedStrips()
 
     const calculateOpacity = (value: number): number => {
-        // Cap value between 0 and 2, then map to [1, 0] (1 for green, 0 for transparent)
         return Math.max(0, Math.min(2, 2 - value)) / 2;
     };
 
