@@ -70,7 +70,7 @@ if __name__ == "__main__":
             last_health_update = 0
             t = time()
             while True:
-                if time() - last_health_update > 10:
+                if time() - last_health_update > 2:
                     last_health_update = time()
                     mqtt.client.publish(
                         f"lights/{LEDSTRIP_ID}/health",
@@ -79,7 +79,7 @@ if __name__ == "__main__":
                     )
 
                     logger.info(
-                        f"Published health update to topic lights/{LEDSTRIP_ID}/status"
+                        f"Published health update to topic lights/{LEDSTRIP_ID}/health"
                     )
 
                 now = time()

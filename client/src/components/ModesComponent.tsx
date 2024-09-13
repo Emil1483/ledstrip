@@ -10,7 +10,7 @@ import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
 import { useEffect, useState } from 'react';
-import { useCurrentModes, useChangeMode } from '@/contexts/LedStripsContext';
+import { useCurrentModes, useChangeMode } from '@/contexts/ModesContext';
 import { AppBarComponent } from '@/components/AppBarComponent';
 import { useSavedStatesStore } from '@/hooks/useSavedStatesStore';
 

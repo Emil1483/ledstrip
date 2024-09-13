@@ -1,74 +1,73 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import { useMQTTPublishFast, useMQTTRPCCall, useMQTTSubscribe } from '@/contexts/MQTTContext';
+import React, { useState, ReactNode, useEffect, createContext } from 'react';
+import { useMQTTSubscribe } from '@/contexts/MQTTContext';
 import { MQTTMessage } from '@/models/mqtt';
 
 
-const CurrentModesContext = createContext<Modes>({});
-const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
-const ChangeModeFastContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
+const LedStripsContext = createContext<Array<{ id: string, aliveFor: number }>>([]);
 
-interface LedStripsProviderProps {
+interface LedStripProviderProps {
     children: ReactNode;
-    id: number;
 }
 
+export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children }) => {
+    const [ledStrips, setLedStrips] = useState<{
+        [id: string]: {
+            aliveAt: number,
+            aliveFor: number,
+        }
+    }>({});
 
-
-export const LedStripsProvider: React.FC<LedStripsProviderProps> = ({ children, id }) => {
-    const [currentModes, setCurrentModes] = useState<Modes>({});
     const subscribe = useMQTTSubscribe();
-    const publishFast = useMQTTPublishFast();
-    const rpcCall = useMQTTRPCCall();
 
     useEffect(() => {
-        subscribe(`lights/${id}/status`, (message: MQTTMessage<Modes>) => {
-            setCurrentModes(message.message)
-        })
+        // TODO: get the ids I have access to from prisma
+        ["0", "1"].forEach(i => subscribe(`lights/${i}/health`, (message: MQTTMessage<{ alive_at: number }>) => {
+            setLedStrips((ledStrips) => {
+                const newLedStrips = { ...ledStrips }
+                newLedStrips[i] = {
+                    aliveAt: message.message.alive_at,
+                    aliveFor: (Date.now() / 1000) - message.message.alive_at
+                }
+                return newLedStrips
+            })
+        }))
     }, []);
 
-    async function changeMode(mode: string, kwargs: ModeState) {
-        await rpcCall(`lights/${id}/set_mode`, { mode: mode, kwargs: kwargs })
-    };
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            Object.keys(ledStrips).forEach((key) => {
+                setLedStrips((ledStrips) => {
+                    const newLedStrips = { ...ledStrips }
+                    newLedStrips[key] = {
+                        aliveAt: newLedStrips[key].aliveAt,
+                        aliveFor: (Date.now() / 1000) - newLedStrips[key].aliveAt
+                    }
+                    return newLedStrips
+                })
+            })
+        }, 10);
+        return () => clearInterval(intervalId);
+    }, [ledStrips])
 
-    async function changeModeFast(mode: string, kwargs: ModeState) {
-        await publishFast(`lights/${id}/set_mode`, JSON.stringify({
-            reply_topic: null,
-            kwargs: { mode: mode, kwargs: kwargs }
-        }))
-    }
 
-    return <CurrentModesContext.Provider value={currentModes}>
-        <ChangeModeContext.Provider value={changeMode}>
-            <ChangeModeFastContext.Provider value={changeModeFast}>
-                {children}
-            </ChangeModeFastContext.Provider>
-        </ChangeModeContext.Provider>
-    </CurrentModesContext.Provider>
+    return <LedStripsContext.Provider value={Object.entries(ledStrips).map(([key, ledStrip]) => {
+        return {
+            id: key,
+            aliveFor: (Date.now() / 1000) - ledStrip.aliveAt
+        }
+    })}>
+        {children}
+    </LedStripsContext.Provider>
 
 };
 
-export function useCurrentModes() {
-    const context = React.useContext(CurrentModesContext);
+export function useLedStrips() {
+    const context = React.useContext(LedStripsContext);
     if (!context) {
         throw new Error('useCurrentModes must be used within a ModesProvider');
     }
     return context;
 }
 
-export function useChangeMode() {
-    const context = React.useContext(ChangeModeContext);
-    if (!context) {
-        throw new Error('useChangeMode must be used within a ModesProvider');
-    }
-    return context;
-}
-
-export function useChangeModeFast() {
-    const context = React.useContext(ChangeModeFastContext);
-    if (!context) {
-        throw new Error('useChangeMode must be used within a ModesProvider');
-    }
-    return context;
-}

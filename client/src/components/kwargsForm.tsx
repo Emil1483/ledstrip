@@ -19,7 +19,7 @@ import useConfirm from "@/hooks/useConfirm";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
-import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/LedStripsContext";
+import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/ModesContext";
 
 interface KwargsFormProps {
     mode: string

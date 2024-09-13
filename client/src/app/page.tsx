@@ -1,35 +1,11 @@
-'use client'
+import { LedStripsComponent } from "@/components/LedStripsComponent";
+import { LedStripProvider } from "@/contexts/LedStripsContext";
+import { MQTTProvider } from "@/contexts/MQTTContext";
 
-import { List, ListItem, ListItemText, Box, Container } from '@mui/material';
-
-const LedStripsComponent: React.FC = () => {
-
-
-
-    return (
-        <Box
-            sx={{
-                height: '100vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                bgcolor: 'background.paper'
-            }}
-        >
-            <Container
-                maxWidth="sm"
-                sx={{ height: '100%', overflowY: 'auto' }}
-            >
-                <List>
-                    {items.map((item, index) => (
-                        <ListItem key={index} divider>
-                            <ListItemText primary={item} />
-                        </ListItem>
-                    ))}
-                </List>
-            </Container>
-        </Box>
-    );
+export default async function Page() {
+    return <MQTTProvider>
+        <LedStripProvider>
+            <LedStripsComponent />
+        </LedStripProvider>
+    </MQTTProvider>
 }
-
-export default LedStripsComponent
