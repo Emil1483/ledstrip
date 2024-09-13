@@ -3,6 +3,7 @@
 import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidV4 } from 'uuid';
+import pTimeout, { TimeoutError } from 'p-timeout';
 
 import assert from 'assert';
 import { MessageFromWS, MessageToWS, MQTTMessage } from '@/models/mqtt';
@@ -17,13 +18,6 @@ interface MQTTProviderProps {
     children: ReactNode;
 }
 
-
-class TimeoutError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "TimeoutError";
-    }
-}
 
 class AlreadySubscribed extends Error {
     constructor(public topic: string) {
@@ -104,6 +98,10 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
                 }
                 callbacks[wsMessage.topic](wsMessage)
             } else if (wsMessage.type == "response") {
+                if (!(wsMessage.requestId in promises)) {
+                    console.warn(`no promise with requestId ${wsMessage.requestId}. Perhaps the promise timed out?`)
+                    return
+                }
                 promises[wsMessage.requestId].resolve({
                     statusCode: wsMessage.statusCode,
                     response: wsMessage.response,
@@ -134,11 +132,20 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         })
     }
 
-    function makeRequest(message: MessageToWS) {
-        return new Promise((resolve: ResponseResolver, _) => {
+    async function makeRequest(message: MessageToWS) {
+        const mainPromise = new Promise((resolve: ResponseResolver, reject) => {
             addPromise(message.requestId, resolve)
             sendMessage(JSON.stringify(message))
         })
+
+        try {
+            return await pTimeout(mainPromise, { milliseconds: 5000 })
+        } catch (e) {
+            if (e instanceof TimeoutError) {
+                removePromise(message.requestId)
+            }
+            throw e
+        }
     }
 
     async function subscribe<T>(topic: string, callback: (message: MQTTMessage<T>) => void) {
@@ -180,7 +187,20 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
     async function publish(topic: string, message: string) {
+        await waitUntilMQTTReady()
 
+        const result = await makeRequest({
+            method: 'publish',
+            requestId: uuidV4(),
+            topic: topic,
+            message: message
+        })
+
+        // TODO: implement publish in the ws server
+
+        if (result.statusCode != 200) {
+            throw Error(`Could not unsubscribe: ${result.response} (${result.statusCode})`)
+        }
     }
 
     async function rpcCall(topic: string, kwargs: { [key: string]: any }) {

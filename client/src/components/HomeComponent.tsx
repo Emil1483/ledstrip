@@ -48,9 +48,6 @@ export const HomeComponent: React.FC<PageProps> = ({ initialSavedStates }) => {
                 <SignedIn>
                     <UserButton />
                 </SignedIn>
-                <Button onClick={() => {
-                    subscribe("test", console.log)
-                }}>Test</Button>
             </ Toolbar>
         </AppBar >
         <ModesComponent />

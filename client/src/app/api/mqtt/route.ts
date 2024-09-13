@@ -76,7 +76,7 @@ export async function SOCKET(
                 mqttClient.end();
             });
 
-            client.on("message", (message) => {
+            client.on("message", async (message) => {
                 const wsMessage: MessageToWS = JSON.parse(message.toString());
                 console.log("handling wsMessage", wsMessage);
 

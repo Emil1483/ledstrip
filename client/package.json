@@ -28,6 +28,7 @@
     "mqtt": "^5.7.2",
     "next": "14.1.4",
     "next-ws": "^1.0.1",
+    "p-timeout": "^6.1.2",
     "parse-color": "^1.0.0",
     "react": "^18",
     "react-dom": "^18",

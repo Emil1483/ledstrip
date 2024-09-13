@@ -31,7 +31,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
 
     useEffect(() => {
         subscribe("lights/0/status", (message: MQTTMessage<Modes>) => {
-            console.log(`OMG we got a message! message keys: ${Object.keys(message.message)}, topic: ${message.topic}`)
+            setCurrentModes(message.message)
         })
     }, []);
 
