@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 import { MessageQueue } from '@/services/MessageQueue';
 import { useMQTTSubscribe } from '@/contexts/MQTTContext';
+import { MQTTMessage } from '@/models/mqtt';
 
 
 const CurrentModesContext = createContext<Modes>({});
@@ -16,10 +17,6 @@ interface ModesProviderProps {
     children: ReactNode;
 }
 
-interface MQTTMessage {
-    topic: string;
-    message: any;
-}
 
 class TimeoutError extends Error {
     constructor(message: string) {
@@ -33,7 +30,9 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const subscribe = useMQTTSubscribe();
 
     useEffect(() => {
-        subscribe("lights/0/status", console.log)
+        subscribe("lights/0/status", (message: MQTTMessage<Modes>) => {
+            console.log(`OMG we got a message! message keys: ${Object.keys(message.message)}, topic: ${message.topic}`)
+        })
     }, []);
 
     async function changeMode(mode: string, kwargs: ModeState) {

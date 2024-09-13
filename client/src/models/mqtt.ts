@@ -1,6 +1,6 @@
-export interface MQTTMessage {
+export interface MQTTMessage<T> {
     topic: string;
-    message: any;
+    message: T;
 }
 
 export type MessageToWS =
@@ -24,7 +24,7 @@ export type MessageToWS =
 export type MessageFromWS =
     | ({
           type: "MQTTMessage";
-      } & MQTTMessage)
+      } & MQTTMessage<any>)
     | {
           type: "response";
           requestId: string;

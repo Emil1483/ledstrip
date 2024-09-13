@@ -1,16 +1,13 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidV4 } from 'uuid';
-import { toast } from 'react-toastify';
 
-import { MessageQueue } from '@/services/MessageQueue';
 import assert from 'assert';
 import { MessageFromWS, MessageToWS, MQTTMessage } from '@/models/mqtt';
 
-
-const MQTTSubscribeContext = createContext<(topic: string, callback: (message: MessageEvent) => void) => Promise<void>>(async (_, __) => { });
+const MQTTSubscribeContext = createContext<(topic: string, callback: (message: MQTTMessage<any>) => void) => Promise<void>>(async (_, __) => { });
 const MQTTUnsubscribeContext = createContext<(topic: string) => Promise<void>>(async (_) => { });
 const MQTTWebsocketReadyStateContext = createContext<ReadyState>(ReadyState.UNINSTANTIATED);
 const MQTTPublishContext = createContext<(topic: string, message: string) => Promise<void>>(async (_, __) => { });
@@ -28,19 +25,28 @@ class TimeoutError extends Error {
     }
 }
 
+class AlreadySubscribed extends Error {
+    constructor(public topic: string) {
+        super(topic);
+        this.name = "AlreadySubscribed";
+    }
+}
+
 type ResponseResolver = (value: {
     statusCode: number,
     response: string
 }) => void
 
 export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
-    const [messageQueue, _] = useState<MessageQueue<MQTTMessage>>(new MessageQueue<MQTTMessage>());
+    const [MQTTReady, setMQTTReady] = useState<boolean>(false)
 
     const [promises, setPromises] = useState<{
         [requestId: string]: {
             resolve: ResponseResolver
         },
     }>({});
+
+    const [callbacks, setCallbacks] = useState<{ [topic: string]: (message: MQTTMessage<any>) => void }>({})
 
     function addPromise(requestId: string, resolve: ResponseResolver) {
         setPromises((promises) => {
@@ -58,6 +64,29 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         })
     }
 
+    function addCallback<T>(topic: string, callback: (message: MQTTMessage<T>) => void): Promise<void> {
+        return new Promise((resolve: (_: any) => void, reject: (reason: any) => void) => {
+            setCallbacks((callbacks) => {
+                if (topic in callbacks) {
+                    reject(new AlreadySubscribed(topic))
+                } else {
+                    resolve(null)
+                }
+                return { ...callbacks, [topic]: callback }
+            })
+        })
+    }
+
+    function removeCallback(topic: string) {
+        setCallbacks((callbacks) => {
+            assert(topic in callbacks)
+            const newCallbacks = { ...callbacks }
+            delete newCallbacks[topic]
+            return newCallbacks
+        })
+    }
+
+
     const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt", {
         shouldReconnect: (_) => true,
         reconnectAttempts: 500,
@@ -70,10 +99,10 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             console.log("Decoded wsMessage:", wsMessage);
 
             if (wsMessage.type == "MQTTMessage") {
-                messageQueue.enqueue({
-                    message: wsMessage.message,
-                    topic: wsMessage.topic
-                });
+                if (!(wsMessage.topic in callbacks)) {
+                    throw Error(`Topic callback not found: ${wsMessage.topic}`)
+                }
+                callbacks[wsMessage.topic](wsMessage)
             } else if (wsMessage.type == "response") {
                 promises[wsMessage.requestId].resolve({
                     statusCode: wsMessage.statusCode,
@@ -81,6 +110,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
                 })
                 removePromise(wsMessage.requestId)
             } else if (wsMessage.type == "MQTTReady") {
+                setMQTTReady(true)
                 for (const promiseId in promises) {
                     if (promiseId.startsWith("MQTTReady")) {
                         promises[promiseId].resolve({
@@ -95,29 +125,38 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }, [lastMessage]);
 
     async function waitUntilMQTTReady() {
+        if (MQTTReady) {
+            return
+        }
         const promiseId = "MQTTReady" + uuidV4();
         await new Promise((resolve: ResponseResolver, _) => {
             addPromise(promiseId, resolve)
         })
     }
 
-    async function makeRequest(message: MessageToWS) {
-        const result = await new Promise((resolve: ResponseResolver, _) => {
+    function makeRequest(message: MessageToWS) {
+        return new Promise((resolve: ResponseResolver, _) => {
             addPromise(message.requestId, resolve)
             sendMessage(JSON.stringify(message))
         })
-        return result
     }
 
-    async function subscribe(topic: string, callback: (message: MessageEvent) => void) {
+    async function subscribe<T>(topic: string, callback: (message: MQTTMessage<T>) => void) {
         await waitUntilMQTTReady()
 
+        try {
+            await addCallback(topic, callback)
+        } catch (e) {
+            if (e instanceof AlreadySubscribed) {
+                console.warn(`Already subscribed to topic ${e.topic}`)
+                return
+            }
+        }
         const result = await makeRequest({
             method: 'subscribe',
             requestId: uuidV4(),
             topic: topic,
         })
-
 
         if (result.statusCode != 200) {
             throw Error(`Could not subscribe: ${result.response} (${result.statusCode})`)
@@ -125,7 +164,19 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
     async function unsubscribe(topic: string) {
+        await waitUntilMQTTReady()
 
+        const result = await makeRequest({
+            method: 'unsubscribe',
+            requestId: uuidV4(),
+            topic: topic,
+        })
+
+        // TODO: implement unsubscribe in the ws server
+
+        if (result.statusCode != 200) {
+            throw Error(`Could not unsubscribe: ${result.response} (${result.statusCode})`)
+        }
     }
 
     async function publish(topic: string, message: string) {
