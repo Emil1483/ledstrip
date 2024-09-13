@@ -133,7 +133,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
     async function makeRequest(message: MessageToWS) {
-        const mainPromise = new Promise((resolve: ResponseResolver, reject) => {
+        const mainPromise = new Promise((resolve: ResponseResolver) => {
             addPromise(message.requestId, resolve)
             sendMessage(JSON.stringify(message))
         })
@@ -179,6 +179,8 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             topic: topic,
         })
 
+        removeCallback(topic)
+
         // TODO: implement unsubscribe in the ws server
 
         if (result.statusCode != 200) {
@@ -203,8 +205,25 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         }
     }
 
-    async function rpcCall(topic: string, kwargs: { [key: string]: any }) {
+    async function rpcCall(topic: string, kwargs: { [key: string]: any }): Promise<any> {
+        const replyTopic = uuidV4()
+        const mainPromise = new Promise(async (resolve) => {
+            await subscribe<any>(replyTopic, (message) => {
+                unsubscribe(replyTopic)
+                resolve(message.message)
+            })
+            await publish(topic, JSON.stringify({
+                kwargs: kwargs,
+                reply_topic: replyTopic,
+            }))
+        })
 
+        try {
+            return await pTimeout(mainPromise, { milliseconds: 25000 })
+        } catch (e) {
+            await unsubscribe(replyTopic)
+            throw e
+        }
     }
 
     return <MQTTSubscribeContext.Provider value={subscribe}>

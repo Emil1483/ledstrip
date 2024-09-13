@@ -1,12 +1,7 @@
 'use client'
 
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
-import useWebSocket, { ReadyState } from 'react-use-websocket';
-import { v4 as uuidV4 } from 'uuid';
-import { toast } from 'react-toastify';
-
-import { MessageQueue } from '@/services/MessageQueue';
-import { useMQTTSubscribe } from '@/contexts/MQTTContext';
+import { useMQTTRPCCall, useMQTTSubscribe } from '@/contexts/MQTTContext';
 import { MQTTMessage } from '@/models/mqtt';
 
 
@@ -18,16 +13,11 @@ interface ModesProviderProps {
 }
 
 
-class TimeoutError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = "TimeoutError";
-    }
-}
 
 export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
     const subscribe = useMQTTSubscribe();
+    const rpcCall = useMQTTRPCCall();
 
     useEffect(() => {
         subscribe("lights/0/status", (message: MQTTMessage<Modes>) => {
@@ -36,7 +26,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
     }, []);
 
     async function changeMode(mode: string, kwargs: ModeState) {
-
+        await rpcCall("lights/0/set_mode", { mode: mode, kwargs: kwargs })
     };
 
     return <CurrentModesContext.Provider value={currentModes}>

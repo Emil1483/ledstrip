@@ -98,6 +98,46 @@ export async function SOCKET(
                             });
                         }
                     });
+                } else if (wsMessage.method == "unsubscribe") {
+                    mqttClient.unsubscribe(wsMessage.topic, (err) => {
+                        if (err) {
+                            sendFromWS(client, {
+                                type: "response",
+                                requestId: wsMessage.requestId,
+                                response: `Failed to unsubscribe to topic ${wsMessage.topic}: ${err.message}`,
+                                statusCode: 500,
+                            });
+                        } else {
+                            sendFromWS(client, {
+                                type: "response",
+                                requestId: wsMessage.requestId,
+                                response: "OK",
+                                statusCode: 200,
+                            });
+                        }
+                    });
+                } else if (wsMessage.method == "publish") {
+                    mqttClient.publish(
+                        wsMessage.topic,
+                        wsMessage.message,
+                        (err) => {
+                            if (err) {
+                                sendFromWS(client, {
+                                    type: "response",
+                                    requestId: wsMessage.requestId,
+                                    response: `Failed to publish to topic ${wsMessage.topic}: ${err.message}`,
+                                    statusCode: 500,
+                                });
+                            } else {
+                                sendFromWS(client, {
+                                    type: "response",
+                                    requestId: wsMessage.requestId,
+                                    response: "OK",
+                                    statusCode: 200,
+                                });
+                            }
+                        }
+                    );
                 }
             });
 
