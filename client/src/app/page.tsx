@@ -1,37 +1,35 @@
-import React from "react";
-import { auth } from "@clerk/nextjs/server";
-import { fetchSavedStates } from "@/services/users";
-import { HomeComponent } from '@/components/HomeComponent';
-import { ModesProvider } from "@/contexts/ModesContext";
-import { MQTTProvider } from "@/contexts/MQTTContext";
+'use client'
+
+import { List, ListItem, ListItemText, Box, Container } from '@mui/material';
+
+const LedStripsComponent: React.FC = () => {
 
 
-async function fetchData() {
-    const { userId } = auth();
 
-
-    if (!userId) {
-        return {
-            redirect: {
-                destination: "/sign-in",
-                permanent: false,
-            },
-        };
-    }
-
-    return {
-        initialSavedStates: await fetchSavedStates(userId),
-    };
+    return (
+        <Box
+            sx={{
+                height: '100vh',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                bgcolor: 'background.paper'
+            }}
+        >
+            <Container
+                maxWidth="sm"
+                sx={{ height: '100%', overflowY: 'auto' }}
+            >
+                <List>
+                    {items.map((item, index) => (
+                        <ListItem key={index} divider>
+                            <ListItemText primary={item} />
+                        </ListItem>
+                    ))}
+                </List>
+            </Container>
+        </Box>
+    );
 }
 
-
-
-export default async function Page() {
-    const { initialSavedStates } = await fetchData();
-
-    return <MQTTProvider>
-        <ModesProvider>
-            <HomeComponent initialSavedStates={initialSavedStates!} />
-        </ModesProvider>
-    </MQTTProvider>
-}
+export default LedStripsComponent

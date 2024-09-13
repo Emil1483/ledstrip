@@ -18,8 +18,6 @@ export async function SOCKET(
     request: import("http").IncomingMessage,
     server: import("ws").WebSocketServer
 ) {
-    console.log("A client connected!");
-
     if (!publicKey) {
         console.error("Missing environment variable CLERK_PEM_PUBLIC_KEY");
         client.send("Server is misconfigured!");
@@ -70,7 +68,6 @@ export async function SOCKET(
         });
 
         mqttClient.on("connect", () => {
-            console.log("Connected to MQTT broker!");
             client.on("close", () => {
                 console.log("A client disconnected!");
                 mqttClient.end();
@@ -78,8 +75,6 @@ export async function SOCKET(
 
             client.on("message", async (message) => {
                 const wsMessage: MessageToWS = JSON.parse(message.toString());
-                console.log("handling wsMessage", wsMessage);
-
                 if (wsMessage.method == "subscribe") {
                     mqttClient.subscribe(wsMessage.topic, (err) => {
                         if (!wsMessage.requestId) return;
@@ -155,8 +150,6 @@ export async function SOCKET(
         });
 
         mqttClient.on("message", (topic, message) => {
-            console.log(`Received message from topic ${topic}: ${message}`);
-
             let m = message.toString();
             try {
                 m = JSON.parse(m);

@@ -9,30 +9,31 @@ const CurrentModesContext = createContext<Modes>({});
 const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 const ChangeModeFastContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 
-interface ModesProviderProps {
+interface LedStripsProviderProps {
     children: ReactNode;
+    id: number;
 }
 
 
 
-export const ModesProvider: React.FC<ModesProviderProps> = ({ children }) => {
+export const LedStripsProvider: React.FC<LedStripsProviderProps> = ({ children, id }) => {
     const [currentModes, setCurrentModes] = useState<Modes>({});
     const subscribe = useMQTTSubscribe();
     const publishFast = useMQTTPublishFast();
     const rpcCall = useMQTTRPCCall();
 
     useEffect(() => {
-        subscribe("lights/0/status", (message: MQTTMessage<Modes>) => {
+        subscribe(`lights/${id}/status`, (message: MQTTMessage<Modes>) => {
             setCurrentModes(message.message)
         })
     }, []);
 
     async function changeMode(mode: string, kwargs: ModeState) {
-        await rpcCall("lights/0/set_mode", { mode: mode, kwargs: kwargs })
+        await rpcCall(`lights/${id}/set_mode`, { mode: mode, kwargs: kwargs })
     };
 
     async function changeModeFast(mode: string, kwargs: ModeState) {
-        await publishFast("lights/0/set_mode", JSON.stringify({
+        await publishFast(`lights/${id}/set_mode`, JSON.stringify({
             reply_topic: null,
             kwargs: { mode: mode, kwargs: kwargs }
         }))
