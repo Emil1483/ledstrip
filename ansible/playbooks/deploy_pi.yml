@@ -1,0 +1,40 @@
+---
+- name: Get variables from vars.yml
+  include_tasks: ../src/get_vars.yml
+  loop:
+    - ../vars.yml
+  loop_control:
+    loop_var: path
+
+- name: Login to Docker Hub
+  docker_login:
+    username: "{{ docker_hub_username }}"
+    password: "{{ docker_hub_password }}"
+
+- name: Get running containers
+  docker_host_info:
+    containers: yes
+  register: docker_containers
+
+- name: Stop Api Container
+  command: docker stop {{ item.Id }}
+  loop: "{{ docker_containers.containers }}"
+  when: "'ledstrip-api' in item.Image"
+
+- name: Start API Docker container
+  docker_container:
+    name: "api-{{ tag }}"
+    image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
+    state: started
+    restart_policy: unless-stopped
+    privileged: true
+    networks:
+      - name: ledstrip-network
+    env:
+      LED_COUNT: "{{ led_count }}"
+      LEDSTRIP_ID: "{{ ledstrip_id }}"
+      MQTT_HOST: "{{ mqtt_host }}"
+      MQTT_PORT: "8883"
+      MQTT_TLS: "true"
+      MQTT_USERNAME: "{{ mqtt_username }}"
+      MQTT_PASSWORD: "{{ mqtt_password }}"
