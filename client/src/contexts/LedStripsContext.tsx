@@ -51,16 +51,19 @@ export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children }) 
         return () => clearInterval(intervalId);
     }, [ledStrips])
 
+    function aliveForEntries() {
+        return Object.entries(ledStrips).map(([key, ledStrip]) => {
+            return {
+                id: key,
+                aliveFor: (Date.now() / 1000) - ledStrip.aliveAt
+            }
+        })
+    }
 
-    return <LedStripsContext.Provider value={Object.entries(ledStrips).map(([key, ledStrip]) => {
-        return {
-            id: key,
-            aliveFor: (Date.now() / 1000) - ledStrip.aliveAt
-        }
-    })}>
+
+    return <LedStripsContext.Provider value={aliveForEntries()}>
         {children}
     </LedStripsContext.Provider>
-
 };
 
 export function useLedStrips() {
