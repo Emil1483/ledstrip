@@ -8,10 +8,11 @@ describe("template spec", () => {
         cy.signIn();
         cy.visit("/");
         cy.url().should("not.include", "/sign-in");
-        cy.get(".mode-button", { timeout: 120000 }).should("exist");
+        cy.get(".led-strip-button", { timeout: 120000 }).should("exist");
     });
 
-    it("can click each button", () => {
+    it("can click each mode button", () => {
+        cy.get(".led-strip-button").click();
         cy.get(".mode-button").each((button, index, list) => {
             cy.wrap(button).click();
 
@@ -25,6 +26,7 @@ describe("template spec", () => {
     });
 
     it("can long-press each button", () => {
+        cy.get(".led-strip-button").click();
         cy.wait(100);
         cy.get(".mode-button").each((button, index, list) => {
             cy.wrap(button).realMouseDown();

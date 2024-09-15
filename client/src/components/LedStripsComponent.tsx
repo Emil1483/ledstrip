@@ -22,7 +22,7 @@ export const LedStripsComponent: React.FC = () => {
             </Typography>
             <List sx={{ width: '100%' }}>
                 {ledStrips.map((strip) => <React.Fragment key={strip.id}>
-                    <ListItemButton key={strip.id} component="a" href={`/${strip.id}`}>
+                    <ListItemButton className="led-strip-button" key={strip.id} component="a" href={`/${strip.id}`}>
                         <ListItemText primary={`ID: ${strip.id}`} />
                         <Box
                             sx={{

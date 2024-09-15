@@ -16,7 +16,6 @@ from dotenv import load_dotenv
 import pygit2
 
 from testcontainers.core.config import testcontainers_config as config
-from testcontainers.postgres import PostgresContainer
 from testcontainers.core.container import DockerContainer, inside_container
 from docker.models.containers import ExecResult
 from pathspec import PathSpec
@@ -190,11 +189,15 @@ class MosquittoContainer(DjupDockerContainer):
 
 
 class ApiContainer(DjupDockerContainer):
-    def __init__(self, tag: str, mosquitto_container: MosquittoContainer):
+    def __init__(
+        self, ledstrip_id: str, tag: str, mosquitto_container: MosquittoContainer
+    ):
         super().__init__(image=f"superemil64/ledstrip-api:{tag}")
         self.with_env("LEDSTRIP_SERVICE", "canvas")
+        self.with_env("LEDSTRIP_ID", ledstrip_id)
 
         self.mosquitto_container = mosquitto_container
+        self.ledstrip_id = ledstrip_id
 
     def start(self):
         super().start()
@@ -211,7 +214,7 @@ class ApiContainer(DjupDockerContainer):
             queue = Queue()
 
             mqtt.client.on_message = lambda *_: queue.put(True)
-            mqtt.client.subscribe("lights/status")
+            mqtt.client.subscribe(f"lights/{self.ledstrip_id}/health")
             queue.get(timeout=1)
 
 
@@ -248,7 +251,8 @@ class TestCore(unittest.TestCase):
         self.mosquotto_container = MosquittoContainer()
         self.cypress_container = CypressContainer()
         self.api_container = ApiContainer(
-            tag,
+            tag=tag,
+            ledstrip_id="emil",
             mosquitto_container=self.mosquotto_container,
         )
         self.client_container = ClientContainer(tag)
