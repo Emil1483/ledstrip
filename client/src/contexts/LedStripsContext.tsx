@@ -23,7 +23,7 @@ export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children }) 
 
     useEffect(() => {
         // TODO: get the ids I have access to from prisma
-        ["0", "1"].forEach(i => subscribe(`lights/${i}/health`, (message: MQTTMessage<{ alive_at: number }>) => {
+        ["emil", "aurora"].forEach(i => subscribe(`lights/${i}/health`, (message: MQTTMessage<{ alive_at: number }>) => {
             setLedStrips((ledStrips) => {
                 const newLedStrips = { ...ledStrips }
                 newLedStrips[i] = {
