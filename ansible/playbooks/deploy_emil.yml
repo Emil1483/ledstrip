@@ -13,3 +13,4 @@
   tasks:
     - name: Include deploy tasks
       include_tasks: deploy_pi.yml
+      
