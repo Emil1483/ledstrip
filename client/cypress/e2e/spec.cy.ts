@@ -6,8 +6,7 @@ describe("template spec", () => {
         cy.visit("/");
         cy.url().should("include", "/sign-in");
         cy.signIn();
-        cy.visit("/");
-        cy.url().should("not.include", "/sign-in");
+        cy.url({ timeout: 12000 }).should("not.include", "/sign-in");
         cy.get(".led-strip-button", { timeout: 120000 }).should("exist");
     });
 

@@ -1,0 +1,60 @@
+name: E2E Tests with Cypress
+
+on:
+  push:
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+
+    services:
+      mosquitto:
+        image: eclipse-mosquitto:latest
+        ports:
+          - 1883
+          - 9001
+
+      api:
+        options: --workdir /app
+        image: superemil64/ledstrip-api:${{ github.sha }}
+        env:
+          LEDSTRIP_SERVICE: "canvas"
+          LED_COUNT: "109"
+          LEDSTRIP_ID: "emil"
+          MQTT_HOST: "127.0.0.1"
+          MQTT_PORT: "${{ job.services.mosquitto.ports['1883'] }}"
+
+      client:
+        options: --workdir /app
+        image: superemil64/ledstrip-client:${{ github.sha }}
+        ports:
+          - 3000
+        env:
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          CLERK_PEM_PUBLIC_KEY: "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA61/yoXgzCgrZJSqQoFzm\nVgJRIpcgqFUazmJIZprdLst1DEdySB8CQ3Gmppxk3+shg426yfw76UcGGF22tkHk\nJrDawJ/qU8PPrIEmbCiznTDRsOVqaLSW11um7kMQQ7MRGaNKGJqPmWyukpBdDuOd\nXeNJsyciPK1T/GwlLM6NBn6cLrNoXeR7oVaZbuBIcVo945ywbmbFGGtzhpnM690s\nProHa0w0H8MoLSgw7STO2QCRgmmT3c5dr25shlRRmi+HIifONLaTBxyPJ27vw01e\n6MTJ9wjYMiFB3RPAZXFlwJ1bscElMtzd67u6qBD/+9PIOp43m/qIN4dLOaUxo6WJ\n7wIDAQAB\n-----END PUBLIC KEY-----"
+          DATABASE_URL: "file:///client/sqlite.db"
+          MQTT_URL: "ws://127.0.0.1:${{ job.services.mosquitto.ports['9001'] }}"
+        # volumes:
+        #   - /client:/client
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Prisma
+        run: npm i -g prisma@5.13.0
+
+      - name: Run Prisma db push to prepare the database
+        run: prisma db push
+        working-directory: ./client
+        env:
+          DATABASE_URL: file:./sqlite.db
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: ./client
+        env:
+          BASE_URL: "http://127.0.0.1:${{ job.services.client.ports['3000'] }}"
+          CYPRESS_TEST_USER_EMAIL: emil@djupvik.dev
+          CYPRESS_TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}

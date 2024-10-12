@@ -34,25 +34,30 @@ Cypress.Commands.add(`signIn`, () => {
 
     cy.visit("/sign-in");
 
-    // cy.get("#identifier-field").type(userEmail);
-    // cy.get("[data-localization-key=formButtonPrimary]").click();
-    // cy.get("#password-field").type(userPassword);
-    // cy.log(userPassword);
-    // cy.get("[data-localization-key=formButtonPrimary]").click();
+    cy.get("#identifier-field").type(userEmail);
+    cy.get("[data-localization-key=formButtonPrimary]").click();
+    cy.get("#password-field").type(userPassword);
+    cy.get("[data-localization-key=formButtonPrimary]").click();
 
-    cy.window()
-        .should((window) => {
-            expect(window).to.not.have.property(`Clerk`, undefined);
-            expect((window as any).Clerk.loaded).to.eq(true);
-        })
-        .then(async (window) => {
-            const res = await (window as any).Clerk.client.signIn.create({
-                identifier: userEmail,
-                password: userPassword,
-            });
+    cy.get(".cl-spinner").should("not.exist");
 
-            await (window as any).Clerk.setActive({
-                session: res.createdSessionId,
-            });
-        });
+    cy.wait(1000);
+
+    cy.get("#error-password").should("not.exist");
+
+    // cy.window()
+    //     .should((window) => {
+    //         expect(window).to.not.have.property(`Clerk`, undefined);
+    //         expect((window as any).Clerk.loaded).to.eq(true);
+    //     })
+    //     .then(async (window) => {
+    //         const res = await (window as any).Clerk.client.signIn.create({
+    //             identifier: userEmail,
+    //             password: userPassword,
+    //         });
+
+    //         await (window as any).Clerk.setActive({
+    //             session: res.createdSessionId,
+    //         });
+    //     });
 });

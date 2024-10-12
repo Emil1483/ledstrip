@@ -160,14 +160,22 @@ class CypressContainer(DockerContainer):
         logging.info(response.output.decode())
         return response
 
-    def copy(self, src: DjupPath, dest: str, ignore_spec: PathSpec):
-        logging.info(f"Copying {src} to {dest}")
+    def copy_to_container(self, src: DjupPath, dest: str, ignore_spec: PathSpec):
+        logging.info(f"Copying host {src} to container {dest}")
         container = self.get_wrapped_container()
 
         container.put_archive(
             dest,
             make_tar_archive(src, ignore_spec),
         )
+
+    def copy_to_host(self, src: str, dest: DjupPath):
+        logging.info(f"Copying container {src} to host {dest}")
+        container = self.get_wrapped_container()
+        bits, _ = container.get_archive(src)
+        with open(dest.path()) as f:
+            for chunk in bits:
+                f.write(chunk)
 
 
 class MosquittoContainer(DjupDockerContainer):
@@ -283,10 +291,17 @@ class TestCore(unittest.TestCase):
             self.client_container.start()
 
             self.cypress_container.with_volume_mapping(
-                str(client_dir),
-                "/etc/client_data",
+                f"{client_dir}/sqlite.db",
+                "/etc/client_data/sqlite.db",
                 mode="rw",
             )
+
+            self.cypress_container.with_volume_mapping(
+                (DjupPath.to_path_parent(__file__) / "screenshots").path(),
+                "/client/cypress/screenshots",
+                mode="rw",
+            )
+
             self.cypress_container.with_env(
                 "DATABASE_URL", "file://etc/client_data/sqlite.db"
             )
@@ -299,14 +314,17 @@ class TestCore(unittest.TestCase):
             )
             self.cypress_container.start()
 
-            self.cypress_container.execute("mkdir /client")
-
             git_ignores = [client_dir / ".gitignore", root_dir / ".gitignore"]
             gitignore_pathspec = pathspec_from_gitignores(git_ignores)
-            self.cypress_container.copy(client_dir, "/client", gitignore_pathspec)
+            self.cypress_container.copy_to_container(
+                client_dir, "/client", gitignore_pathspec
+            )
 
             self.cypress_container.execute("npm install", workdir="/client")
             self.cypress_container.execute("npx prisma db push", workdir="/client")
+
+            print("Setup complete")
+
         except Exception as e:
             self.tearDown()
             raise e
@@ -317,7 +335,7 @@ class TestCore(unittest.TestCase):
         self.client_container.stop()
 
     def test_with_cypress(self):
-        self.cypress_container.execute("npm run cy:run", workdir="/client")
+        self.cypress_container.execute("1", workdir="/client")
 
 
 if __name__ == "__main__":
