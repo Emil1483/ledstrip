@@ -80,14 +80,10 @@ jobs:
           TAG: ${{ github.sha }}      
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }} 
       
-      - name: Install dependencies
-        run: npm ci
-        working-directory: client
-      
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          working-directory: client
+          project: ./client
         env:
           BASE_URL: "http://127.0.0.1:1112"
           CYPRESS_TEST_USER_EMAIL: emil@djupvik.dev
