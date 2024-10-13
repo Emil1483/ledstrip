@@ -2,3 +2,6 @@ venv
 .env
 __pycache__
 sqlite.db
+.secrets
+.clerk_key
+.test_password

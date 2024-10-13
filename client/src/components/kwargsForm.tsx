@@ -19,7 +19,7 @@ import useConfirm from "@/hooks/useConfirm";
 import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
 import { useShallow } from "zustand/react/shallow";
 import { SavedStateComponent } from "@/components/SavedStateComponent";
-import { useChangeMode, useCurrentModes } from "@/contexts/ModesContext";
+import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/ModesContext";
 
 interface KwargsFormProps {
     mode: string
@@ -41,6 +41,7 @@ function getDefaultState(mode: Mode) {
 const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
+    const changeModeFast = useChangeModeFast()
 
     assert(mode in currentModes, `Mode ${mode} not found`)
 
@@ -51,13 +52,9 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
         useShallow((state) => ({ savedStates: state.savedStates, setSavedStates: state.setSavedStates })
         ))
 
-    async function updateModeToState() {
-        changeMode(mode, state)
-    }
-
     useEffect(() => {
         if (canAutoChange()) {
-            updateModeToState()
+            changeModeFast(mode, state)
         }
     }, [state])
 
@@ -236,7 +233,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
 
     return <form onSubmit={(event) => {
         event.preventDefault()
-        updateModeToState()
+        changeMode(mode, state)
     }}>
         {Array.from(generateInputs())}
         <Grid

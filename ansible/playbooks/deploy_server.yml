@@ -1,51 +1,4 @@
-# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private deploy.yml --diff
-
-- name: Deploy Docker Containers on the Raspberry Pi
-  hosts: pi-remote
-  become: true
-
-  tasks:
-    - name: Get variables from vars.yml
-      include_tasks: ../src/get_vars.yml
-      loop:
-        - ../vars.yml
-      loop_control:
-        loop_var: path
-
-    - name: Login to Docker Hub
-      docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password }}"
-
-    - name: Set Tag Fact
-      include_tasks: ../src/set_tag_fact.yml
-
-    - name: Get running containers
-      docker_host_info:
-        containers: yes
-      register: docker_containers
-
-    - name: Stop Existing Containers
-      command: docker stop {{ item.Id }}
-      loop: "{{ docker_containers.containers }}"
-      when: "'ledstrip-api' in item.Image"
-
-    - name: Start API Docker container
-      docker_container:
-        name: "api-{{ tag }}"
-        image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"
-        state: started
-        restart_policy: unless-stopped
-        privileged: true
-        networks:
-          - name: ledstrip-network
-        env:
-          LED_COUNT: "109"
-          MQTT_HOST: "{{ mqtt_host }}"
-          MQTT_PORT: "8883"
-          MQTT_TLS: "true"
-          MQTT_USERNAME: "{{ mqtt_username }}"
-          MQTT_PASSWORD: "{{ mqtt_password }}"
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private deploy_server.yml --diff
 
 - name: Deploy Docker Containers on Linode
   hosts: linode
@@ -72,7 +25,7 @@
         containers: yes
       register: docker_containers
 
-    - name: Stop Existing Containers
+    - name: Stop Existing Client Container
       command: docker stop {{ item.Id }}
       loop: "{{ docker_containers.containers }}"
       when: "'ledstrip-client' in item.Image"

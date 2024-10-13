@@ -1,0 +1,16 @@
+# sudo ansible-playbook -i ../inventory.yml --vault-id default@/etc/ansible_pass_private deploy_emil.yml --diff
+
+- name: Install ledstrip api for Emil
+  hosts: emil-remote
+  become: true
+  gather_facts: false
+
+  vars:
+    led_count: "109"
+    ledstrip_id: "emil"
+    tag: "c5fcd68347b231735df2af16309f11c7dd4f4b76"
+
+  tasks:
+    - name: Include deploy tasks
+      include_tasks: deploy_pi.yml
+      
