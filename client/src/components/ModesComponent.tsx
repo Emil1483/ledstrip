@@ -104,7 +104,7 @@ const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) =
             backgroundColor: '#242635',
             display: "flex",
             alignItems: "end",
-            padding: "0px 12px 8px 12px",
+            padding: "0px 12px 20px 12px",
         }}>
             <Grid container spacing={2}>
                 {Object.entries(currentModes).map(([key, mode]) => (
