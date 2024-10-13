@@ -80,3 +80,6 @@ jobs:
           TAG: ${{ github.sha }}      
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }} 
     
+      - name: Wait for cypress to finish
+        run: |
+          exit $(docker wait cypress)
