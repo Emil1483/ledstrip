@@ -68,8 +68,13 @@ if __name__ == "__main__":
 
         try:
             last_health_update = 0
+            last_started_rpc_server = 0
             t = time()
             while True:
+                if time() - last_started_rpc_server > 3600:
+                    last_started_rpc_server = time()
+                    lights_mqtt_rpc.start(mqtt.client)
+
                 if time() - last_health_update > 2:
                     last_health_update = time()
                     mqtt.client.publish(
