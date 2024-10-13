@@ -77,6 +77,8 @@ jobs:
         with:
           compose-file: compose.yml
         env:
+          UID: 1000
+          GID: 1000
           TAG: ${{ github.sha }}      
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }} 
