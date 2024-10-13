@@ -17,9 +17,6 @@ export const LedStripsComponent: React.FC = () => {
     return <>
         <AppBarComponent />
         <div>
-            <Typography variant="h4" gutterBottom>
-                LED Strips List
-            </Typography>
             <List sx={{ width: '100%' }}>
                 {ledStrips.map((strip) => <React.Fragment key={strip.id}>
                     <ListItemButton className="led-strip-button" key={strip.id} component="a" href={`/${strip.id}`}>

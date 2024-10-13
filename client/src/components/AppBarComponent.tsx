@@ -1,14 +1,17 @@
 'use client'
 
 import React from "react";
-import { AppBar, Toolbar, Box } from '@mui/material';
+import { AppBar, Toolbar, Box, Typography } from '@mui/material';
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { ReadyState } from "react-use-websocket";
 import { useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
 
+interface AppBarComponentProps {
+    title?: string;
+}
 
-export const AppBarComponent: React.FC = () => {
+export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
     const readyState = useMQTTWebsocketReadyState();
 
     function appbarColor() {
@@ -27,15 +30,21 @@ export const AppBarComponent: React.FC = () => {
     }
 
 
-    return <AppBar sx={{ backgroundColor: appbarColor() }}>
-        < Toolbar >
-            <Box sx={{ flexGrow: 1 }}></Box>
-            <SignedOut>
-                <SignInButton />
-            </SignedOut>
-            <SignedIn>
-                <UserButton />
-            </SignedIn>
-        </ Toolbar>
-    </AppBar >
+    return (
+        <AppBar position="static" sx={{ backgroundColor: appbarColor() }}  >
+            <Toolbar>
+                {title && (<Typography variant="h6" component="div">
+                    {title}
+                </Typography>
+                )}
+                <Box sx={{ flexGrow: 1 }}></Box>
+                <SignedOut>
+                    <SignInButton />
+                </SignedOut>
+                <SignedIn>
+                    <UserButton />
+                </SignedIn>
+            </Toolbar>
+        </AppBar>
+    );
 };

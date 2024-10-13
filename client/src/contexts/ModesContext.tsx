@@ -8,10 +8,15 @@ import { MQTTMessage } from '@/models/mqtt';
 const CurrentModesContext = createContext<Modes>({});
 const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 const ChangeModeFastContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
+const LightsMetaDataContext = createContext<LightsMetaData>({ id: "" });
 
 interface ModesProviderProps {
     children: ReactNode;
-    id: number;
+    id: string;
+}
+
+interface LightsMetaData {
+    id: string;
 }
 
 
@@ -43,7 +48,9 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, id }) =>
     return <CurrentModesContext.Provider value={currentModes}>
         <ChangeModeContext.Provider value={changeMode}>
             <ChangeModeFastContext.Provider value={changeModeFast}>
-                {children}
+                <LightsMetaDataContext.Provider value={{ id: id }}>
+                    {children}
+                </LightsMetaDataContext.Provider>
             </ChangeModeFastContext.Provider>
         </ChangeModeContext.Provider>
     </CurrentModesContext.Provider>
@@ -70,6 +77,14 @@ export function useChangeModeFast() {
     const context = React.useContext(ChangeModeFastContext);
     if (!context) {
         throw new Error('useChangeMode must be used within a ModesProvider');
+    }
+    return context;
+}
+
+export function useLightsMetaData() {
+    const context = React.useContext(LightsMetaDataContext);
+    if (!context) {
+        throw new Error('useLightsMetaData must be used within a ModesProvider');
     }
     return context;
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Grid, Button, Modal, DialogTitle, alpha } from '@mui/material';
+import { Grid, Button, Modal, DialogTitle, alpha, Box } from '@mui/material';
 import ModalClose from '@mui/joy/ModalClose';
 import ModalDialog from "@mui/joy/ModalDialog";
 import Typography from '@mui/joy/Typography';
@@ -10,7 +10,7 @@ import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
 import { useEffect, useState } from 'react';
-import { useCurrentModes, useChangeMode } from '@/contexts/ModesContext';
+import { useCurrentModes, useChangeMode, useLightsMetaData } from '@/contexts/ModesContext';
 import { AppBarComponent } from '@/components/AppBarComponent';
 import { useSavedStatesStore } from '@/hooks/useSavedStatesStore';
 
@@ -97,22 +97,18 @@ const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) =
         }
     }
 
-    return <>
-        <AppBarComponent />
-        <Grid
-            container
-            sx={{
-                backgroundColor: '#242635',
-                color: 'white',
-                paddingLeft: '20px',
-                paddingRight: '20px',
-                paddingBottom: '42px',
-                height: '100vh',
-                alignItems: 'flex-end',
-            }}>
-            <Grid container spacing={4} sx={{ padding: '20px', justifyContent: 'flex-end' }}>
+    return <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
+        <AppBarComponent title={useLightsMetaData().id} />
+        <Box sx={{
+            flexGrow: 1,
+            backgroundColor: '#242635',
+            display: "flex",
+            alignItems: "end",
+            padding: "0px 12px 8px 12px",
+        }}>
+            <Grid container spacing={2}>
                 {Object.entries(currentModes).map(([key, mode]) => (
-                    <Grid item xs={6} sm={6} md={4} key={key}>
+                    <Grid item xs={6} key={key}>
                         <Button
                             {...longPressAttrs}
                             variant="contained"
@@ -127,59 +123,58 @@ const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) =
                                 flexDirection: 'column'
                             }}
                         >
+
                             <Typography level="h4" textColor="common.white" fontWeight="bold">
                                 {key.toUpperCase()}
                             </Typography>
 
-                            <Grid sx={{
-                                flexDirection: 'column',
-                            }}>
+
+                            <Grid sx={{ flexDirection: 'column' }}>
                                 {Array.from(generateStateComponents(mode.state))}
                             </Grid>
                         </Button>
-                    </Grid>
-                ))}
+                    </Grid>)
+                )}
             </Grid>
+        </Box>
 
+        <Modal
+            aria-labelledby="modal-title"
+            aria-describedby="modal-desc"
+            open={selectedMode != null}
+            onClose={() => setSelectedMode(null)}
+            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+        >
+            {selectedMode != null ?
+                <ModalDialog
+                    variant="plain"
+                    sx={{
+                        borderRadius: 'md',
+                        p: 4,
+                        boxShadow: 'lg',
+                        width: '85%',
+                        padding: '16px',
+                        color: 'white',
+                        backgroundColor: '#242635',
+                    }}
+                >
+                    <ModalClose id="modal-close" onClick={() => setSelectedMode(null)} />
+                    <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
 
-            <Modal
-                aria-labelledby="modal-title"
-                aria-describedby="modal-desc"
-                open={selectedMode != null}
-                onClose={() => setSelectedMode(null)}
-                sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-            >
-                {selectedMode != null ?
-                    <ModalDialog
-                        variant="plain"
-                        sx={{
-                            borderRadius: 'md',
-                            p: 4,
-                            boxShadow: 'lg',
-                            width: '85%',
-                            padding: '16px',
-                            color: 'white',
-                            backgroundColor: '#242635',
-                        }}
-                    >
-                        <ModalClose id="modal-close" onClick={() => setSelectedMode(null)} />
-                        <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
+                    <Stack spacing={2} sx={{
+                        paddingRight: '16px',
+                        paddingLeft: '16px',
+                        paddingBottom: '16px',
+                    }}>
+                        <KwargsForm
+                            mode={selectedMode}
+                        ></KwargsForm>
 
-                        <Stack spacing={2} sx={{
-                            paddingRight: '16px',
-                            paddingLeft: '16px',
-                            paddingBottom: '16px',
-                        }}>
-                            <KwargsForm
-                                mode={selectedMode}
-                            ></KwargsForm>
-
-                        </Stack>
-                    </ModalDialog>
-                    : <></>}
-            </Modal >
-        </Grid>
-    </>
+                    </Stack>
+                </ModalDialog>
+                : <></>}
+        </Modal >
+    </Box>
 }
 
 export default ModesComponent
