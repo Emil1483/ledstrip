@@ -15,7 +15,7 @@ on:
           - aurora
 
 jobs:
-  deploy-client:
+  deploy-api:
     runs-on: ubuntu-latest
 
     steps:
