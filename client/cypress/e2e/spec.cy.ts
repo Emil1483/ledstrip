@@ -1,11 +1,17 @@
 import "cypress-real-events";
+import { setupClerkTestingToken } from '@clerk/testing/cypress'
 
 describe("template spec", () => {
     beforeEach(() => {
         cy.viewport(430, 932);
         cy.visit("/");
         cy.url().should("include", "/sign-in");
-        cy.signIn();
+        
+        const userEmail = Cypress.env("TEST_USER_EMAIL");
+        const userPassword = Cypress.env("TEST_USER_PASSWORD");
+        cy.clerkSignIn({ strategy: 'password', identifier: userEmail, password: userPassword })
+
+        cy.visit("/");
         cy.url({ timeout: 12000 }).should("not.include", "/sign-in");
         cy.get(".led-strip-button", { timeout: 120000 }).should("exist");
     });
