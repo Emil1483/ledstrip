@@ -88,6 +88,23 @@
       when: docker_installed.rc != 0
       shell: curl -fsSL https://get.docker.com | sh
 
+    - name: Create docker config file
+      copy:
+        dest: /etc/docker/daemon.json
+        content: |
+          {
+            "log-driver": "json-file",
+            "log-opts": {
+              "max-size": "10m",
+              "max-file": "3"
+            }
+          }
+
+    - name: Restart Docker
+      service:
+        name: docker
+        state: restarted
+
     - name: Create Client Volume
       docker_volume:
         name: ledstrip_client_data

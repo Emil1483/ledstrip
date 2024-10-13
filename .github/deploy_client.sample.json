@@ -1,0 +1,7 @@
+{
+    "action": "workflow_dispatch",
+    "inputs": {
+        "tag": "3b71ce47d25c24ee5b82ff0b60a9abde71cfb246",
+        "environment": "client0"
+    }
+}

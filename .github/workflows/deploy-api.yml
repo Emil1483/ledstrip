@@ -1,0 +1,52 @@
+name: Deploy Client Container
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag"
+        required: true
+      environment:
+        description: "Environment"
+        type: choice
+        required: true
+        options:
+          - emil
+          - aurora
+
+jobs:
+  deploy-client:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create ansible configuration directory
+        run: sudo mkdir -p /etc/ansible
+
+      - name: Create ansible configuration file
+        run: |
+          sudo tee /etc/ansible/ansible.cfg <<EOF
+          [defaults]
+          host_key_checking = False
+          EOF
+
+      - name: Setting ansible vault password
+        run: echo '${{ secrets.ANSIBLE_VAULT_PASS }}' | sudo tee /etc/ansible_pass
+        shell: bash
+
+      - name: pip install docker
+        run: sudo pip install docker
+
+      - name: Apt update
+        run: sudo apt-get update
+
+      - name: Install ansible
+        run: sudo apt-get install ansible -y
+
+      - name: Run ansible script
+        shell: bash
+        working-directory: ansible/playbooks/deploy/api
+        run: |
+          sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass ${{ github.event.inputs.environment }}.yml --diff --extra-vars "tag=${{ github.event.inputs.tag }}"
