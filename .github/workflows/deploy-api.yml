@@ -1,4 +1,4 @@
-name: Deploy Client Container
+name: Deploy Api Container
 
 on:
   workflow_dispatch:
