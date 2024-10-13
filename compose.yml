@@ -71,3 +71,4 @@ services:
       - BASE_URL=http://127.0.0.1:3000
       - CYPRESS_TEST_USER_EMAIL=emil@djupvik.dev
       - CYPRESS_TEST_USER_PASSWORD=$TEST_USER_PASSWORD
+      - NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_cm9idXN0LWphdmVsaW4tNzguY2xlcmsuYWNjb3VudHMuZGV2JA
