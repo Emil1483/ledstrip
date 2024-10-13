@@ -1,5 +1,5 @@
 import "cypress-real-events";
-import { setupClerkTestingToken } from '@clerk/testing/cypress'
+import {  } from '@clerk/testing/cypress'
 
 describe("template spec", () => {
     beforeEach(() => {

@@ -82,4 +82,6 @@ jobs:
     
       - name: Wait for cypress to finish
         run: |
-          exit $(docker wait cypress)
+          EXIT_CODE=$(docker wait cypress)
+          docker logs --tail 9999 cypress
+          exit $EXIT_CODE
