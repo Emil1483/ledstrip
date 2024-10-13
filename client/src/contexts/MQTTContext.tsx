@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect, useContext } from 'react';
+import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidV4 } from 'uuid';
 import pTimeout, { TimeoutError } from 'p-timeout';
@@ -59,7 +59,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         })
     }
 
-    function addCallback<T>(topic: string, callback: (message: MQTTMessage<T>) => void): Promise<void> {
+    function addTopicCallback<T>(topic: string, callback: (message: MQTTMessage<T>) => void): Promise<void> {
         return new Promise((resolve: (_: any) => void, reject: (reason: any) => void) => {
             setCallbacks((callbacks) => {
                 if (topic in callbacks) {
@@ -89,6 +89,13 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     })
 
     useEffect(() => {
+        console.log(readyState == ReadyState.OPEN)
+        if (readyState != ReadyState.OPEN) {
+            setMQTTReady(false)
+        }
+    }, [readyState])
+
+    useEffect(() => {
         if (typeof lastMessage?.data === "string") {
             const wsMessage: MessageFromWS = JSON.parse(lastMessage?.data);
             console.log("Decoded wsMessage:", wsMessage);
@@ -110,6 +117,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
                 removePromise(wsMessage.requestId)
             } else if (wsMessage.type == "MQTTReady") {
                 setMQTTReady(true)
+                reSubscribe()
                 for (const promiseId in promises) {
                     if (promiseId.startsWith("MQTTReady")) {
                         promises[promiseId].resolve({
@@ -150,11 +158,21 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         }
     }
 
+    async function reSubscribe() {
+        for (const topic in callbacks) {
+            await makeRequest({
+                method: 'subscribe',
+                requestId: uuidV4(),
+                topic: topic,
+            })
+        }
+    }
+
     async function subscribe<T>(topic: string, callback: (message: MQTTMessage<T>) => void) {
         await waitUntilMQTTReady()
 
         try {
-            await addCallback(topic, callback)
+            await addTopicCallback(topic, callback)
         } catch (e) {
             if (e instanceof AlreadySubscribed) {
                 console.warn(`Already subscribed to topic ${e.topic}`)
