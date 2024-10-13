@@ -1,6 +1,0 @@
-pathspec==0.12.1
-python-dotenv==0.21.1
-testcontainers==4.4.1
-docker==7.1.0
-pygit2==1.15.0
-paho-mqtt==2.1.0
