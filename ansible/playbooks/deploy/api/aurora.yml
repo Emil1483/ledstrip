@@ -1,0 +1,15 @@
+# sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass_private emil.yml --diff --extra-vars "tag=a1df9221ada9298223f515de52f52566eba4d1f1"
+
+- name: Install ledstrip api for Emil
+  hosts: aurora-remote
+  become: true
+  gather_facts: false
+
+  vars:
+    led_count: "109" # TODO Is this right?
+    ledstrip_id: "aurora"
+    tag: "{{ tag }}"
+
+  tasks:
+    - name: Include deploy tasks
+      include_tasks: api.yml

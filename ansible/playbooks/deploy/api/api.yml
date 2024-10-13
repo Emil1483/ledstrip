@@ -1,10 +1,13 @@
 ---
 - name: Get variables from vars.yml
-  include_tasks: ../src/get_vars.yml
-  loop:
-    - ../vars.yml
-  loop_control:
-    loop_var: path
+  include_tasks: ../../../src/get_vars.yml
+  vars:
+    path: ../../../vars.yml
+
+- name: Install Docker SDK
+  apt:
+    name: python3-docker
+    state: present
 
 - name: Login to Docker Hub
   docker_login:
@@ -14,14 +17,14 @@
 - name: Get running containers
   docker_host_info:
     containers: yes
-  register: docker_containers
+  register: running_containers
 
-- name: Stop Api Container
+- name: Stopping old API container
   command: docker stop {{ item.Id }}
-  loop: "{{ docker_containers.containers }}"
+  loop: "{{ running_containers.containers }}"
   when: "'ledstrip-api' in item.Image"
 
-- name: Start API Docker container
+- name: Start new API container
   docker_container:
     name: "api-{{ tag }}"
     image: "{{ docker_hub_username }}/ledstrip-api:{{ tag }}"

@@ -89,7 +89,6 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     })
 
     useEffect(() => {
-        console.log(readyState == ReadyState.OPEN)
         if (readyState != ReadyState.OPEN) {
             setMQTTReady(false)
         }

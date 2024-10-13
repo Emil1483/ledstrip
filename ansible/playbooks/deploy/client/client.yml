@@ -1,0 +1,46 @@
+---
+- name: Get variables from vars.yml
+  include_tasks: ../../../src/get_vars.yml
+  vars:
+    path: ../../../vars.yml
+
+- name: Install Docker SDK
+  apt:
+    name: python3-docker
+    state: present
+
+- name: Login to Docker Hub
+  docker_login:
+    username: "{{ docker_hub_username }}"
+    password: "{{ docker_hub_password }}"
+
+- name: Get running containers
+  docker_host_info:
+    containers: yes
+  register: running_containers
+
+- name: Stopping existing client
+  command: docker stop {{ item.Id }}
+  loop: "{{ running_containers.containers }}"
+  when: "'ledstrip-client' in item.Image"
+
+- name: Start Client Docker container
+  docker_container:
+    name: "client-{{ tag }}"
+    image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
+    state: started
+    restart_policy: unless-stopped
+    volumes:
+      - ledstrip_client_data:/etc/client_data
+    ports:
+      - "{{ client_port }}:{{ client_port }}"
+    networks:
+      - name: ledstrip-network
+    env:
+      PORT: "{{ client_port }}"
+      CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
+      DATABASE_URL: "file://etc/client_data/sqlite.db"
+      MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"
+      MQTT_USERNAME: "{{ mqtt_username }}"
+      MQTT_PASSWORD: "{{ mqtt_password }}"
+      CLERK_PEM_PUBLIC_KEY: "{{ clerk_pem_public_key }}"
