@@ -3,6 +3,8 @@ name: CI
 on:
   push:
   workflow_dispatch:
+  release:
+    types: [released]
 
 jobs:
   build-api:
@@ -51,20 +53,29 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set Docker tag
+        id: docker_tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           context: client
           platforms: linux/amd64
           push: true
-          tags: superemil64/ledstrip-client:${{ github.sha }}
+          tags: superemil64/ledstrip-client:${{ steps.docker_tag.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   test:
     runs-on: ubuntu-22.04
 
-    needs: 
+    needs:
       - build-api
       - build-client
 
@@ -79,10 +90,10 @@ jobs:
         env:
           UID: 1000
           GID: 1000
-          TAG: ${{ github.sha }}      
+          TAG: ${{ github.sha }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }} 
-    
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
       - name: Wait for cypress to finish
         run: |
           EXIT_CODE=$(docker wait cypress)
