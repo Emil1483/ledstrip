@@ -116,7 +116,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
                 removePromise(wsMessage.requestId)
             } else if (wsMessage.type == "MQTTReady") {
                 setMQTTReady(true)
-                // reSubscribe()
+                reSubscribe()
                 for (const promiseId in promises) {
                     if (promiseId.startsWith("MQTTReady")) {
                         promises[promiseId].resolve({
