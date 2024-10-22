@@ -58,19 +58,19 @@ if __name__ == "__main__":
 
         lights_mqtt_rpc.start(mqtt.client)
 
-        payload = json.dumps(mode_service.status())
-
-        info = mqtt.client.publish(f"lights/{LEDSTRIP_ID}/status", payload, retain=True)
-
-        if info.rc != MQTTErrorCode.MQTT_ERR_SUCCESS:
-            logger.error(f"Failed to publish message {payload} to topic lights/status")
-        logger.info(f"Published message {payload} to topic lights/{LEDSTRIP_ID}/status")
-
         try:
             last_health_update = 0
             last_started_rpc_server = 0
+            last_published_status = 0
             t = time()
             while True:
+                if time() - last_published_status > 60:
+                    last_published_status = time()
+                    payload = json.dumps(mode_service.status())
+                    topic = f"lights/{LEDSTRIP_ID}/status"
+                    mqtt.client.publish(topic, payload, retain=True)
+                    logger.info(f"Published message {payload} to topic {topic}")
+
                 if time() - last_started_rpc_server > 3600:
                     last_started_rpc_server = time()
                     lights_mqtt_rpc.start(mqtt.client)
