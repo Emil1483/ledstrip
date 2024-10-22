@@ -17,7 +17,11 @@ jobs:
 
     steps:
       - name: Assert ref_type is tag
-        run: echo ${{ github.ref_type }} | grep -q "tag"
+        run: |
+          if [[ "${{ github.ref_type }}" != "tag" ]]; then
+            echo "Error: Please select a ref of type tag to deploy"
+            exit 1
+          fi
 
       - name: Checkout code
         uses: actions/checkout@v4
