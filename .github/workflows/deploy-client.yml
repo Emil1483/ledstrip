@@ -3,9 +3,6 @@ name: Deploy Client Container
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Tag"
-        required: true
       environment:
         description: "Environment"
         type: choice
@@ -18,6 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Assert ref_type is tag
+        run: |
+          if [[ "${{ github.ref_type }}" != "tag" ]]; then
+            echo "Error: Please select a ref of type tag to deploy"
+            exit 1
+          fi
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -48,4 +52,4 @@ jobs:
         shell: bash
         working-directory: ansible/playbooks/deploy/client
         run: |
-          sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass ${{ github.event.inputs.environment }}.yml --diff --extra-vars "tag=${{ github.event.inputs.tag }}"
+          sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass ${{ github.event.inputs.environment }}.yml --diff --extra-vars "tag=${{ github.ref_name }}"
