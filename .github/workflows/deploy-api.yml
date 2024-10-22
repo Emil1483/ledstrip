@@ -3,9 +3,6 @@ name: Deploy Api Container
 on:
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Tag"
-        required: true
       environment:
         description: "Environment"
         type: choice
@@ -19,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Assert ref_type is tag
+        run: echo ${{ github.ref_type }} | grep -q "tag"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -49,4 +49,4 @@ jobs:
         shell: bash
         working-directory: ansible/playbooks/deploy/api
         run: |
-          sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass ${{ github.event.inputs.environment }}.yml --diff --extra-vars "tag=${{ github.event.inputs.tag }}"
+          sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass ${{ github.event.inputs.environment }}.yml --diff --extra-vars "tag=${{ github.ref_name }}"
