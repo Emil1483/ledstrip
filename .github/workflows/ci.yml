@@ -28,12 +28,9 @@ jobs:
       - name: Set Docker tag
         id: docker_tag
         run: |
-          echo "ref type is ${{ github.ref_type }} and event name is ${{ github.event_name }}"
           if [[ "${{ github.ref_type }}" == "tag" || "${{ github.event_name }}" == "release" ]]; then
-            echo "We are on a tag or release"
             echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
-            echo "We are not on a tag or release"
             echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 

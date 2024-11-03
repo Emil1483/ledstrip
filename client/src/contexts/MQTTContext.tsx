@@ -43,6 +43,8 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
     const [callbacks, setCallbacks] = useState<{ [topic: string]: (message: MQTTMessage<any>) => void }>({})
 
+    const [messageHistory, setMessageHistory] = useState<MQTTMessage<any>[]>([])
+
     function addPromise(requestId: string, resolve: ResponseResolver) {
         setPromises((promises) => {
             assert(!(requestId in promises))
@@ -104,6 +106,8 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
                     throw Error(`Topic callback not found: ${wsMessage.topic}`)
                 }
                 callbacks[wsMessage.topic](wsMessage)
+
+                setMessageHistory((history) => [...history, wsMessage])
             } else if (wsMessage.type == "response") {
                 if (!(wsMessage.requestId in promises)) {
                     console.warn(`no promise with requestId ${wsMessage.requestId}. Perhaps the promise timed out?`)
@@ -174,7 +178,13 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             await addTopicCallback(topic, callback)
         } catch (e) {
             if (e instanceof AlreadySubscribed) {
-                console.warn(`Already subscribed to topic ${e.topic}`)
+                console.log(`Already subscribed to topic ${e.topic}. Executing callback immediately with last message.`)
+                const lastMessage = messageHistory.findLast((message) => message.topic == e.topic)
+                if (lastMessage) {
+                    callback(lastMessage)
+                } else {
+                    console.warn(`No last message found for topic ${e.topic}.`)
+                }
                 return
             }
         }
