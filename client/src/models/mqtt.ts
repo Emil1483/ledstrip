@@ -33,4 +33,8 @@ export type MessageFromWS =
       }
     | {
           type: "MQTTReady";
+      }
+    | {
+          type: "error";
+          error: string;
       };

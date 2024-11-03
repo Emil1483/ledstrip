@@ -85,7 +85,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
 
     const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt", {
-        shouldReconnect: (_) => true,
+        shouldReconnect: (event) => event.code !== 3000,
         reconnectAttempts: 500,
         reconnectInterval: 500,
     })
@@ -101,7 +101,9 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             const wsMessage: MessageFromWS = JSON.parse(lastMessage?.data);
             console.log("Decoded wsMessage:", wsMessage);
 
-            if (wsMessage.type == "MQTTMessage") {
+            if (wsMessage.type == "error") {
+                console.error(`Error from server: ${wsMessage.error}`)
+            } else if (wsMessage.type == "MQTTMessage") {
                 if (!(wsMessage.topic in callbacks)) {
                     throw Error(`Topic callback not found: ${wsMessage.topic}`)
                 }

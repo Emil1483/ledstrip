@@ -5,3 +5,5 @@ sqlite.db
 .secrets
 .clerk_key
 .test_password
+
+client/cypress/screenshots/**

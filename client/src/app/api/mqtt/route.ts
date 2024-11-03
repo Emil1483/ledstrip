@@ -20,19 +20,28 @@ export async function SOCKET(
 ) {
     if (!publicKey) {
         console.error("Missing environment variable CLERK_PEM_PUBLIC_KEY");
-        client.send("Server is misconfigured!");
-        client.close();
+        sendFromWS(client, {
+            type: "error",
+            error: "Server is misconfigured!",
+        });
+        client.close(1011);
     }
 
     if (!mqttUrl) {
         console.error("Missing environment variable MQTT_URL");
-        client.send("Server is misconfigured!");
-        client.close();
+        sendFromWS(client, {
+            type: "error",
+            error: "Server is misconfigured!",
+        });
+        client.close(1011);
     }
 
     if (!request.headers.cookie) {
-        client.send("No cookie found!");
-        client.close();
+        sendFromWS(client, {
+            type: "error",
+            error: "No cookie found!",
+        });
+        client.close(3000);
         return;
     }
 
@@ -40,8 +49,11 @@ export async function SOCKET(
     const token = c.__session;
 
     if (!token) {
-        client.send("No __session found in cookie!");
-        client.close();
+        sendFromWS(client, {
+            type: "error",
+            error: "No __session found in cookie!",
+        });
+        client.close(3000);
         return;
     }
 
@@ -49,14 +61,20 @@ export async function SOCKET(
         const decoded = jwt.verify(token, publicKey) as jwt.JwtPayload;
 
         if (!decoded.exp) {
-            client.send("No expiration found in token!");
-            client.close();
+            sendFromWS(client, {
+                type: "error",
+                error: "No expiration found in token!",
+            });
+            client.close(3000);
             return;
         }
 
         if (decoded.exp * 1000 < Date.now()) {
-            client.send("Token expired!");
-            client.close();
+            sendFromWS(client, {
+                type: "error",
+                error: "Token expired!",
+            });
+            client.close(3000);
             return;
         }
 
@@ -146,7 +164,7 @@ export async function SOCKET(
 
         mqttClient.on("error", (error) => {
             console.error("Connection error: ", error);
-            client.close();
+            client.close(1014);
         });
 
         mqttClient.on("message", (topic, message) => {
@@ -163,8 +181,11 @@ export async function SOCKET(
         });
     } catch (e) {
         if (e instanceof JsonWebTokenError) {
-            client.send("Invalid token!");
-            client.close();
+            sendFromWS(client, {
+                type: "error",
+                error: "Invalid token!",
+            });
+            client.close(3000);
             return;
         }
 
