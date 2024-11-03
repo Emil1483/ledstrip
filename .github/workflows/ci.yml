@@ -111,3 +111,10 @@ jobs:
           EXIT_CODE=$(docker wait cypress)
           docker logs --tail 9999 cypress
           exit $EXIT_CODE
+
+      - name: Upload Cypress screenshots as artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Cypress-screenshots
+          path: client/cypress/screenshots/**
