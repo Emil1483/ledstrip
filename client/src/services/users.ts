@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 export async function fetchSavedStates(userId: string): Promise<SavedStates> {
     const user = await prisma.user.findUnique({

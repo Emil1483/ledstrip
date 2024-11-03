@@ -1,0 +1,531 @@
+{
+  "tooljet_database": [],
+  "app": [
+    {
+      "definition": {
+        "appV2": {
+          "id": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
+          "type": "front-end",
+          "name": "ledstrip-admin",
+          "slug": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
+          "isPublic": null,
+          "isMaintenanceOn": false,
+          "icon": "folderupload",
+          "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
+          "currentVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804",
+          "userId": "f9d3ed04-ece9-4a06-a4fb-b6411c08186a",
+          "workflowApiToken": null,
+          "workflowEnabled": false,
+          "createdAt": "2024-11-03T18:01:42.618Z",
+          "creationMode": "DEFAULT",
+          "updatedAt": "2024-11-03T18:24:31.125Z",
+          "editingVersion": {
+            "id": "d2228591-e59a-4352-b9b7-8621f0e73804",
+            "name": "v1",
+            "definition": null,
+            "globalSettings": {
+              "hideHeader": false,
+              "appInMaintenance": false,
+              "canvasMaxWidth": 100,
+              "canvasMaxWidthType": "%",
+              "canvasMaxHeight": 2400,
+              "canvasBackgroundColor": "#edeff5",
+              "backgroundFxQuery": "",
+              "appMode": "auto"
+            },
+            "showViewerNavigation": true,
+            "homePageId": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
+            "appId": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
+            "currentEnvironmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
+            "promotedFrom": "c506a5b1-5150-4545-b613-25667e18b00c",
+            "createdAt": "2024-11-03T18:01:42.625Z",
+            "updatedAt": "2024-11-03T18:24:31.125Z"
+          },
+          "components": [],
+          "pages": [
+            {
+              "id": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
+              "name": "Home",
+              "handle": "home",
+              "index": 1,
+              "disabled": null,
+              "hidden": null,
+              "createdAt": "2024-11-03T18:01:42.618Z",
+              "updatedAt": "2024-11-03T18:01:42.618Z",
+              "autoComputeLayout": true,
+              "appVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804"
+            }
+          ],
+          "events": [],
+          "dataQueries": [
+            {
+              "id": "a3423229-2b0b-46be-89b4-d555c8b34b07",
+              "name": "users",
+              "options": {
+                "method": "get",
+                "url": "users",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "showSuccessNotification": false
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804",
+              "createdAt": "2024-11-03T18:16:15.637Z",
+              "updatedAt": "2024-11-03T18:24:11.089Z"
+            }
+          ],
+          "dataSources": [
+            {
+              "id": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "name": "nextServer",
+              "kind": "restapi",
+              "type": "default",
+              "pluginId": null,
+              "appVersionId": null,
+              "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
+              "scope": "global",
+              "createdAt": "2024-11-03T18:08:50.070Z",
+              "updatedAt": "2024-11-03T18:20:11.024Z"
+            }
+          ],
+          "appVersions": [
+            {
+              "id": "d2228591-e59a-4352-b9b7-8621f0e73804",
+              "name": "v1",
+              "definition": null,
+              "globalSettings": {
+                "hideHeader": false,
+                "appInMaintenance": false,
+                "canvasMaxWidth": 100,
+                "canvasMaxWidthType": "%",
+                "canvasMaxHeight": 2400,
+                "canvasBackgroundColor": "#edeff5",
+                "backgroundFxQuery": "",
+                "appMode": "auto"
+              },
+              "showViewerNavigation": true,
+              "homePageId": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
+              "appId": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
+              "currentEnvironmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
+              "promotedFrom": "c506a5b1-5150-4545-b613-25667e18b00c",
+              "createdAt": "2024-11-03T18:01:42.625Z",
+              "updatedAt": "2024-11-03T18:24:31.125Z"
+            }
+          ],
+          "appEnvironments": [
+            {
+              "id": "c506a5b1-5150-4545-b613-25667e18b00c",
+              "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
+              "name": "development",
+              "isDefault": false,
+              "priority": 1,
+              "enabled": true,
+              "createdAt": "2024-11-03T17:59:20.062Z",
+              "updatedAt": "2024-11-03T17:59:20.062Z"
+            },
+            {
+              "id": "cab63881-c4dc-49a4-88d7-231fe21660c5",
+              "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
+              "name": "staging",
+              "isDefault": false,
+              "priority": 2,
+              "enabled": true,
+              "createdAt": "2024-11-03T17:59:20.063Z",
+              "updatedAt": "2024-11-03T17:59:20.063Z"
+            },
+            {
+              "id": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
+              "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
+              "name": "production",
+              "isDefault": true,
+              "priority": 3,
+              "enabled": true,
+              "createdAt": "2024-11-03T17:59:20.063Z",
+              "updatedAt": "2024-11-03T17:59:20.063Z"
+            }
+          ],
+          "dataSourceOptions": [
+            {
+              "id": "d6518b75-38b3-4ef1-9717-61e779f42098",
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "environmentId": "c506a5b1-5150-4545-b613-25667e18b00c",
+              "options": {
+                "url": {
+                  "value": "http://host.docker.internal:3000/api/",
+                  "encrypted": false
+                },
+                "auth_type": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "grant_type": {
+                  "value": "authorization_code",
+                  "encrypted": false
+                },
+                "add_token_to": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "header_prefix": {
+                  "value": "Bearer ",
+                  "encrypted": false
+                },
+                "access_token_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_id": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_secret": {
+                  "credential_id": "1dc127fc-e790-4cc6-b65c-44ef36151e11",
+                  "encrypted": true
+                },
+                "scopes": {
+                  "value": "read, write",
+                  "encrypted": false
+                },
+                "username": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "password": {
+                  "credential_id": "1d78c4ef-5275-41ab-8f32-18fd3fb951b8",
+                  "encrypted": true
+                },
+                "bearer_token": {
+                  "credential_id": "ddb01ce6-9d3a-47ec-84ed-db4f170631f9",
+                  "encrypted": true
+                },
+                "auth_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_auth": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "headers": {
+                  "value": [
+                    [
+                      "X-API-Key",
+                      "banana"
+                    ],
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_query_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_auth_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "access_token_custom_headers": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "multiple_auth_enabled": {
+                  "value": false,
+                  "encrypted": false
+                },
+                "ssl_certificate": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "retry_network_errors": {
+                  "value": true,
+                  "encrypted": false
+                }
+              },
+              "createdAt": "2024-11-03T18:08:50.076Z",
+              "updatedAt": "2024-11-03T18:20:11.020Z"
+            },
+            {
+              "id": "30c6adef-b351-43c7-b112-3d547ace0f2e",
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "environmentId": "cab63881-c4dc-49a4-88d7-231fe21660c5",
+              "options": {
+                "url": {
+                  "value": "http://host.docker.internal:3000/api/",
+                  "encrypted": false
+                },
+                "auth_type": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "grant_type": {
+                  "value": "authorization_code",
+                  "encrypted": false
+                },
+                "add_token_to": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "header_prefix": {
+                  "value": "Bearer ",
+                  "encrypted": false
+                },
+                "access_token_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_id": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_secret": {
+                  "credential_id": "591021ad-1161-4356-b2d6-cae24fc4eb65",
+                  "encrypted": true
+                },
+                "scopes": {
+                  "value": "read, write",
+                  "encrypted": false
+                },
+                "username": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "password": {
+                  "credential_id": "853de386-297b-48a3-ac84-5536a0ee9abe",
+                  "encrypted": true
+                },
+                "bearer_token": {
+                  "credential_id": "07947573-edf9-4d1b-a2a4-2b6753885811",
+                  "encrypted": true
+                },
+                "auth_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_auth": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "headers": {
+                  "value": [
+                    [
+                      "X-API-Key",
+                      "banana"
+                    ],
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_query_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_auth_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "access_token_custom_headers": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "multiple_auth_enabled": {
+                  "value": false,
+                  "encrypted": false
+                },
+                "ssl_certificate": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "retry_network_errors": {
+                  "value": true,
+                  "encrypted": false
+                }
+              },
+              "createdAt": "2024-11-03T18:08:50.076Z",
+              "updatedAt": "2024-11-03T18:20:11.021Z"
+            },
+            {
+              "id": "f6a8aab3-59ee-4f22-a2c6-c3db9230967a",
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "environmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
+              "options": {
+                "url": {
+                  "value": "http://host.docker.internal:3000/api/",
+                  "encrypted": false
+                },
+                "auth_type": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "grant_type": {
+                  "value": "authorization_code",
+                  "encrypted": false
+                },
+                "add_token_to": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "header_prefix": {
+                  "value": "Bearer ",
+                  "encrypted": false
+                },
+                "access_token_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_id": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_secret": {
+                  "credential_id": "bc3a3a3e-6858-4d4d-a584-640cdc18c188",
+                  "encrypted": true
+                },
+                "scopes": {
+                  "value": "read, write",
+                  "encrypted": false
+                },
+                "username": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "password": {
+                  "credential_id": "acca5511-be02-4a32-ba4f-477315dd10c6",
+                  "encrypted": true
+                },
+                "bearer_token": {
+                  "credential_id": "db8ef295-e494-4ff9-a07f-cf8e85ae9a57",
+                  "encrypted": true
+                },
+                "auth_url": {
+                  "value": "",
+                  "encrypted": false
+                },
+                "client_auth": {
+                  "value": "header",
+                  "encrypted": false
+                },
+                "headers": {
+                  "value": [
+                    [
+                      "X-API-Key",
+                      "banana"
+                    ],
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_query_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "custom_auth_params": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "access_token_custom_headers": {
+                  "value": [
+                    [
+                      "",
+                      ""
+                    ]
+                  ],
+                  "encrypted": false
+                },
+                "multiple_auth_enabled": {
+                  "value": false,
+                  "encrypted": false
+                },
+                "ssl_certificate": {
+                  "value": "none",
+                  "encrypted": false
+                },
+                "retry_network_errors": {
+                  "value": true,
+                  "encrypted": false
+                }
+              },
+              "createdAt": "2024-11-03T18:08:50.076Z",
+              "updatedAt": "2024-11-03T18:20:11.024Z"
+            }
+          ],
+          "schemaDetails": {
+            "multiPages": true,
+            "multiEnv": true,
+            "globalDataSources": true
+          }
+        }
+      }
+    }
+  ],
+  "tooljet_version": "2.50.9.45"
+}
