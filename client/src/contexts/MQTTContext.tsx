@@ -178,12 +178,13 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             await addTopicCallback(topic, callback)
         } catch (e) {
             if (e instanceof AlreadySubscribed) {
-                console.log(`Already subscribed to topic ${e.topic}. Executing callback immediately with last message.`)
-                const lastMessage = messageHistory.findLast((message) => message.topic == e.topic)
+                const error = e as AlreadySubscribed;
+                console.log(`Already subscribed to topic ${error.topic}. Executing callback immediately with last message.`)
+                const lastMessage = messageHistory.findLast((message) => message.topic == error.topic)
                 if (lastMessage) {
                     callback(lastMessage)
                 } else {
-                    console.warn(`No last message found for topic ${e.topic}.`)
+                    console.warn(`No last message found for topic ${error.topic}.`)
                 }
                 return
             }
