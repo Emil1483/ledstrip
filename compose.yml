@@ -1,4 +1,4 @@
-# UID=$(id -u) GID=$(id -g) TAG=$(git rev-parse HEAD) CLERK_SECRET_KEY=$(cat .clerk_key) TEST_USER_PASSWORD=$(cat .test_password) docker compose up -d
+# TAG=$(git rev-parse HEAD) CLERK_SECRET_KEY=$(cat .clerk_key) TEST_USER_PASSWORD=$(cat .test_password) docker compose up -d
 
 services:
   prisma:
@@ -59,7 +59,7 @@ services:
   cypress:
     image: cypress/included:cypress-13.15.0-node-20.18.0-chrome-129.0.6668.89-1-ff-131.0.2-edge-129.0.2792.65-1
     container_name: cypress
-    user: "${UID}:${GID}"
+    user: root
     depends_on:
       - client
     volumes:
