@@ -12,16 +12,16 @@
           "isMaintenanceOn": false,
           "icon": "folderupload",
           "organizationId": "724638ba-d06a-45b9-b3ad-4dd9ae0b9e83",
-          "currentVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804",
+          "currentVersionId": "98581453-1436-4f86-9615-016af8239c70",
           "userId": "f9d3ed04-ece9-4a06-a4fb-b6411c08186a",
           "workflowApiToken": null,
           "workflowEnabled": false,
           "createdAt": "2024-11-03T18:01:42.618Z",
           "creationMode": "DEFAULT",
-          "updatedAt": "2024-11-03T18:24:31.125Z",
+          "updatedAt": "2024-11-16T20:31:46.576Z",
           "editingVersion": {
-            "id": "d2228591-e59a-4352-b9b7-8621f0e73804",
-            "name": "v1",
+            "id": "98581453-1436-4f86-9615-016af8239c70",
+            "name": "v1.2.5",
             "definition": null,
             "globalSettings": {
               "hideHeader": false,
@@ -34,32 +34,2455 @@
               "appMode": "auto"
             },
             "showViewerNavigation": true,
-            "homePageId": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
+            "homePageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
             "appId": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
             "currentEnvironmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
             "promotedFrom": "c506a5b1-5150-4545-b613-25667e18b00c",
-            "createdAt": "2024-11-03T18:01:42.625Z",
-            "updatedAt": "2024-11-03T18:24:31.125Z"
+            "createdAt": "2024-11-16T18:22:57.573Z",
+            "updatedAt": "2024-11-16T20:31:46.576Z"
           },
-          "components": [],
-          "pages": [
+          "components": [
             {
-              "id": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
-              "name": "Home",
-              "handle": "home",
-              "index": 1,
-              "disabled": null,
-              "hidden": null,
-              "createdAt": "2024-11-03T18:01:42.618Z",
-              "updatedAt": "2024-11-03T18:01:42.618Z",
-              "autoComputeLayout": true,
-              "appVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804"
+              "id": "583d3e49-78f3-4d57-a9c0-ad1807d2080a",
+              "name": "button1",
+              "type": "Button",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": null,
+              "properties": {
+                "text": {
+                  "value": "<-"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "723d941f-6f2a-4a35-9462-9bf9f67dc27a",
+                  "type": "mobile",
+                  "top": 80,
+                  "left": 35,
+                  "width": 3,
+                  "height": 30,
+                  "componentId": "583d3e49-78f3-4d57-a9c0-ad1807d2080a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "7106a226-107e-43db-87e4-92b18852d526",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 2,
+                  "height": 50,
+                  "componentId": "583d3e49-78f3-4d57-a9c0-ad1807d2080a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "name": "form1",
+              "type": "Form",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "259996a6-19f7-4ae7-945d-e34ed850bb3c",
+              "properties": {
+                "buttonToSubmit": {
+                  "value": "e4fd647c-7bf2-4f40-b0d0-9cc0091a46a5"
+                }
+              },
+              "general": {
+                "tooltip": {
+                  "value": ""
+                }
+              },
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "1f0442dc-215e-49d9-911d-3cd527e87ae3",
+                  "type": "desktop",
+                  "top": 10,
+                  "left": 2,
+                  "width": 40,
+                  "height": 340,
+                  "componentId": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "44e8b876-a9fc-4ba7-92c7-e552870da6a2",
+                  "type": "mobile",
+                  "top": 10,
+                  "left": 2,
+                  "width": 13,
+                  "height": 340,
+                  "componentId": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "79df2e76-4707-4806-8807-e466ed4672d3",
+              "name": "tabs1",
+              "type": "Tabs",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": null,
+              "properties": {
+                "tabs": {
+                  "value": "{{[ \n\t\t{ title: 'Users', id: '0' }, \n\t\t{ title: 'Ledstrips', id: '1' }\n ]}}"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "48580d69-8d6e-4bc2-81c3-3ec63cdaeb85",
+                  "type": "mobile",
+                  "top": 20,
+                  "left": 16,
+                  "width": 30,
+                  "height": 300,
+                  "componentId": "79df2e76-4707-4806-8807-e466ed4672d3",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "e536ee80-8914-4091-a679-c0e27be52c25",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 43,
+                  "height": 830,
+                  "componentId": "79df2e76-4707-4806-8807-e466ed4672d3",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "a3f3d599-4f26-4662-b9be-9ae1ecb2b7ce",
+              "name": "table2",
+              "type": "Table",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "79df2e76-4707-4806-8807-e466ed4672d3-2",
+              "properties": {},
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "8fc7705f-d639-40df-bcaf-506de9c56654",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 1,
+                  "width": 41,
+                  "height": 250,
+                  "componentId": "a3f3d599-4f26-4662-b9be-9ae1ecb2b7ce",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "c75ec6da-ed64-49a4-8c3e-d7d27fb19ba1",
+              "name": "table1",
+              "type": "Table",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "79df2e76-4707-4806-8807-e466ed4672d3-0",
+              "properties": {
+                "data": {
+                  "value": "{{queries.d31ce232-aeac-4153-b49a-6c54a2253aec.data}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "id": "28a6ae2f-40d7-424a-9779-761af26e67da",
+                      "name": "image",
+                      "key": "clerkData.imageUrl",
+                      "columnType": "image",
+                      "autogenerated": true,
+                      "isEditable": "{{false}}"
+                    },
+                    {
+                      "name": "first name",
+                      "id": "65d563f6-08d9-4228-9eff-8a1c25440d19",
+                      "isEditable": false,
+                      "fxActiveFields": [],
+                      "columnType": "string",
+                      "key": "clerkData.firstName",
+                      "transformation": "{{cellValue}}"
+                    },
+                    {
+                      "name": "last name",
+                      "id": "642b1e6a-3eef-40c1-8645-12feec57b463",
+                      "isEditable": false,
+                      "fxActiveFields": [],
+                      "columnType": "string",
+                      "key": "clerkData.lastName"
+                    },
+                    {
+                      "id": "8ac214f6-b05a-4470-9427-e178df670ce8",
+                      "name": "email",
+                      "key": "clerkData.emailAddresses",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "transformation": "{{cellValue[0].emailAddress}}"
+                    },
+                    {
+                      "id": "06dceb2c-638e-4131-bc88-20944d492022",
+                      "name": "id",
+                      "key": "clerkData.id",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "21632feb-caec-4828-9b08-52d092f35aa6",
+                      "name": "clerkData.passwordEnabled",
+                      "key": "clerkData.passwordEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "93d0dd0f-8405-495d-96aa-59b5c32539ee",
+                      "name": "clerkData.totpEnabled",
+                      "key": "clerkData.totpEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "38e6a989-4c75-4626-b74c-7f145a45da85",
+                      "name": "clerkData.backupCodeEnabled",
+                      "key": "clerkData.backupCodeEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "523c894d-9d7a-435f-9ebd-028c2da2132e",
+                      "name": "clerkData.twoFactorEnabled",
+                      "key": "clerkData.twoFactorEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "54c43067-fe64-4deb-9047-ef530fe878d5",
+                      "name": "clerkData.banned",
+                      "key": "clerkData.banned",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "89d699d7-39d4-4db2-95f6-840bba5fa02b",
+                      "name": "clerkData.locked",
+                      "key": "clerkData.locked",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "9404f0d7-b2ae-47b9-a27f-d35c395488bd",
+                      "name": "Created At",
+                      "key": "clerkData.createdAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "9a41962f-0411-4f5c-8018-73902225d432",
+                      "name": "clerkData.updatedAt",
+                      "key": "clerkData.updatedAt",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "5cbc953e-ccc2-4ff5-89f7-e83b14c3857c",
+                      "name": "clerkData.hasImage",
+                      "key": "clerkData.hasImage",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "d74dcf8e-56d1-4c76-8568-46dbfeeb7663",
+                      "name": "clerkData.primaryEmailAddressId",
+                      "key": "clerkData.primaryEmailAddressId",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "8dc2759a-6553-46af-8f8b-2fc1bb8614a5",
+                      "name": "Last Sign In",
+                      "key": "clerkData.lastSignInAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "9247b05c-9949-4cd3-b2f7-9bb5fdff29ef",
+                      "name": "clerkData.emailAddresses",
+                      "key": "clerkData.emailAddresses",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "ca048cb7-c3fa-46b6-af79-f2454b2af177",
+                      "name": "clerkData.phoneNumbers",
+                      "key": "clerkData.phoneNumbers",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "a268e5a8-642d-4ca5-83ff-d2b4ab4af292",
+                      "name": "clerkData.web3Wallets",
+                      "key": "clerkData.web3Wallets",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "f120fe3d-da9b-4a42-b05b-b91bfaee7479",
+                      "name": "clerkData.externalAccounts",
+                      "key": "clerkData.externalAccounts",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "fa598c59-96d9-4ffa-a020-30655e07e74b",
+                      "name": "clerkData.samlAccounts",
+                      "key": "clerkData.samlAccounts",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "766d30d4-0f59-4dba-ab70-a57192126dc4",
+                      "name": "Last Active",
+                      "key": "clerkData.lastActiveAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "9390a6b0-1187-433c-ac3a-ad127d7d4429",
+                      "name": "clerkData.createOrganizationEnabled",
+                      "key": "clerkData.createOrganizationEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "36a628f7-9c6e-4151-ad75-0d2d89dcb08f",
+                      "name": "clerkData.deleteSelfEnabled",
+                      "key": "clerkData.deleteSelfEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "name": "Initialized",
+                      "id": "b69a7323-6ed1-4d76-9806-445fbd284bdf",
+                      "isEditable": false,
+                      "fxActiveFields": [],
+                      "columnType": "boolean",
+                      "key": "ledstripData"
+                    }
+                  ]
+                },
+                "columnSizes": {
+                  "value": {
+                    "e3ecbf7fa52c4d7210a93edb8f43776267a489bad52bd108be9588f790126737": 105,
+                    "244da23a-31cb-4e41-8414-8f8967006f25": 207,
+                    "ff0a6e55-c587-4df8-8fcf-daef1f36237a": 92,
+                    "8ac214f6-b05a-4470-9427-e178df670ce8": 229,
+                    "65d563f6-08d9-4228-9eff-8a1c25440d19": 116,
+                    "b69a7323-6ed1-4d76-9806-445fbd284bdf": 27,
+                    "766d30d4-0f59-4dba-ab70-a57192126dc4": 120,
+                    "8dc2759a-6553-46af-8f8b-2fc1bb8614a5": 133,
+                    "28a6ae2f-40d7-424a-9779-761af26e67da": 89,
+                    "06dceb2c-638e-4131-bc88-20944d492022": 288,
+                    "9404f0d7-b2ae-47b9-a27f-d35c395488bd": 120
+                  }
+                },
+                "columnDeletionHistory": {
+                  "value": [
+                    "hasImage",
+                    "totpEnabled"
+                  ]
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "showAddNewRowButton": {
+                  "value": "{{false}}"
+                },
+                "showDownloadButton": {
+                  "value": "{{false}}"
+                },
+                "loadingState": {
+                  "value": "{{queries.d31ce232-aeac-4153-b49a-6c54a2253aec.isLoading}}",
+                  "fxActive": true
+                },
+                "showBulkUpdateActions": {
+                  "value": "{{true}}"
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Details",
+                      "events": [],
+                      "position": "right"
+                    }
+                  ]
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T20:25:38.622Z",
+              "layouts": [
+                {
+                  "id": "586270b9-fe76-4ca9-8d24-6180c319419b",
+                  "type": "mobile",
+                  "top": 0,
+                  "left": 0,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "c75ec6da-ed64-49a4-8c3e-d7d27fb19ba1",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "7ecb0e98-b957-489d-a408-72f83873de70",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 43,
+                  "height": 430,
+                  "componentId": "c75ec6da-ed64-49a4-8c3e-d7d27fb19ba1",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "259996a6-19f7-4ae7-945d-e34ed850bb3c",
+              "name": "modal1",
+              "type": "Modal",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "79df2e76-4707-4806-8807-e466ed4672d3-1",
+              "properties": {
+                "triggerButtonLabel": {
+                  "value": "Create Ledstrip"
+                },
+                "title": {
+                  "value": "Create Ledstrip"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "29abf8e9-4df5-4ec2-89a5-0b44abed7687",
+                  "type": "mobile",
+                  "top": 0,
+                  "left": 3,
+                  "width": 10,
+                  "height": 34,
+                  "componentId": "259996a6-19f7-4ae7-945d-e34ed850bb3c",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "cc083034-12b8-4015-a1a0-d0b71a07eb7f",
+                  "type": "desktop",
+                  "top": 390,
+                  "left": 20,
+                  "width": 5,
+                  "height": 40,
+                  "componentId": "259996a6-19f7-4ae7-945d-e34ed850bb3c",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "8c56c07f-3226-4077-902f-8c8d885754d0",
+              "name": "text1",
+              "type": "Text",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "properties": {
+                "text": {
+                  "value": "Ledstrip Details"
+                },
+                "textSize": {
+                  "value": 18
+                },
+                "fontWeight": {
+                  "value": "bold"
+                },
+                "fontStyle": {
+                  "value": "normal"
+                },
+                "textColor": {
+                  "value": "#000"
+                },
+                "isScrollRequired": {
+                  "value": "enabled"
+                },
+                "lineHeight": {
+                  "value": 1.5
+                },
+                "textIndent": {
+                  "value": "0"
+                },
+                "textAlign": {
+                  "value": "left"
+                },
+                "verticalAlignment": {
+                  "value": "top"
+                },
+                "decoration": {
+                  "value": "none"
+                },
+                "transformation": {
+                  "value": "none"
+                },
+                "letterSpacing": {
+                  "value": "0"
+                },
+                "wordSpacing": {
+                  "value": "0"
+                },
+                "fontVariant": {
+                  "value": "normal"
+                },
+                "backgroundColor": {
+                  "value": "#fff00000"
+                },
+                "borderColor": {
+                  "value": ""
+                },
+                "borderRadius": {
+                  "value": "0"
+                },
+                "boxShadow": {
+                  "value": "0px 0px 0px 0px #00000090"
+                },
+                "padding": {
+                  "value": "default"
+                }
+              },
+              "general": null,
+              "styles": {
+                "textFormat": {
+                  "value": "html"
+                },
+                "text": {
+                  "value": "User Details"
+                },
+                "loadingState": {
+                  "value": "{{false}}"
+                },
+                "disabledState": {
+                  "value": "{{false}}"
+                },
+                "visibility": {
+                  "value": "{{true}}"
+                },
+                "textSize": {
+                  "value": 18
+                },
+                "fontWeight": {
+                  "value": "bold"
+                },
+                "textColor": {
+                  "value": "#000"
+                },
+                "lineHeight": {
+                  "value": 1.5
+                },
+                "textIndent": {
+                  "value": "0"
+                },
+                "verticalAlignment": {
+                  "value": "top"
+                },
+                "letterSpacing": {
+                  "value": "0"
+                },
+                "wordSpacing": {
+                  "value": "0"
+                },
+                "borderRadius": {
+                  "value": "0"
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "4f1373dd-6659-458d-b68f-fc6b96850498",
+                  "type": "desktop",
+                  "top": 40,
+                  "left": 10,
+                  "width": 17,
+                  "height": 30,
+                  "componentId": "8c56c07f-3226-4077-902f-8c8d885754d0",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "cd00a178-7241-47a9-beeb-5312475be679",
+              "name": "button1",
+              "type": "Button",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "properties": {
+                "text": {
+                  "value": "Submit"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "e1b7c1ca-6d6a-4e79-8989-e3ac29ace55a",
+                  "type": "desktop",
+                  "top": 240,
+                  "left": 10,
+                  "width": 10,
+                  "height": 30,
+                  "componentId": "cd00a178-7241-47a9-beeb-5312475be679",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "b144b2a9-9144-4075-907b-3c5096f18f5d",
+              "name": "nameInput",
+              "type": "TextInput",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "properties": {
+                "label": {
+                  "value": "Name"
+                },
+                "placeholder": {
+                  "value": "What do you want to call the ledstrip?"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {
+                "minLength": {
+                  "value": "1"
+                }
+              },
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "24465eda-4617-44cb-bb65-3a3e2cd75754",
+                  "type": "desktop",
+                  "top": 90,
+                  "left": 10,
+                  "width": 24,
+                  "height": 40,
+                  "componentId": "b144b2a9-9144-4075-907b-3c5096f18f5d",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "92ca03bb-b090-433c-80a3-dd2a9cda44d1",
+                  "type": "mobile",
+                  "top": 90,
+                  "left": 10,
+                  "width": 10,
+                  "height": 40,
+                  "componentId": "b144b2a9-9144-4075-907b-3c5096f18f5d",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "4424a189-7743-4e2c-84e0-d455f38bfefe",
+              "name": "idInput",
+              "type": "TextInput",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "properties": {
+                "label": {
+                  "value": "Id"
+                },
+                "placeholder": {
+                  "value": "Enter the ledstrip ID"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {
+                "minLength": {
+                  "value": "1"
+                }
+              },
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "de463626-66b6-4ee7-8c81-f7b5c8e20eb0",
+                  "type": "mobile",
+                  "top": 140,
+                  "left": 9,
+                  "width": 10,
+                  "height": 40,
+                  "componentId": "4424a189-7743-4e2c-84e0-d455f38bfefe",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "966babd7-f01f-436b-a7e0-1baced79b3b9",
+                  "type": "desktop",
+                  "top": 150,
+                  "left": 10,
+                  "width": 24,
+                  "height": 40,
+                  "componentId": "4424a189-7743-4e2c-84e0-d455f38bfefe",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "52ac4191-48c2-44c6-a215-904630f439ca",
+              "name": "ledstripsTable",
+              "type": "Table",
+              "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "parent": "79df2e76-4707-4806-8807-e466ed4672d3-1",
+              "properties": {
+                "data": {
+                  "value": "{{queries.7faa8867-3e5f-43de-8e83-6ae45ecce4c6.data}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "name": "id",
+                      "id": "e3ecbf7fa52c4d7210a93edb8f43776267a489bad52bd108be9588f790126737",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 30,
+                      "columnType": "string"
+                    },
+                    {
+                      "name": "name",
+                      "id": "5d2a3744a006388aadd012fcc15cc0dbcb5f9130e0fbb64c558561c97118754a",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 130,
+                      "columnType": "string"
+                    },
+                    {
+                      "id": "4280bbc6-4573-4e0d-b301-7179f23fe642",
+                      "name": "users",
+                      "key": "users",
+                      "columnType": "number",
+                      "autogenerated": true,
+                      "transformation": "{{cellValue.length}}"
+                    }
+                  ]
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Details",
+                      "events": [],
+                      "position": "right",
+                      "backgroundColor": "#3072bbff"
+                    }
+                  ]
+                },
+                "loadingState": {
+                  "fxActive": true,
+                  "value": "{{queries.7faa8867-3e5f-43de-8e83-6ae45ecce4c6.isLoading}}"
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T20:25:14.477Z",
+              "layouts": [
+                {
+                  "id": "8d9e2ecd-6b97-48ad-8197-d8f88e6303e3",
+                  "type": "mobile",
+                  "top": -10,
+                  "left": 0,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "52ac4191-48c2-44c6-a215-904630f439ca",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "2df13fef-c744-4f56-9c68-53b89cf1d23e",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 43,
+                  "height": 380,
+                  "componentId": "52ac4191-48c2-44c6-a215-904630f439ca",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "b237877e-071b-49e1-a8b3-8b9c55b97d2e",
+              "name": "text1",
+              "type": "Text",
+              "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "parent": null,
+              "properties": {
+                "text": {
+                  "value": "{{queries.47ea68ce-3da8-43ae-8beb-29af91712483.data.clerkData.firstName}} {{queries.user.data.clerkData.lastName}}"
+                },
+                "textFormat": {
+                  "value": "markdown"
+                }
+              },
+              "general": null,
+              "styles": {
+                "textSize": {
+                  "value": "32"
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "8dfbb6e9-06e2-4bec-b7d4-39f15dfa84bf",
+                  "type": "mobile",
+                  "top": 170,
+                  "left": 18,
+                  "width": 6,
+                  "height": 40,
+                  "componentId": "b237877e-071b-49e1-a8b3-8b9c55b97d2e",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "2af4cfaf-0f60-4b09-9ab7-ec50e20d45bf",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 3,
+                  "width": 40,
+                  "height": 50,
+                  "componentId": "b237877e-071b-49e1-a8b3-8b9c55b97d2e",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "2e21831e-e507-4e4e-ae86-baa602c6b97d",
+              "name": "button1",
+              "type": "Button",
+              "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "parent": null,
+              "properties": {
+                "text": {
+                  "value": "<-"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "layouts": [
+                {
+                  "id": "124503de-5f7f-49dc-bfab-5629bce0fae2",
+                  "type": "mobile",
+                  "top": 80,
+                  "left": 35,
+                  "width": 3,
+                  "height": 30,
+                  "componentId": "2e21831e-e507-4e4e-ae86-baa602c6b97d",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                },
+                {
+                  "id": "e2ba6c1f-b721-4396-899a-63ac219f5102",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 2,
+                  "height": 50,
+                  "componentId": "2e21831e-e507-4e4e-ae86-baa602c6b97d",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:22:57.569Z"
+                }
+              ]
+            },
+            {
+              "id": "75196130-bf72-4781-8291-faf568d034f6",
+              "name": "text1",
+              "type": "Text",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": null,
+              "properties": {
+                "text": {
+                  "value": "{{ queries.ledstrip.data.name }}"
+                },
+                "textFormat": {
+                  "value": "plainText"
+                }
+              },
+              "general": null,
+              "styles": {
+                "textSize": {
+                  "value": "32"
+                },
+                "fontWeight": {
+                  "value": "normal"
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:26:54.099Z",
+              "updatedAt": "2024-11-16T18:28:18.419Z",
+              "layouts": [
+                {
+                  "id": "74e7ba3e-f68c-4654-b7f1-67b34c4ca4d6",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 3,
+                  "width": 40,
+                  "height": 50,
+                  "componentId": "75196130-bf72-4781-8291-faf568d034f6",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:28:20.776Z"
+                },
+                {
+                  "id": "43c84a86-fcf9-4045-9b1e-54427e5ceeea",
+                  "type": "mobile",
+                  "top": 0,
+                  "left": 4,
+                  "width": 6,
+                  "height": 40,
+                  "componentId": "75196130-bf72-4781-8291-faf568d034f6",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:26:54.099Z"
+                }
+              ]
+            },
+            {
+              "id": "5ae38bdb-f7ab-41bd-8e8d-80bcdfa3f088",
+              "name": "text2",
+              "type": "Text",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": null,
+              "properties": {
+                "text": {
+                  "value": "Owners"
+                }
+              },
+              "general": null,
+              "styles": {
+                "textSize": {
+                  "value": "22"
+                },
+                "fontWeight": {
+                  "value": "bold"
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:28:43.785Z",
+              "updatedAt": "2024-11-16T18:29:00.367Z",
+              "layouts": [
+                {
+                  "id": "fc4db6e0-ef5a-4243-b5a4-b55f6259aafd",
+                  "type": "mobile",
+                  "top": 80,
+                  "left": 0,
+                  "width": 6,
+                  "height": 40,
+                  "componentId": "5ae38bdb-f7ab-41bd-8e8d-80bcdfa3f088",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:28:43.785Z"
+                },
+                {
+                  "id": "6e73246b-2b69-44d7-8154-a0023ddae9c7",
+                  "type": "desktop",
+                  "top": 90,
+                  "left": 0,
+                  "width": 6,
+                  "height": 40,
+                  "componentId": "5ae38bdb-f7ab-41bd-8e8d-80bcdfa3f088",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:26:57.485Z"
+                }
+              ]
+            },
+            {
+              "id": "174af2c0-40b5-413d-b240-f70553c7b01a",
+              "name": "modal1",
+              "type": "Modal",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": null,
+              "properties": {
+                "title": {
+                  "value": "Assign an Owner"
+                },
+                "triggerButtonLabel": {
+                  "value": "Assign an Owner"
+                },
+                "size": {
+                  "value": "xl"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:30:27.529Z",
+              "updatedAt": "2024-11-16T18:46:21.950Z",
+              "layouts": [
+                {
+                  "id": "171c7980-8142-4cc7-9917-57e93e6100fc",
+                  "type": "desktop",
+                  "top": 90,
+                  "left": 33,
+                  "width": 10,
+                  "height": 34,
+                  "componentId": "174af2c0-40b5-413d-b240-f70553c7b01a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:20:03.886Z"
+                },
+                {
+                  "id": "3bd1875c-6e09-4bb8-ab16-fefbc2b41966",
+                  "type": "mobile",
+                  "top": 140,
+                  "left": 19,
+                  "width": 10,
+                  "height": 34,
+                  "componentId": "174af2c0-40b5-413d-b240-f70553c7b01a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:30:27.529Z"
+                }
+              ]
+            },
+            {
+              "id": "87608c88-cc3a-4227-9e71-3d913485b4b3",
+              "name": "ownersTable",
+              "type": "Table",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": null,
+              "properties": {
+                "data": {
+                  "value": "{{queries.0958f08c-f1e4-43c3-aee6-07c36284fc8d.data.users}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "id": "18fae943-27f1-4aed-b475-ca88309e859b",
+                      "name": "Image",
+                      "key": "clerkData.imageUrl",
+                      "columnType": "image",
+                      "autogenerated": true,
+                      "isEditable": "{{false}}"
+                    },
+                    {
+                      "id": "474ca028-73d0-4f2a-abb0-028f85423df5",
+                      "name": "First Name",
+                      "key": "clerkData.firstName",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "802e6877-4558-4b69-b78a-500a8133d233",
+                      "name": "Last Name",
+                      "key": "clerkData.lastName",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "201b23a0-9c0b-4a55-8f1a-008fa9c2412b",
+                      "name": "ID",
+                      "key": "clerkData.id",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "a3047593-1b2d-47d6-8fe3-de839a45cdaf",
+                      "name": "Created",
+                      "key": "clerkData.createdAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "276d8080-f0e1-4d26-91d9-9177b4f709fc",
+                      "name": "Sign In",
+                      "key": "clerkData.lastSignInAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": "{{true}}",
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "6f1a9f55-779f-467b-85e1-2240a7c713d0",
+                      "name": "Active",
+                      "key": "clerkData.lastActiveAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    }
+                  ]
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "columnDeletionHistory": {
+                  "value": [
+                    "clerkData.passwordEnabled",
+                    "clerkData.totpEnabled",
+                    "clerkData.backupCodeEnabled",
+                    "clerkData.twoFactorEnabled",
+                    "clerkData.banned",
+                    "clerkData.locked",
+                    "clerkData.hasImage",
+                    "clerkData.primaryEmailAddressId",
+                    "clerkData.emailAddresses",
+                    "clerkData.phoneNumbers",
+                    "clerkData.web3Wallets",
+                    "clerkData.externalAccounts",
+                    "clerkData.samlAccounts",
+                    "clerkData.createOrganizationEnabled",
+                    "clerkData.deleteSelfEnabled",
+                    "ledstripData.id",
+                    "clerkData.updatedAt"
+                  ]
+                },
+                "columnSizes": {
+                  "value": {
+                    "201b23a0-9c0b-4a55-8f1a-008fa9c2412b": 282
+                  }
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Remove",
+                      "events": [],
+                      "position": "right",
+                      "backgroundColor": "#d0021bff"
+                    }
+                  ]
+                },
+                "loadingState": {
+                  "fxActive": true,
+                  "value": "{{queries.0958f08c-f1e4-43c3-aee6-07c36284fc8d.isLoading}}"
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:35:29.449Z",
+              "updatedAt": "2024-11-16T20:19:56.398Z",
+              "layouts": [
+                {
+                  "id": "4229444c-0e4b-4f69-94bd-3051bba5b72d",
+                  "type": "mobile",
+                  "top": 110,
+                  "left": 1,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "87608c88-cc3a-4227-9e71-3d913485b4b3",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:35:29.449Z"
+                },
+                {
+                  "id": "4ab26297-e357-400c-8b69-231f6ed9dac0",
+                  "type": "desktop",
+                  "top": 130,
+                  "left": 0,
+                  "width": 43,
+                  "height": 400,
+                  "componentId": "87608c88-cc3a-4227-9e71-3d913485b4b3",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:36:23.555Z"
+                }
+              ]
+            },
+            {
+              "id": "eb9dffb7-dee3-4f54-b4cf-98333aafe08a",
+              "name": "ledstripUsersTable",
+              "type": "Table",
+              "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "parent": "174af2c0-40b5-413d-b240-f70553c7b01a",
+              "properties": {
+                "data": {
+                  "value": "{{queries.78c5d203-01cf-4f1c-8835-8615a822e212.data}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "id": "37c827eb-178d-483b-a95a-d623afe8bde6",
+                      "name": "Image",
+                      "key": "clerkData.imageUrl",
+                      "columnType": "image",
+                      "autogenerated": true,
+                      "isEditable": "{{false}}"
+                    },
+                    {
+                      "id": "32706c97-211c-42df-8332-b15825156646",
+                      "name": "clerkData.id",
+                      "key": "clerkData.id",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "cddb967c-e308-4d53-9993-59212f396da0",
+                      "name": "clerkData.passwordEnabled",
+                      "key": "clerkData.passwordEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "dcc21090-2910-4035-a50c-6c3475711e9d",
+                      "name": "clerkData.totpEnabled",
+                      "key": "clerkData.totpEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "ca0e5a8c-18a6-4bda-8aae-32a2bd37cf5b",
+                      "name": "clerkData.backupCodeEnabled",
+                      "key": "clerkData.backupCodeEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "f8bb559b-5026-4222-a073-80dccb6c911a",
+                      "name": "clerkData.twoFactorEnabled",
+                      "key": "clerkData.twoFactorEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "c0136703-a119-44ca-b8bb-3c6000aefb4a",
+                      "name": "clerkData.banned",
+                      "key": "clerkData.banned",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "43b89d5a-4532-4d25-ac08-b5ccf4655b58",
+                      "name": "clerkData.locked",
+                      "key": "clerkData.locked",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "4ae33253-c18c-4c9f-8555-10848dd5735d",
+                      "name": "Created",
+                      "key": "clerkData.createdAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "5931ec85-43ce-4288-8260-5a893fee7ce7",
+                      "name": "clerkData.updatedAt",
+                      "key": "clerkData.updatedAt",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "2e558100-315e-4079-9581-6833376681e3",
+                      "name": "clerkData.hasImage",
+                      "key": "clerkData.hasImage",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "b7ab995d-686a-4b46-86ac-e0f850bf75e7",
+                      "name": "clerkData.primaryEmailAddressId",
+                      "key": "clerkData.primaryEmailAddressId",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "2921bbbf-b1b1-47f1-8ed2-d52d91b12bde",
+                      "name": "Last Sign In",
+                      "key": "clerkData.lastSignInAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "fdfeff09-fc8d-4c3e-9d5f-735de80ad17a",
+                      "name": "clerkData.emailAddresses",
+                      "key": "clerkData.emailAddresses",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "d22c3bb0-b80d-4909-934a-5787c5a3a817",
+                      "name": "clerkData.phoneNumbers",
+                      "key": "clerkData.phoneNumbers",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "3541dc7f-4cb1-4506-8e64-02156dec125e",
+                      "name": "clerkData.web3Wallets",
+                      "key": "clerkData.web3Wallets",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "7aeb8443-e69d-4acf-9784-fb7b2115f2bf",
+                      "name": "clerkData.externalAccounts",
+                      "key": "clerkData.externalAccounts",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "0f73953e-46da-4d1f-be82-bacdd1d37a2f",
+                      "name": "clerkData.samlAccounts",
+                      "key": "clerkData.samlAccounts",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "8b51734c-0d3e-4ff3-a224-1a2faf29e464",
+                      "name": "Last Active",
+                      "key": "clerkData.lastActiveAt",
+                      "columnType": "datepicker",
+                      "autogenerated": true,
+                      "isTimeChecked": false,
+                      "dateFormat": "DD/MM/YYYY",
+                      "parseDateFormat": "DD/MM/YYYY",
+                      "isDateSelectionEnabled": true,
+                      "parseInUnixTimestamp": "{{true}}",
+                      "unixTimestamp": "milliseconds"
+                    },
+                    {
+                      "id": "98bfe91a-cfa6-4cde-8b06-10004afae781",
+                      "name": "clerkData.createOrganizationEnabled",
+                      "key": "clerkData.createOrganizationEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "0beda3bc-8625-45d5-ac81-c0328da902c6",
+                      "name": "clerkData.deleteSelfEnabled",
+                      "key": "clerkData.deleteSelfEnabled",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "2f6499ea-e39f-4dfb-be3a-a2a8aebe0ce2",
+                      "name": "First Name",
+                      "key": "clerkData.firstName",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "baea0d50-d94a-49fc-a955-d12aed9ebc4c",
+                      "name": "Last Name",
+                      "key": "clerkData.lastName",
+                      "columnType": "string",
+                      "autogenerated": true
+                    },
+                    {
+                      "id": "87256a93-9700-4351-9dcd-3a94226a19b1",
+                      "name": "ledstripData.id",
+                      "key": "ledstripData.id",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    },
+                    {
+                      "id": "e102ae02-5189-4a72-99ca-4bea3c6e51d4",
+                      "name": "ledstripData.ledstrips",
+                      "key": "ledstripData.ledstrips",
+                      "columnType": "string",
+                      "autogenerated": true,
+                      "columnVisibility": "{{false}}"
+                    }
+                  ]
+                },
+                "serverSideFilter": {
+                  "value": false
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "columnDeletionHistory": {
+                  "value": [
+                    "clerkData.createdAt"
+                  ]
+                },
+                "columnSizes": {
+                  "value": {
+                    "37c827eb-178d-483b-a95a-d623afe8bde6": 80,
+                    "32706c97-211c-42df-8332-b15825156646": 270,
+                    "4ae33253-c18c-4c9f-8555-10848dd5735d": 118,
+                    "2921bbbf-b1b1-47f1-8ed2-d52d91b12bde": 124,
+                    "8b51734c-0d3e-4ff3-a224-1a2faf29e464": 121,
+                    "2f6499ea-e39f-4dfb-be3a-a2a8aebe0ce2": 126,
+                    "baea0d50-d94a-49fc-a955-d12aed9ebc4c": 111
+                  }
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Assign Owner",
+                      "events": [],
+                      "position": "right",
+                      "fxActiveFields": [],
+                      "backgroundColor": "#417505ff",
+                      "disableActionButton": "{{false}}"
+                    }
+                  ]
+                },
+                "loadingState": {
+                  "fxActive": true,
+                  "value": "{{queries.78c5d203-01cf-4f1c-8835-8615a822e212.isLoading}}"
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T18:37:46.225Z",
+              "updatedAt": "2024-11-16T20:20:22.357Z",
+              "layouts": [
+                {
+                  "id": "92df8a7e-ef83-4290-b99c-ce57d87a9ac4",
+                  "type": "mobile",
+                  "top": 0,
+                  "left": 1,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "eb9dffb7-dee3-4f54-b4cf-98333aafe08a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:37:46.225Z"
+                },
+                {
+                  "id": "4c672220-9e76-4afd-8c44-55e27d895a24",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 43,
+                  "height": 460,
+                  "componentId": "eb9dffb7-dee3-4f54-b4cf-98333aafe08a",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T18:46:28.730Z"
+                }
+              ]
+            },
+            {
+              "id": "3babe6b1-eae1-488b-8b86-2effcbd41079",
+              "name": "myLedstripsTable",
+              "type": "Table",
+              "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "parent": null,
+              "properties": {
+                "data": {
+                  "value": "{{queries.47ea68ce-3da8-43ae-8beb-29af91712483.data.ledstripData.ledstrips}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "name": "id",
+                      "id": "e3ecbf7fa52c4d7210a93edb8f43776267a489bad52bd108be9588f790126737",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 30,
+                      "columnType": "string"
+                    },
+                    {
+                      "name": "name",
+                      "id": "5d2a3744a006388aadd012fcc15cc0dbcb5f9130e0fbb64c558561c97118754a",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 130,
+                      "columnType": "string"
+                    }
+                  ]
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Remove",
+                      "events": [],
+                      "position": "right",
+                      "backgroundColor": "#d0021bff"
+                    }
+                  ]
+                },
+                "loadingState": {
+                  "value": "{{queries.47ea68ce-3da8-43ae-8beb-29af91712483.isLoading}}",
+                  "fxActive": true
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T19:58:31.632Z",
+              "updatedAt": "2024-11-16T20:17:16.108Z",
+              "layouts": [
+                {
+                  "id": "9298a933-71b3-4bc4-bf46-67003f1deb68",
+                  "type": "mobile",
+                  "top": 70,
+                  "left": 0,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "3babe6b1-eae1-488b-8b86-2effcbd41079",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T19:58:31.632Z"
+                },
+                {
+                  "id": "dfad8df3-4691-4282-9e49-965e69edac8a",
+                  "type": "desktop",
+                  "top": 90,
+                  "left": 0,
+                  "width": 43,
+                  "height": 460,
+                  "componentId": "3babe6b1-eae1-488b-8b86-2effcbd41079",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T19:58:36.409Z"
+                }
+              ]
+            },
+            {
+              "id": "24406df6-cb44-4d89-a39a-49ffc5633760",
+              "name": "modal1",
+              "type": "Modal",
+              "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "parent": null,
+              "properties": {
+                "title": {
+                  "value": "Add ledstrip"
+                },
+                "triggerButtonLabel": {
+                  "value": "Add ledstrip"
+                },
+                "size": {
+                  "value": "xl"
+                }
+              },
+              "general": null,
+              "styles": {},
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T20:06:39.832Z",
+              "updatedAt": "2024-11-16T20:07:00.978Z",
+              "layouts": [
+                {
+                  "id": "65f2b8c6-3896-4680-b19c-d00a02188521",
+                  "type": "mobile",
+                  "top": 60,
+                  "left": 0,
+                  "width": 10,
+                  "height": 34,
+                  "componentId": "24406df6-cb44-4d89-a39a-49ffc5633760",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:06:39.832Z"
+                },
+                {
+                  "id": "09bce71c-dc9d-4060-852a-7b7363b010a6",
+                  "type": "desktop",
+                  "top": 60,
+                  "left": 33,
+                  "width": 10,
+                  "height": 34,
+                  "componentId": "24406df6-cb44-4d89-a39a-49ffc5633760",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:06:56.034Z"
+                }
+              ]
+            },
+            {
+              "id": "89aa803a-4593-4e2b-a87a-53a25382ecd2",
+              "name": "potentialLedstripsTable",
+              "type": "Table",
+              "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "parent": "24406df6-cb44-4d89-a39a-49ffc5633760",
+              "properties": {
+                "data": {
+                  "value": "{{queries.19622388-4468-4b20-a29b-4f9588b17bc0.data}}"
+                },
+                "columns": {
+                  "value": [
+                    {
+                      "name": "id",
+                      "id": "e3ecbf7fa52c4d7210a93edb8f43776267a489bad52bd108be9588f790126737",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 30,
+                      "columnType": "string"
+                    },
+                    {
+                      "name": "name",
+                      "id": "5d2a3744a006388aadd012fcc15cc0dbcb5f9130e0fbb64c558561c97118754a",
+                      "autogenerated": true,
+                      "fxActiveFields": [],
+                      "columnSize": 130,
+                      "columnType": "string"
+                    },
+                    {
+                      "id": "20d1788a-9664-4a25-9b11-6390f0bbb91a",
+                      "name": "users",
+                      "key": "users",
+                      "columnType": "string",
+                      "autogenerated": true
+                    }
+                  ]
+                },
+                "allowSelection": {
+                  "value": "{{false}}"
+                },
+                "actions": {
+                  "value": [
+                    {
+                      "name": "Action0",
+                      "buttonText": "Assign Ownership",
+                      "events": [],
+                      "position": "right",
+                      "backgroundColor": "#417505ff"
+                    }
+                  ]
+                },
+                "loadingState": {
+                  "fxActive": true,
+                  "value": "{{queries.19622388-4468-4b20-a29b-4f9588b17bc0.isLoading}}"
+                }
+              },
+              "general": null,
+              "styles": {
+                "contentWrap": {
+                  "value": false
+                }
+              },
+              "generalStyles": null,
+              "displayPreferences": {
+                "showOnDesktop": {
+                  "value": "{{true}}"
+                },
+                "showOnMobile": {
+                  "value": "{{false}}"
+                }
+              },
+              "validation": {},
+              "createdAt": "2024-11-16T20:07:08.753Z",
+              "updatedAt": "2024-11-16T20:18:13.261Z",
+              "layouts": [
+                {
+                  "id": "4c28fa7e-52c4-4fb3-bab6-d029d41d30dc",
+                  "type": "mobile",
+                  "top": 0,
+                  "left": 0,
+                  "width": 35,
+                  "height": 456,
+                  "componentId": "89aa803a-4593-4e2b-a87a-53a25382ecd2",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:07:08.753Z"
+                },
+                {
+                  "id": "0a1e6ba5-4973-45d6-98f9-998426213b71",
+                  "type": "desktop",
+                  "top": 0,
+                  "left": 0,
+                  "width": 43,
+                  "height": 460,
+                  "componentId": "89aa803a-4593-4e2b-a87a-53a25382ecd2",
+                  "dimensionUnit": "count",
+                  "updatedAt": "2024-11-16T20:07:12.951Z"
+                }
+              ]
             }
           ],
-          "events": [],
+          "pages": [
+            {
+              "id": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+              "name": "Home",
+              "handle": "home",
+              "index": 0,
+              "disabled": null,
+              "hidden": null,
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "autoComputeLayout": false,
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70"
+            },
+            {
+              "id": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+              "name": "UserDetails",
+              "handle": "details",
+              "index": 0,
+              "disabled": null,
+              "hidden": null,
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "autoComputeLayout": false,
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70"
+            },
+            {
+              "id": "833356c2-6cad-48d2-b545-852f7d7762d7",
+              "name": "LedstripDetails",
+              "handle": "ledstripdetails",
+              "index": 3,
+              "disabled": null,
+              "hidden": null,
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z",
+              "autoComputeLayout": false,
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70"
+            }
+          ],
+          "events": [
+            {
+              "id": "905462cb-c6e8-4dc9-9d67-6fa3b8ed0a1b",
+              "name": "onDataQuerySuccess",
+              "index": 0,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Ledstrip was created",
+                "actionId": "show-alert",
+                "alertType": "success"
+              },
+              "sourceId": "7e91b956-9b63-4089-b37b-3f5eb45ae8c4",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "1c6b7486-4091-4dfc-a2be-dd2975022255",
+              "name": "onDataQueryFailure",
+              "index": 1,
+              "event": {
+                "eventId": "onDataQueryFailure",
+                "message": "{{queries.7e91b956-9b63-4089-b37b-3f5eb45ae8c4}}",
+                "actionId": "show-alert",
+                "alertType": "info"
+              },
+              "sourceId": "7e91b956-9b63-4089-b37b-3f5eb45ae8c4",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "1861effd-5aa7-4d36-a056-480d0d63d150",
+              "name": "onSubmit",
+              "index": 0,
+              "event": {
+                "eventId": "onSubmit",
+                "message": "Hello world!",
+                "queryId": "7e91b956-9b63-4089-b37b-3f5eb45ae8c4",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "createLedstrip",
+                "runOnlyIf": "",
+                "parameters": {}
+              },
+              "sourceId": "8b2d64cb-80c6-4621-b1e6-a9823ee2b3af",
+              "target": "component",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "9e5559d9-89cb-430e-a3ec-f881c188b67c",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "slug": "c4542393-1455-4497-a317-84def3a4e393",
+                "pageId": "3797dbd0-1b99-475c-8149-dfc7c6960c14",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "actionId": "switch-page",
+                "alertType": "info",
+                "queryParams": [
+                  [
+                    "id",
+                    "{{components.c75ec6da-ed64-49a4-8c3e-d7d27fb19ba1.selectedRow.clerkData.id}}"
+                  ]
+                ]
+              },
+              "sourceId": "c75ec6da-ed64-49a4-8c3e-d7d27fb19ba1",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "6c0347e4-2806-4bcc-838f-5d7a9205ada2",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "pageId": "833356c2-6cad-48d2-b545-852f7d7762d7",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "actionId": "switch-page",
+                "alertType": "info",
+                "queryParams": [
+                  [
+                    "id",
+                    "{{components.52ac4191-48c2-44c6-a215-904630f439ca.selectedRow.id}}"
+                  ]
+                ]
+              },
+              "sourceId": "52ac4191-48c2-44c6-a215-904630f439ca",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "935dd2c5-3e29-4e22-8d5f-337fe3fe3ac1",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "actionId": "switch-page",
+                "alertType": "info",
+                "runOnlyIf": ""
+              },
+              "sourceId": "2e21831e-e507-4e4e-ae86-baa602c6b97d",
+              "target": "component",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "1dd53ec3-f6be-4eb8-bb3c-f876eddf8f4c",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "pageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "actionId": "switch-page",
+                "alertType": "info",
+                "runOnlyIf": ""
+              },
+              "sourceId": "583d3e49-78f3-4d57-a9c0-ad1807d2080a",
+              "target": "component",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "0bcbabea-5420-4a53-b7b6-a317f79f9f3c",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "queryId": "0e48317e-2e7d-4b59-84fa-0d2ba35ff0d7",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "assignOwner",
+                "parameters": {}
+              },
+              "sourceId": "eb9dffb7-dee3-4f54-b4cf-98333aafe08a",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:55:20.982Z",
+              "updatedAt": "2024-11-16T19:03:19.208Z"
+            },
+            {
+              "id": "34fffe45-327f-4203-a77e-572953cf99b7",
+              "name": "onDataQuerySuccess",
+              "index": 0,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Ownership assigned!",
+                "actionId": "show-alert",
+                "alertType": "success"
+              },
+              "sourceId": "0e48317e-2e7d-4b59-84fa-0d2ba35ff0d7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:02:50.461Z",
+              "updatedAt": "2024-11-16T19:03:07.190Z"
+            },
+            {
+              "id": "95c529e2-4001-40b1-9b1d-66feabf4cbed",
+              "name": "onDataQuerySuccess",
+              "index": 1,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "78c5d203-01cf-4f1c-8835-8615a822e212",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "ledstripUsers",
+                "parameters": {}
+              },
+              "sourceId": "0e48317e-2e7d-4b59-84fa-0d2ba35ff0d7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:03:38.134Z",
+              "updatedAt": "2024-11-16T19:03:47.181Z"
+            },
+            {
+              "id": "642829d2-e8c9-4713-a1f0-7ab8fdfbf344",
+              "name": "onDataQuerySuccess",
+              "index": 2,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "0958f08c-f1e4-43c3-aee6-07c36284fc8d",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "ledstrip",
+                "parameters": {}
+              },
+              "sourceId": "0e48317e-2e7d-4b59-84fa-0d2ba35ff0d7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:03:48.998Z",
+              "updatedAt": "2024-11-16T19:04:02.514Z"
+            },
+            {
+              "id": "fcf7ca8a-0900-4572-856a-4341e297c46e",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "queryId": "52e991c2-1b09-4524-9f80-82b2794413e7",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "deleteOwner",
+                "parameters": {}
+              },
+              "sourceId": "87608c88-cc3a-4227-9e71-3d913485b4b3",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:28:43.092Z",
+              "updatedAt": "2024-11-16T19:29:20.171Z"
+            },
+            {
+              "id": "d939f1d9-7648-4c80-9d4b-73a98e74eb0e",
+              "name": "onDataQuerySuccess",
+              "index": 1,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "78c5d203-01cf-4f1c-8835-8615a822e212",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "ledstripUsers",
+                "parameters": {}
+              },
+              "sourceId": "52e991c2-1b09-4524-9f80-82b2794413e7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:28:53.273Z",
+              "updatedAt": "2024-11-16T19:28:53.273Z"
+            },
+            {
+              "id": "a9c4882a-4b2d-4317-aba9-d1f3ee306f93",
+              "name": "onDataQuerySuccess",
+              "index": 2,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "0958f08c-f1e4-43c3-aee6-07c36284fc8d",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "ledstrip",
+                "parameters": {}
+              },
+              "sourceId": "52e991c2-1b09-4524-9f80-82b2794413e7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:28:53.296Z",
+              "updatedAt": "2024-11-16T19:28:53.296Z"
+            },
+            {
+              "id": "580efb81-9306-4906-9336-27fcf0892bfb",
+              "name": "onDataQuerySuccess",
+              "index": 0,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Ownership removed",
+                "actionId": "show-alert",
+                "alertType": "success"
+              },
+              "sourceId": "52e991c2-1b09-4524-9f80-82b2794413e7",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:28:53.316Z",
+              "updatedAt": "2024-11-16T19:29:49.524Z"
+            },
+            {
+              "id": "56ef0133-d510-4fa7-88e2-82abca30feb9",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "queryId": "d00454ce-befc-4122-adb9-79c3f0ed582d",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "deleteLedstrip",
+                "parameters": {}
+              },
+              "sourceId": "3babe6b1-eae1-488b-8b86-2effcbd41079",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:59:29.315Z",
+              "updatedAt": "2024-11-16T20:02:46.119Z"
+            },
+            {
+              "id": "978417ea-a894-40cd-ab18-4cf7597a03db",
+              "name": "onDataQuerySuccess",
+              "index": 0,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Ledstrip Removed",
+                "actionId": "show-alert",
+                "alertType": "info"
+              },
+              "sourceId": "d00454ce-befc-4122-adb9-79c3f0ed582d",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:04:48.828Z",
+              "updatedAt": "2024-11-16T20:04:58.547Z"
+            },
+            {
+              "id": "9d69d024-5f2e-4517-b0a1-894fc199958e",
+              "name": "onDataQuerySuccess",
+              "index": 1,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "47ea68ce-3da8-43ae-8beb-29af91712483",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "user",
+                "parameters": {}
+              },
+              "sourceId": "d00454ce-befc-4122-adb9-79c3f0ed582d",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:05:45.941Z",
+              "updatedAt": "2024-11-16T20:05:55.734Z"
+            },
+            {
+              "id": "811569e2-e504-4335-81e0-406aa3eebd92",
+              "name": "onDataQuerySuccess",
+              "index": 0,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Ledsrip was Added!",
+                "actionId": "show-alert",
+                "alertType": "success"
+              },
+              "sourceId": "156e2f7e-77f3-48bf-9986-d05b44c5306e",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:14:30.182Z",
+              "updatedAt": "2024-11-16T20:14:39.950Z"
+            },
+            {
+              "id": "799e015f-7db3-43c8-993a-08795f3b2120",
+              "name": "onDataQuerySuccess",
+              "index": 1,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "19622388-4468-4b20-a29b-4f9588b17bc0",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "potentialLedstrips",
+                "parameters": {}
+              },
+              "sourceId": "156e2f7e-77f3-48bf-9986-d05b44c5306e",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:14:40.508Z",
+              "updatedAt": "2024-11-16T20:15:00.586Z"
+            },
+            {
+              "id": "1f02be28-4fba-4e15-bc05-dc3b8de12049",
+              "name": "onDataQuerySuccess",
+              "index": 2,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "47ea68ce-3da8-43ae-8beb-29af91712483",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "user",
+                "parameters": {}
+              },
+              "sourceId": "156e2f7e-77f3-48bf-9986-d05b44c5306e",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:15:02.128Z",
+              "updatedAt": "2024-11-16T20:15:17.470Z"
+            },
+            {
+              "id": "86a35a6e-933f-4144-a04a-f98a505317a3",
+              "name": "onClick",
+              "index": 0,
+              "event": {
+                "ref": "Action0",
+                "eventId": "onClick",
+                "message": "Hello world!",
+                "queryId": "156e2f7e-77f3-48bf-9986-d05b44c5306e",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "assignLedstrip",
+                "parameters": {}
+              },
+              "sourceId": "89aa803a-4593-4e2b-a87a-53a25382ecd2",
+              "target": "table_action",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:15:35.898Z",
+              "updatedAt": "2024-11-16T20:15:47.481Z"
+            },
+            {
+              "id": "a56fa54d-94f3-421e-958d-ccbd794efae9",
+              "name": "onDataQuerySuccess",
+              "index": 2,
+              "event": {
+                "eventId": "onDataQuerySuccess",
+                "message": "Hello world!",
+                "queryId": "19622388-4468-4b20-a29b-4f9588b17bc0",
+                "actionId": "run-query",
+                "alertType": "info",
+                "queryName": "potentialLedstrips",
+                "parameters": {}
+              },
+              "sourceId": "d00454ce-befc-4122-adb9-79c3f0ed582d",
+              "target": "data_query",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:17:36.568Z",
+              "updatedAt": "2024-11-16T20:17:44.373Z"
+            }
+          ],
           "dataQueries": [
             {
-              "id": "a3423229-2b0b-46be-89b4-d555c8b34b07",
+              "id": "d31ce232-aeac-4153-b49a-6c54a2253aec",
               "name": "users",
               "options": {
                 "method": "get",
@@ -87,15 +2510,415 @@
                 "retry_network_errors": true,
                 "transformationLanguage": "javascript",
                 "enableTransformation": false,
-                "showSuccessNotification": false
+                "showSuccessNotification": false,
+                "runOnPageLoad": true
               },
               "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
-              "appVersionId": "d2228591-e59a-4352-b9b7-8621f0e73804",
-              "createdAt": "2024-11-03T18:16:15.637Z",
-              "updatedAt": "2024-11-03T18:24:11.089Z"
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T20:26:46.919Z"
+            },
+            {
+              "id": "47ea68ce-3da8-43ae-8beb-29af91712483",
+              "name": "user",
+              "options": {
+                "method": "get",
+                "url": "users/{{globals.urlparams.id}}",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "runOnPageLoad": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T20:26:46.751Z"
+            },
+            {
+              "id": "7e91b956-9b63-4089-b37b-3f5eb45ae8c4",
+              "name": "createLedstrip",
+              "options": {
+                "method": "post",
+                "url": "ledstrips",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "name",
+                    "{{components.form1.data.nameInput.value}}"
+                  ],
+                  [
+                    "id",
+                    "{{components.form1.data.idInput.value}}"
+                  ],
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "arrayValuesChanged": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "7faa8867-3e5f-43de-8e83-6ae45ecce4c6",
+              "name": "ledstrips",
+              "options": {
+                "method": "get",
+                "url": "ledstrips",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "runOnPageLoad": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T20:26:46.487Z"
+            },
+            {
+              "id": "0958f08c-f1e4-43c3-aee6-07c36284fc8d",
+              "name": "ledstrip",
+              "options": {
+                "method": "get",
+                "url": "ledstrips/{{globals.urlparams.id}}",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "runOnPageLoad": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:23:20.723Z",
+              "updatedAt": "2024-11-16T20:26:46.555Z"
+            },
+            {
+              "id": "78c5d203-01cf-4f1c-8835-8615a822e212",
+              "name": "potentialOwners",
+              "options": {
+                "method": "get",
+                "url": "users",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": true,
+                "runOnPageLoad": true,
+                "transformation": "// write your code here\n// return value will be set as data and the original data will be available as rawData\nreturn data.filter(row => row.ledstripData && !row.ledstripData.ledstrips.map(l => l.id).includes(globals.urlparams.id));\n    "
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:43:32.554Z",
+              "updatedAt": "2024-11-16T20:26:46.632Z"
+            },
+            {
+              "id": "0e48317e-2e7d-4b59-84fa-0d2ba35ff0d7",
+              "name": "assignOwner",
+              "options": {
+                "method": "post",
+                "url": "users/{{components.ledstripUsersTable.selectedRow.clerkData.id}}/ownership",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "ledstripId",
+                    "{{globals.urlparams.id}}"
+                  ],
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "arrayValuesChanged": false
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T18:56:06.337Z",
+              "updatedAt": "2024-11-16T20:23:05.844Z"
+            },
+            {
+              "id": "52e991c2-1b09-4524-9f80-82b2794413e7",
+              "name": "deleteOwner",
+              "options": {
+                "method": "delete",
+                "url": "users/{{components.ownersTable.selectedRow.clerkData.id}}/ownership",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "ledstripId",
+                    "{{globals.urlparams.id}}"
+                  ],
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "arrayValuesChanged": false
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T19:28:53.065Z",
+              "updatedAt": "2024-11-16T20:22:58.657Z"
+            },
+            {
+              "id": "d00454ce-befc-4122-adb9-79c3f0ed582d",
+              "name": "deleteLedstrip",
+              "options": {
+                "method": "delete",
+                "url": "users/{{globals.urlparams.id}}/ownership",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "ledstripId",
+                    "{{components.myLedstripsTable.selectedRow.id}}"
+                  ],
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "arrayValuesChanged": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:00:56.318Z",
+              "updatedAt": "2024-11-16T20:17:01.739Z"
+            },
+            {
+              "id": "19622388-4468-4b20-a29b-4f9588b17bc0",
+              "name": "potentialLedstrips",
+              "options": {
+                "method": "get",
+                "url": "ledstrips",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": true,
+                "transformation": "// write your code here\n// return value will be set as data and the original data will be available as rawData\nreturn data.filter(row => !row.users.map(u => u.id).includes(globals.urlparams.id));\n    ",
+                "runOnPageLoad": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:07:16.765Z",
+              "updatedAt": "2024-11-16T20:26:46.831Z"
+            },
+            {
+              "id": "156e2f7e-77f3-48bf-9986-d05b44c5306e",
+              "name": "assignLedstrip",
+              "options": {
+                "method": "post",
+                "url": "users/{{globals.urlparams.id}}/ownership",
+                "url_params": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "headers": [
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "body": [
+                  [
+                    "ledstripId",
+                    "{{components.potentialLedstripsTable.selectedRow.id}}"
+                  ],
+                  [
+                    "",
+                    ""
+                  ]
+                ],
+                "json_body": null,
+                "body_toggle": false,
+                "retry_network_errors": true,
+                "transformationLanguage": "javascript",
+                "enableTransformation": false,
+                "runOnPageLoad": false,
+                "arrayValuesChanged": true
+              },
+              "dataSourceId": "cfdfc716-2125-47b0-ba5d-491093d9409d",
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "createdAt": "2024-11-16T20:11:58.654Z",
+              "updatedAt": "2024-11-16T20:18:23.530Z"
             }
           ],
           "dataSources": [
+            {
+              "id": "80ca0139-14ed-48bb-9f29-1e8ac3e0aed0",
+              "name": "restapidefault",
+              "kind": "restapi",
+              "type": "static",
+              "pluginId": null,
+              "appVersionId": "98581453-1436-4f86-9615-016af8239c70",
+              "organizationId": null,
+              "scope": "local",
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
             {
               "id": "cfdfc716-2125-47b0-ba5d-491093d9409d",
               "name": "nextServer",
@@ -111,8 +2934,8 @@
           ],
           "appVersions": [
             {
-              "id": "d2228591-e59a-4352-b9b7-8621f0e73804",
-              "name": "v1",
+              "id": "98581453-1436-4f86-9615-016af8239c70",
+              "name": "v1.2.5",
               "definition": null,
               "globalSettings": {
                 "hideHeader": false,
@@ -125,12 +2948,12 @@
                 "appMode": "auto"
               },
               "showViewerNavigation": true,
-              "homePageId": "98190f0d-3eeb-4a5d-a372-09b92732a6ba",
+              "homePageId": "ed6d9268-5cc8-4b1b-a198-e3aef104df91",
               "appId": "6f061b38-5041-44fb-90f4-2c76a42ffc76",
               "currentEnvironmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
               "promotedFrom": "c506a5b1-5150-4545-b613-25667e18b00c",
-              "createdAt": "2024-11-03T18:01:42.625Z",
-              "updatedAt": "2024-11-03T18:24:31.125Z"
+              "createdAt": "2024-11-16T18:22:57.573Z",
+              "updatedAt": "2024-11-16T20:31:46.576Z"
             }
           ],
           "appEnvironments": [
@@ -516,6 +3339,30 @@
               },
               "createdAt": "2024-11-03T18:08:50.076Z",
               "updatedAt": "2024-11-03T18:20:11.024Z"
+            },
+            {
+              "id": "ea0156f1-c5bb-4f68-b1bd-39411d01eaa6",
+              "dataSourceId": "80ca0139-14ed-48bb-9f29-1e8ac3e0aed0",
+              "environmentId": "c506a5b1-5150-4545-b613-25667e18b00c",
+              "options": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "dae32965-3338-4868-9927-0fc8121fd5bc",
+              "dataSourceId": "80ca0139-14ed-48bb-9f29-1e8ac3e0aed0",
+              "environmentId": "cab63881-c4dc-49a4-88d7-231fe21660c5",
+              "options": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
+            },
+            {
+              "id": "92b83600-bd4c-4f80-9686-32631c4508a8",
+              "dataSourceId": "80ca0139-14ed-48bb-9f29-1e8ac3e0aed0",
+              "environmentId": "d1b09ff5-471f-46d8-86cc-38b4a57816ae",
+              "options": {},
+              "createdAt": "2024-11-16T18:22:57.569Z",
+              "updatedAt": "2024-11-16T18:22:57.569Z"
             }
           ],
           "schemaDetails": {

@@ -6,7 +6,7 @@ const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, { params }: any) {
     try {
         const apiKey = request.headers.get("X-API-Key");
 
@@ -17,21 +17,18 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const clerkUsers = await clerkClient.users.getUserList();
+        const userId: string = params.id;
 
-        return NextResponse.json(
-            await Promise.all(
-                clerkUsers.data.map(async (clerkUser) => {
-                    return {
-                        clerkData: clerkUser,
-                        ledstripData: await prisma.user.findUnique({
-                            where: { id: clerkUser.id },
-                            include: { ledstrips: true },
-                        }),
-                    };
-                })
-            )
-        );
+        const clerkUser = await clerkClient.users.getUser(userId);
+        const ledstripUser = await prisma.user.findUnique({
+            where: { id: userId },
+            include: { ledstrips: true },
+        });
+
+        return NextResponse.json({
+            clerkData: clerkUser,
+            ledstripData: ledstripUser,
+        });
     } catch (error) {
         console.error(error);
         return NextResponse.json(

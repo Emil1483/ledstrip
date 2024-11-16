@@ -8,6 +8,12 @@ datasource db {
 }
 
 model User {
-  id          String @id
-  savedStates String
+  id        String     @id
+  ledstrips Ledstrip[] @relation("UserLedstrips")
+}
+
+model Ledstrip {
+  id    String @id
+  name  String
+  users User[] @relation("UserLedstrips")
 }
