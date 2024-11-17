@@ -33,10 +33,10 @@ export default async function Page(context: any) {
                     404: Not Found 🚫
                 </Typography>
                 <Typography variant="h6" component="p" color="text.secondary" gutterBottom>
-                    Looks like there's no LED strip with ID "{context.params.id}" 🆔
+                    Looks like there&apos;s no LED strip with ID &quot;{context.params.id}&quot; 🆔
                 </Typography>
                 <Typography variant="body1" color="text.secondary" mb={3}>
-                    Double-check the ID or reach out to an admin if you're not sure. 🔧💡
+                    Double-check the ID or reach out to an admin if you&apos;re not sure. 🔧💡
                 </Typography>
 
             </Box>

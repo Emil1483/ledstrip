@@ -65,7 +65,7 @@ export default async function Page() {
                     Oops! 😢
                 </Typography>
                 <Typography variant="h6" component="p" color="text.secondary" gutterBottom>
-                    You don't have any LED strips assigned! 🚧
+                    You don&apos;t have any LED strips assigned! 🚧
                 </Typography>
                 <Typography variant="body1" color="text.secondary" mb={3}>
                     Please ask an admin to assign LED strips to you. 💡✨

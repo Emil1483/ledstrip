@@ -46,8 +46,9 @@ export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children, le
             Object.keys(extendedLedstrips).forEach((key) => {
                 setLedstrips((ledstrips) => {
                     const newLedstrips = { ...ledstrips }
-                    if (newLedstrips[key].aliveAt) {
-                        newLedstrips[key].aliveFor = (Date.now() / 1000) - newLedstrips[key].aliveAt
+                    const ledstrip = newLedstrips[key]
+                    if (ledstrip && ledstrip.aliveAt) {
+                        newLedstrips[key].aliveFor = (Date.now() / 1000) - ledstrip.aliveAt
                     }
                     return newLedstrips
                 })
