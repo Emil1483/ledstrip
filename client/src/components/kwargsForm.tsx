@@ -12,13 +12,7 @@ import ColorInput from "@/components/colorInput";
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import RangedFloatInput from "@/components/rangedFloat";
 import { Button, Grid } from "@mui/material";
-import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
-import { useLongPress } from "@uidotdev/usehooks";
 import assert from "assert";
-import useConfirm from "@/hooks/useConfirm";
-import { useSavedStatesStore } from "@/hooks/useSavedStatesStore";
-import { useShallow } from "zustand/react/shallow";
-import { SavedStateComponent } from "@/components/SavedStateComponent";
 import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/ModesContext";
 
 interface KwargsFormProps {
@@ -46,11 +40,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
     assert(mode in currentModes, `Mode ${mode} not found`)
 
     const [state, setState] = useState<ModeState>(getDefaultState(currentModes[mode]))
-    const [Dialog, confirmDelete] = useConfirm()
 
-    const { savedStates, setSavedStates } = useSavedStatesStore(
-        useShallow((state) => ({ savedStates: state.savedStates, setSavedStates: state.setSavedStates })
-        ))
 
     useEffect(() => {
         if (canAutoChange()) {
@@ -58,58 +48,6 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
         }
     }, [state])
 
-    function currentStateIsSaved(): boolean {
-        for (const savedState of currentSavedStates()) {
-            if (JSON.stringify(savedState) === JSON.stringify(state)) {
-                return true
-            }
-        }
-        return false
-    }
-
-
-    async function handleSaveState() {
-        const result = await fetch(`/api/saveState`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                mode: mode,
-                state: state
-            }),
-        })
-
-        const savedStates = await result.json()
-
-        if (result.ok) {
-            setSavedStates(savedStates)
-        } else {
-            console.error('Failed to save state')
-        }
-    }
-
-    async function handleDeleteState(index: number) {
-        assert(index >= 0 && index < currentSavedStates().length)
-
-        const result = await fetch(`/api/deleteState`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                mode: mode,
-                index: index
-            }),
-        })
-
-        if (result.ok) {
-            const savedStates = await result.json()
-            setSavedStates(savedStates)
-        } else {
-            console.error('Failed to delete state')
-        }
-    }
 
     function handleStateChange(key: string, value: any) {
         if (value === null) {
@@ -211,20 +149,6 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
         return getButtonElement(element.parentElement)
     }
 
-    const longPressAttrs = useLongPress(
-        async (e) => {
-            const buttonElement = getButtonElement(e.target as HTMLElement);
-            const index = parseInt(buttonElement.id)
-            const confirmed = await confirmDelete(`Are you sure you want to delete saved state nr ${index}`)
-            if (!confirmed) return
-            await handleDeleteState(index)
-        },
-        { threshold: 500 }
-    )
-
-    function currentSavedStates(): ModeState[] {
-        return savedStates[mode] ?? []
-    }
 
     function canAutoChange() {
         const autoChangeable = ["color", "ranged_float"]
@@ -242,22 +166,6 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                 flexDirection: 'row',
                 justifyContent: 'center',
             }}>
-            {currentSavedStates().map((state, i) => <SavedStateComponent
-                id={i.toString()}
-                index={i}
-                state={state}
-                key={i}
-                onClick={() => setState(state)}
-                longPressFns={longPressAttrs}
-            />)}
-            {!currentStateIsSaved()
-                && <Button onClick={handleSaveState} variant="outlined" color="primary" sx={{
-                    marginRight: '8px',
-                    marginLeft: '8px',
-                    marginBottom: '8px',
-                }}>
-                    <BookmarkAddIcon />
-                </Button>}
 
             {!canAutoChange() &&
                 <Button
@@ -271,9 +179,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                     }}
                 >Submit</Button>
             }
-
         </Grid>
-        <Dialog />
     </form>
 };
 

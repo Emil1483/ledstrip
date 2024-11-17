@@ -9,24 +9,12 @@ import assert from "assert";
 import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
-import { useEffect, useState } from 'react';
-import { useCurrentModes, useChangeMode, useLightsMetaData } from '@/contexts/ModesContext';
-import { AppBarComponent } from '@/components/AppBarComponent';
-import { useSavedStatesStore } from '@/hooks/useSavedStatesStore';
+import { useState } from 'react';
+import { useCurrentModes, useChangeMode } from '@/contexts/ModesContext';
 
 
-interface ModesComponentProps {
-    initialSavedStates: SavedStates;
-}
 
-
-const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) => {
-    const setSavedStates = useSavedStatesStore((state) => state.setSavedStates);
-
-    useEffect(() => {
-        setSavedStates(initialSavedStates)
-    }, [initialSavedStates, setSavedStates])
-
+const ModesComponent: React.FC = () => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
@@ -97,8 +85,7 @@ const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) =
         }
     }
 
-    return <Box sx={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-        <AppBarComponent title={useLightsMetaData().id} />
+    return <>
         <Box sx={{
             flexGrow: 1,
             backgroundColor: '#242635',
@@ -174,7 +161,7 @@ const ModesComponent: React.FC<ModesComponentProps> = ({ initialSavedStates }) =
                 </ModalDialog>
                 : <></>}
         </Modal >
-    </Box>
+    </>
 }
 
 export default ModesComponent

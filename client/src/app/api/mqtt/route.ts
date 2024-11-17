@@ -94,6 +94,8 @@ export async function SOCKET(
             client.on("message", async (message) => {
                 const wsMessage: MessageToWS = JSON.parse(message.toString());
                 if (wsMessage.method == "subscribe") {
+                    // TODO: make sure the user is allowed to subscribe to this topic
+
                     mqttClient.subscribe(wsMessage.topic, (err) => {
                         if (!wsMessage.requestId) return;
                         if (err) {
@@ -132,6 +134,8 @@ export async function SOCKET(
                         }
                     });
                 } else if (wsMessage.method == "publish") {
+                    // TODO: make sure the user is allowed to publish to this topic
+
                     mqttClient.publish(
                         wsMessage.topic,
                         wsMessage.message,
