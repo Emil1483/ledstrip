@@ -1,9 +1,11 @@
-import { prisma } from "@/services/users";
+import { PrismaClient } from "@prisma/client";
 import {
     PrismaClientKnownRequestError,
     PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { NextRequest, NextResponse } from "next/server";
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     try {
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error(error);
         return NextResponse.json(
-            { error: "An error occurred while deleting the saved state" },
+            { error: "An error occurred while fetching ledstrips" },
             { status: 500 }
         );
     }
@@ -44,6 +46,13 @@ export async function POST(request: NextRequest) {
         }
 
         const data = await request.json();
+
+        if (!data.id || !data.name) {
+            return NextResponse.json(
+                { error: "Missing required fields" },
+                { status: 400 }
+            );
+        }
 
         const result = await prisma.ledstrip.create({
             data: {

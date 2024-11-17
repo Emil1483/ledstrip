@@ -1,10 +1,12 @@
-import { prisma } from "@/services/users";
 import { NextRequest, NextResponse } from "next/server";
 import { createClerkClient } from "@clerk/backend";
+import { PrismaClient } from "@prisma/client";
 
 const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
+
+const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest, { params }: any) {
     try {
@@ -32,7 +34,7 @@ export async function GET(request: NextRequest, { params }: any) {
     } catch (error) {
         console.error(error);
         return NextResponse.json(
-            { error: "An error occurred while deleting the saved state" },
+            { error: "An error occurred while fetching user" },
             { status: 500 }
         );
     }
