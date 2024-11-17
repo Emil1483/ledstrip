@@ -230,7 +230,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
         })
 
         if (result.statusCode != 200) {
-            throw Error(`Could not unsubscribe: ${result.response} (${result.statusCode})`)
+            throw Error(`Could not publish: ${result.response} (${result.statusCode})`)
         }
     }
 

@@ -16,8 +16,6 @@ export default async function Page() {
         include: { ledstrips: true },
     });
 
-    // TODO: handle uninitialized user
-
     if (!user) {
         return <>
             <AppBarComponent />
