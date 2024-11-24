@@ -1,9 +1,6 @@
 'use client'
 
-import { Grid, Button, Modal, DialogTitle, alpha, Box } from '@mui/material';
-import ModalClose from '@mui/joy/ModalClose';
-import ModalDialog from "@mui/joy/ModalDialog";
-import Typography from '@mui/joy/Typography';
+import { Grid, Button, Modal, DialogTitle, alpha, Box, Typography } from '@mui/material';
 import KwargsForm from "@/components/kwargsForm";
 import assert from "assert";
 import Stack from '@mui/joy/Stack';
@@ -62,7 +59,7 @@ const ModesComponent: React.FC = () => {
                         alignItems: 'center',
                     }}
                 >
-                    <Typography level="body-sm" textColor="common.white">{key}:</Typography>
+                    <Typography variant='body2' textTransform="capitalize">{key}:</Typography>
                     <div style={{
                         width: 20,
                         height: 20,
@@ -77,11 +74,11 @@ const ModesComponent: React.FC = () => {
             }
 
             if (isRangedFloat(value)) {
-                yield <Typography key={key} level="body-sm" textColor="common.white">{key}: {value.value}</Typography>
+                yield <Typography variant='body2' textTransform="capitalize" key={key}>{key}: {value.value}</Typography>
                 continue
             }
 
-            yield <Typography key={key} level="body-sm" textColor="common.white">{key}: {value}</Typography>
+            yield <Typography variant='body2' textTransform="capitalize" key={key}>{key}: {value}</Typography>
         }
     }
 
@@ -111,7 +108,7 @@ const ModesComponent: React.FC = () => {
                             }}
                         >
 
-                            <Typography level="h4" textColor="common.white" fontWeight="bold">
+                            <Typography variant='h4' fontWeight="bold">
                                 {key.toUpperCase()}
                             </Typography>
 
@@ -133,8 +130,7 @@ const ModesComponent: React.FC = () => {
             sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
         >
             {selectedMode != null ?
-                <ModalDialog
-                    variant="plain"
+                <Box
                     sx={{
                         borderRadius: 'md',
                         p: 4,
@@ -145,7 +141,6 @@ const ModesComponent: React.FC = () => {
                         backgroundColor: '#242635',
                     }}
                 >
-                    <ModalClose id="modal-close" onClick={() => setSelectedMode(null)} />
                     <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
 
                     <Stack spacing={2} sx={{
@@ -158,7 +153,7 @@ const ModesComponent: React.FC = () => {
                         ></KwargsForm>
 
                     </Stack>
-                </ModalDialog>
+                </Box>
                 : <></>}
         </Modal >
     </>

@@ -1,7 +1,6 @@
 'use client'
 
-import * as React from 'react';
-import { Input } from '@mui/joy';
+import { TextField } from "@mui/material";
 
 interface IntInputProps {
     onChange: (value: number | null) => void;
@@ -10,23 +9,15 @@ interface IntInputProps {
 
 const IntInput: React.FC<IntInputProps> = ({ onChange, value }) => {
     return (
-        <Input
-            type='number'
-            value={value}
-            onChange={(event) => {
-                const value = parseFloat(event.target.value)
-                if (isNaN(value)) {
-                    onChange(null)
+        <TextField
+            inputProps={{ type: 'number' }}
+            value={value ?? ''}
+            onChange={(e) => {
+                const value = e.target.value;
+                if (value === '') {
+                    onChange(null);
                 } else {
-                    onChange(value)
-                }
-            }}
-            onKeyDown={(event) => {
-                if (["Tab", "Backspace"].includes(event.key)) {
-                    return
-                }
-                if (isNaN(parseFloat(event.key))) {
-                    event.preventDefault();
+                    onChange(parseInt(value));
                 }
             }}
         />

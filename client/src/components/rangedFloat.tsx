@@ -1,7 +1,7 @@
 'use client'
 
+import { Slider } from "@mui/material";
 import React from "react";
-import { Slider } from "@mui/joy";
 
 interface RangedFloatInputProps {
     onChange: (value: RangedFloat | null) => void;
