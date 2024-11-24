@@ -1,5 +1,4 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { Mode } from "@mui/icons-material";
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 

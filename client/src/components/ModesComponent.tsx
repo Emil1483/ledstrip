@@ -7,9 +7,9 @@ import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
 import { useState } from 'react';
-import { useCurrentModes, useChangeMode, useSavedKwargs } from '@/contexts/ModesContext';
-import { Save } from '@mui/icons-material';
+import { useCurrentModes, useChangeMode, useSavedKwargs, useDeleteSavedKwargs } from '@/contexts/ModesContext';
 import { icons } from '@/models/icons';
+import useConfirm from '@/hooks/useConfirm';
 
 
 
@@ -18,6 +18,8 @@ const ModesComponent: React.FC = () => {
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
     const savedKwargs = useSavedKwargs()
+    const deleteSavedKwargs = useDeleteSavedKwargs()
+    const [ConfirmDialog, confirm] = useConfirm()
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {
@@ -25,6 +27,14 @@ const ModesComponent: React.FC = () => {
         }
         assert(element.parentElement, `Could not find button element`)
         return getButtonElement(element.parentElement)
+    }
+
+    function getElementByClass(element: HTMLElement, className: string): HTMLElement {
+        if (element.classList.contains(className)) {
+            return element
+        }
+        assert(element.parentElement, `Could not find element with class ${className}`)
+        return getElementByClass(element.parentElement, className)
     }
 
     function selectMode(mode: string) {
@@ -37,6 +47,22 @@ const ModesComponent: React.FC = () => {
             const buttonElement = getButtonElement(e.target as HTMLElement);
             const mode = buttonElement.id
             selectMode(mode);
+        },
+        { threshold: 500 }
+    );
+
+    const savedKwargsLongPressAttrs = useLongPress(
+        async (e) => {
+            const buttonElement = getElementByClass(e.target as HTMLElement, "saved-kwargs-button");
+            const id = parseInt(buttonElement.id)
+            const kwargs = savedKwargs.find(kwargs => kwargs.id === id)
+            if (!kwargs) {
+                throw new Error(`Could not find saved kwargs with id ${id}`)
+            }
+            const confirmed = await confirm(`Do you want to delete ${kwargs.name}`)
+            if (confirmed) {
+                await deleteSavedKwargs(id)
+            }
         },
         { threshold: 500 }
     );
@@ -107,7 +133,10 @@ const ModesComponent: React.FC = () => {
                     }
 
                     return <ListItemButton
+                        {...savedKwargsLongPressAttrs}
                         key={kwargs.id}
+                        id={kwargs.id.toString()}
+                        className='saved-kwargs-button'
                         onClick={() => changeMode(kwargs.mode, kwargs.kwargs)}>
                         <ListItemText primary={kwargs.name} />
                         <Icon sx={{ color: color }} />
@@ -156,6 +185,8 @@ const ModesComponent: React.FC = () => {
             mode={selectedMode}
             onClose={() => setSelectedMode(null)}
         ></KwargsFormDialog>
+
+        <ConfirmDialog />
     </>
 }
 

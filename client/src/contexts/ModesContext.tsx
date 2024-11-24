@@ -18,6 +18,7 @@ const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => voi
 const ChangeModeFastContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 const SaveCurrentStateContext = createContext<(name: string, iconId: number) => void>(() => { });
 const SavedKwargsContext = createContext<SavedKwargs[]>([]);
+const DeleteSavedKwargsContext = createContext<(id: number) => void>(() => { });
 
 interface ModesProviderProps {
     children: ReactNode;
@@ -82,12 +83,25 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
         }))
     }
 
+    async function deleteSavedKwargs(id: number) {
+        const result = await fetch(`/api/kwargs/${id}`, {
+            method: "DELETE"
+        })
+        if (!result.ok) {
+            throw new Error("Failed to delete saved kwargs")
+        }
+        toast.success("Deleted successfully")
+        setCurrentSavedKwargs(await result.json())
+    }
+
     return <CurrentModesContext.Provider value={currentModes}>
         <ChangeModeContext.Provider value={changeMode}>
             <ChangeModeFastContext.Provider value={changeModeFast}>
                 <SaveCurrentStateContext.Provider value={saveCurrentState}>
                     <SavedKwargsContext.Provider value={currentSavedKwargs}>
-                        {children}
+                        <DeleteSavedKwargsContext.Provider value={deleteSavedKwargs}>
+                            {children}
+                        </DeleteSavedKwargsContext.Provider>
                     </SavedKwargsContext.Provider>
                 </SaveCurrentStateContext.Provider>
             </ChangeModeFastContext.Provider>
@@ -132,6 +146,14 @@ export function useSavedKwargs() {
     const context = React.useContext(SavedKwargsContext);
     if (!context) {
         throw new Error('useSavedKwargs must be used within a ModesProvider');
+    }
+    return context;
+}
+
+export function useDeleteSavedKwargs() {
+    const context = React.useContext(DeleteSavedKwargsContext);
+    if (!context) {
+        throw new Error('useDeleteSavedKwargs must be used within a ModesProvider');
     }
     return context;
 }
