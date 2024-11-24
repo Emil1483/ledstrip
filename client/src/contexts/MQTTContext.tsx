@@ -283,7 +283,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 export function useMQTTSubscribe() {
     const context = React.useContext(MQTTSubscribeContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModesProvider');
+        throw new Error('useCurrentModes must be used within a MQTTProvider');
     }
     return context;
 }
@@ -291,7 +291,7 @@ export function useMQTTSubscribe() {
 export function useMQTTUnsubscribe() {
     const context = React.useContext(MQTTUnsubscribeContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModesProvider');
+        throw new Error('useCurrentModes must be used within a MQTTProvider');
     }
     return context;
 }
@@ -303,7 +303,7 @@ export function useMQTTWebsocketReadyState() {
 export function useMQTTPublish() {
     const context = React.useContext(MQTTPublishContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModesProvider');
+        throw new Error('useCurrentModes must be used within a MQTTProvider');
     }
     return context;
 }
@@ -311,7 +311,7 @@ export function useMQTTPublish() {
 export function useMQTTPublishFast() {
     const context = React.useContext(MQTTPublishFastContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModesProvider');
+        throw new Error('useCurrentModes must be used within a MQTTProvider');
     }
     return context;
 }
@@ -319,7 +319,7 @@ export function useMQTTPublishFast() {
 export function useMQTTRPCCall() {
     const context = React.useContext(MQTTRPCCallContext);
     if (!context) {
-        throw new Error('useCurrentModes must be used within a ModesProvider');
+        throw new Error('useCurrentModes must be used within a MQTTProvider');
     }
     return context;
 }

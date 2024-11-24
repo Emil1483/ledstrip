@@ -16,6 +16,7 @@ import {
 
 import { Home, Favorite, Flight, Lightbulb } from "@mui/icons-material";
 import { OverridableComponent } from '@mui/material/OverridableComponent';
+import { useSaveCurrentState } from '@/contexts/ModesContext';
 
 interface SaveDialogProps {
     open: boolean;
@@ -23,26 +24,31 @@ interface SaveDialogProps {
 }
 
 interface IconOption {
-    name: string;
+    id: number;
     Icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
         muiName: string;
     };
 };
 
 const iconOptions: IconOption[] = [
-    { name: "Home", Icon: Home },
-    { name: "Plane", Icon: Flight },
-    { name: "Favorite", Icon: Favorite },
-    { name: "Lightbulb", Icon: Lightbulb },
+    { id: 0, Icon: Home },
+    { id: 1, Icon: Flight },
+    { id: 2, Icon: Favorite },
+    { id: 3, Icon: Lightbulb },
 ];
 
 const SaveDialog: React.FC<SaveDialogProps> = ({ open, onClose }) => {
-    const [selectedIcon, setSelectedIcon] = useState<string>("");
+    const saveState = useSaveCurrentState();
 
-    const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const [selectedIcon, setSelectedIcon] = useState<number>(0);
+
+    const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const formJson = Object.fromEntries(formData.entries());
+
+        await saveState(formJson.name as string, selectedIcon);
+
         onClose();
     };
 
@@ -64,12 +70,13 @@ const SaveDialog: React.FC<SaveDialogProps> = ({ open, onClose }) => {
                         <InputLabel id="icon-select-label">Icon</InputLabel>
                         <Select
                             labelId="icon-select-label"
+                            name="icon"
                             value={selectedIcon}
-                            onChange={(event) => setSelectedIcon(event.target.value)}
+                            onChange={(event) => setSelectedIcon(event.target.value as number)}
                             label="Icon"
                         >
-                            {iconOptions.map(({ name, Icon }: any) => (
-                                <MenuItem key={name} value={name}>
+                            {iconOptions.map(({ id, Icon }) => (
+                                <MenuItem key={id} value={id}>
                                     <Icon />
                                 </MenuItem>
                             ))}
