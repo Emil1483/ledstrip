@@ -8,6 +8,9 @@ export async function POST(request: NextRequest, { params }: any) {
         const apiKey = request.headers.get("X-API-Key");
 
         if (process.env.API_KEY != apiKey) {
+            console.error(
+                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
+            );
             return NextResponse.json(
                 { error: "Invalid API Key" },
                 { status: 401 }
@@ -43,6 +46,9 @@ export async function DELETE(request: NextRequest, { params }: any) {
         const apiKey = request.headers.get("X-API-Key");
 
         if (process.env.API_KEY != apiKey) {
+            console.error(
+                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
+            );
             return NextResponse.json(
                 { error: "Invalid API Key" },
                 { status: 401 }
