@@ -11,31 +11,16 @@ import {
     MenuItem,
     TextField,
     Button,
-    SvgIconTypeMap,
 } from '@mui/material';
 
-import { Home, Favorite, Flight, Lightbulb } from "@mui/icons-material";
-import { OverridableComponent } from '@mui/material/OverridableComponent';
 import { useSaveCurrentState } from '@/contexts/ModesContext';
+import { icons } from '@/models/icons';
 
 interface SaveDialogProps {
     open: boolean;
     onClose: () => void;
 }
 
-interface IconOption {
-    id: number;
-    Icon: OverridableComponent<SvgIconTypeMap<{}, "svg">> & {
-        muiName: string;
-    };
-};
-
-const iconOptions: IconOption[] = [
-    { id: 0, Icon: Home },
-    { id: 1, Icon: Flight },
-    { id: 2, Icon: Favorite },
-    { id: 3, Icon: Lightbulb },
-];
 
 const SaveDialog: React.FC<SaveDialogProps> = ({ open, onClose }) => {
     const saveState = useSaveCurrentState();
@@ -75,11 +60,12 @@ const SaveDialog: React.FC<SaveDialogProps> = ({ open, onClose }) => {
                             onChange={(event) => setSelectedIcon(event.target.value as number)}
                             label="Icon"
                         >
-                            {iconOptions.map(({ id, Icon }) => (
-                                <MenuItem key={id} value={id}>
+                            {icons.map(({ Icon, id }) => {
+                                return <MenuItem key={id} value={id}>
                                     <Icon />
                                 </MenuItem>
-                            ))}
+                            }
+                            )}
                         </Select>
                     </FormControl>
                     <TextField

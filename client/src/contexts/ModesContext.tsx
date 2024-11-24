@@ -5,17 +5,24 @@ import { useMQTTPublishFast, useMQTTRPCCall, useMQTTSubscribe } from '@/contexts
 import { MQTTMessage } from '@/models/mqtt';
 import { toast } from 'react-toastify';
 
+interface SavedKwargs {
+    kwargs: ModeState,
+    name: string,
+    iconId: number,
+    mode: string,
+    id: number,
+}
 
 const CurrentModesContext = createContext<Modes>({});
 const ChangeModeContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 const ChangeModeFastContext = createContext<(mode: string, kwargs: ModeState) => void>(() => { });
 const SaveCurrentStateContext = createContext<(name: string, iconId: number) => void>(() => { });
-const SavedKwargsContext = createContext<{ kwargs: ModeKwargs, name: string, iconId: number }[]>([]);
+const SavedKwargsContext = createContext<SavedKwargs[]>([]);
 
 interface ModesProviderProps {
     children: ReactNode;
     ledstrip: Ledstrip;
-    savedKwargs: { kwargs: ModeKwargs, name: string, iconId: number }[];
+    savedKwargs: SavedKwargs[];
 }
 
 
@@ -43,22 +50,17 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        kwargs: currentModes[mode].kwargs,
+                        kwargs: currentModes[mode].state,
                         name: name,
                         iconId: iconId,
+                        mode: mode,
                     })
                 })
                 if (!result.ok) {
                     throw new Error("Failed to save state")
                 }
 
-                setCurrentSavedKwargs((currentSavedKwargs) => [
-                    ...currentSavedKwargs,
-                    {
-                        kwargs: currentModes[mode].kwargs,
-                        name: name,
-                        iconId: iconId,
-                    }])
+                setCurrentSavedKwargs(await result.json())
 
                 toast.success("Saved successfully!")
 

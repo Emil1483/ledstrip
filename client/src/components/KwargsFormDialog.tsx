@@ -9,14 +9,15 @@ import StrInput from "@/components/strInput";
 import ColorInput from "@/components/colorInput";
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import RangedFloatInput from "@/components/rangedFloat";
-import { Box, Button, Grid, IconButton, FormControl, FormLabel } from "@mui/material";
+import { Box, Button, Grid, IconButton, FormControl, FormLabel, Dialog, DialogTitle, DialogContent } from "@mui/material";
 import { Save } from "@mui/icons-material";
 import assert from "assert";
 import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/ModesContext";
 import SaveDialog from "@/components/SaveDialog";
 
 interface KwargsFormProps {
-    mode: string
+    mode: string | null
+    onClose: () => void
 }
 
 function getDefaultState(mode: Mode) {
@@ -32,7 +33,12 @@ function getDefaultState(mode: Mode) {
 }
 
 
-const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
+const KwargsFormDialog: React.FC<KwargsFormProps> = ({ mode, onClose }) => {
+    if (mode === null) {
+        return <></>
+    }
+
+
     const [saving, setSaving] = useState(false)
 
     const currentModes = useCurrentModes()
@@ -84,12 +90,12 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
     }
 
     function* generateInputs() {
-        for (const [key, value] of Object.entries(currentModes[mode].kwargs)) {
+        for (const [key, value] of Object.entries(currentModes[mode!].kwargs)) {
             switch (value.type) {
                 case 'str':
                     yield <FormControl key={key}>
                         <FormLabel
-                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            sx={{ fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
                         <StrInput value={asString(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
@@ -98,7 +104,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                 case 'int':
                     yield <FormControl key={key}>
                         <FormLabel
-                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            sx={{ fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
                         <IntInput value={asNumber(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
@@ -107,7 +113,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                 case 'float':
                     yield <FormControl key={key}>
                         <FormLabel
-                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            sx={{ fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
                         <FloatInput value={asNumber(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
@@ -117,7 +123,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                 case 'color':
                     yield <FormControl key={key} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <FormLabel
-                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            sx={{ fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
                         <ColorInput value={asColor(state[key])} onChange={(value) => { handleStateChange(key, value) }} />
@@ -127,7 +133,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                 case 'ranged_float':
                     yield <FormControl key={key}>
                         <FormLabel
-                            sx={{ color: 'white', fontWeight: 'bold' }}>
+                            sx={{ fontWeight: 'bold' }}>
                             {key}
                         </FormLabel>
                         <RangedFloatInput
@@ -145,19 +151,29 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
 
     function canAutoChange() {
         const autoChangeable = ["color", "ranged_float"]
-        return Object.values(currentModes[mode].kwargs).every(v => autoChangeable.includes(v.type))
+        return Object.values(currentModes[mode!].kwargs).every(v => autoChangeable.includes(v.type))
     }
 
-    return <>
-        <form onSubmit={(event) => {
-            event.preventDefault()
-            changeMode(mode, state)
+
+
+    return <Dialog
+        open={true}
+        onClose={onClose}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+            component: 'form',
+            onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault()
+                changeMode(mode, state)
+            }
         }}>
+        <DialogTitle>{mode.toUpperCase()}</DialogTitle>
+        <DialogContent>
             <Box sx={{
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '16px',
-                backgroundColor: '#242635',
                 width: '100%',
             }}>
                 {Array.from(generateInputs())}
@@ -174,9 +190,7 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                         type="submit"
                         sx={{
                             width: '100%',
-                            backgroundColor: '#1835F2',
                             borderRadius: '8px',
-                            color: 'white',
                             fontWeight: 'bold',
                         }}
                     >Submit</Button>
@@ -192,17 +206,18 @@ const KwargsForm: React.FC<KwargsFormProps> = ({ mode }) => {
                         size="large"
                         sx={{ marginTop: "24px" }}
                         onClick={() => setSaving(true)}>
-                        <Save fontSize="inherit" sx={{ color: "white" }} />
+                        <Save fontSize="inherit" />
                     </IconButton>
                 </Box>
             </Grid>
-        </form>
+        </DialogContent>
+
         <SaveDialog
             open={saving}
             onClose={() => setSaving(false)}
         />
-    </>
+    </Dialog >
 
 };
 
-export default KwargsForm
+export default KwargsFormDialog

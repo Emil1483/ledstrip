@@ -86,7 +86,9 @@ export default async function Page(context: any) {
         return {
             name: kwargs.name,
             iconId: kwargs.iconId,
+            mode: kwargs.mode,
             kwargs: JSON.parse(kwargs.kwargs),
+            id: kwargs.id,
         };
     });
 

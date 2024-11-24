@@ -1,13 +1,15 @@
 'use client'
 
-import { Grid, Button, Modal, DialogTitle, alpha, Box, Typography } from '@mui/material';
-import KwargsForm from "@/components/kwargsForm";
+import { Grid, Button, Modal, DialogTitle, alpha, Box, Typography, List, ListItemButton, ListItemText, Icon, IconButton } from '@mui/material';
+import KwargsFormDialog from "@/components/KwargsFormDialog";
 import assert from "assert";
 import Stack from '@mui/joy/Stack';
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import { useLongPress } from "@uidotdev/usehooks";
 import { useState } from 'react';
-import { useCurrentModes, useChangeMode } from '@/contexts/ModesContext';
+import { useCurrentModes, useChangeMode, useSavedKwargs } from '@/contexts/ModesContext';
+import { Save } from '@mui/icons-material';
+import { icons } from '@/models/icons';
 
 
 
@@ -15,6 +17,7 @@ const ModesComponent: React.FC = () => {
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
     const currentModes = useCurrentModes()
     const changeMode = useChangeMode()
+    const savedKwargs = useSavedKwargs()
 
     function getButtonElement(element: HTMLElement): HTMLElement {
         if (element.tagName === 'BUTTON') {
@@ -85,77 +88,74 @@ const ModesComponent: React.FC = () => {
     return <>
         <Box sx={{
             flexGrow: 1,
-            backgroundColor: '#242635',
             display: "flex",
-            alignItems: "end",
-            padding: "0px 12px 20px 12px",
+            flexDirection: "column",
         }}>
-            <Grid container spacing={2}>
-                {Object.entries(currentModes).map(([key, mode]) => (
-                    <Grid item xs={6} key={key}>
-                        <Button
-                            {...longPressAttrs}
-                            variant="contained"
-                            id={key}
-                            className="mode-button"
-                            onClick={() => onModeClicked(key)}
-                            sx={{
-                                width: '100%',
-                                height: '128px',
-                                backgroundColor: mode.on ? '#1835F2' : '#3E4051',
-                                borderRadius: '8px',
-                                flexDirection: 'column'
-                            }}
-                        >
+            <List sx={{ padding: "0px", flexGrow: 1 }} >
+                {savedKwargs.map((kwargs) => {
+                    const Icon = icons.find(icon => icon.id === kwargs.iconId)?.Icon
+                    if (!Icon) {
+                        throw new Error(`Icon with id ${kwargs.iconId} not found`)
+                    }
 
-                            <Typography variant='h4' fontWeight="bold">
-                                {key.toUpperCase()}
-                            </Typography>
+                    let color = undefined
+                    for (const value of Object.values(kwargs.kwargs)) {
+                        if (isColor(value)) {
+                            color = `rgb(${value.r},${value.g},${value.b})`
+                            break
+                        }
+                    }
+
+                    return <ListItemButton
+                        key={kwargs.id}
+                        onClick={() => changeMode(kwargs.mode, kwargs.kwargs)}>
+                        <ListItemText primary={kwargs.name} />
+                        <Icon sx={{ color: color }} />
+                    </ListItemButton>;
+                })}
+            </List>
+            <Box sx={{
+                display: "flex",
+                alignItems: "end",
+                padding: "0px 12px 20px 12px",
+            }}>
+                <Grid container spacing={2}>
+                    {Object.entries(currentModes).map(([key, mode]) => (
+                        <Grid item xs={6} key={key}>
+                            <Button
+                                {...longPressAttrs}
+                                variant="contained"
+                                id={key}
+                                className="mode-button"
+                                onClick={() => onModeClicked(key)}
+                                color={mode.on ? 'primary' : 'inherit'}
+                                sx={{
+                                    width: '100%',
+                                    height: '128px',
+                                    borderRadius: '8px',
+                                    flexDirection: 'column'
+                                }}
+                            >
+
+                                <Typography variant='h4' fontWeight="bold">
+                                    {key.toUpperCase()}
+                                </Typography>
 
 
-                            <Grid sx={{ flexDirection: 'column' }}>
-                                {Array.from(generateStateComponents(mode.state))}
-                            </Grid>
-                        </Button>
-                    </Grid>)
-                )}
-            </Grid>
+                                <Grid sx={{ flexDirection: 'column' }}>
+                                    {Array.from(generateStateComponents(mode.state))}
+                                </Grid>
+                            </Button>
+                        </Grid>)
+                    )}
+                </Grid>
+            </Box>
         </Box>
 
-        <Modal
-            aria-labelledby="modal-title"
-            aria-describedby="modal-desc"
-            open={selectedMode != null}
+        <KwargsFormDialog
+            mode={selectedMode}
             onClose={() => setSelectedMode(null)}
-            sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-        >
-            {selectedMode != null ?
-                <Box
-                    sx={{
-                        borderRadius: 'md',
-                        p: 4,
-                        boxShadow: 'lg',
-                        width: '85%',
-                        padding: '16px',
-                        color: 'white',
-                        backgroundColor: '#242635',
-                    }}
-                >
-                    <DialogTitle>{selectedMode.toUpperCase()}</DialogTitle>
-
-                    <Stack spacing={2} sx={{
-                        paddingRight: '16px',
-                        paddingLeft: '16px',
-                        paddingBottom: '16px',
-                    }}>
-                        <KwargsForm
-                            mode={selectedMode}
-                        ></KwargsForm>
-
-                    </Stack>
-                </Box>
-                : <></>}
-        </Modal >
+        ></KwargsFormDialog>
     </>
 }
 
