@@ -15,7 +15,10 @@ export async function GET(request: NextRequest, { params }: any) {
         const clerkUser = await clerkClient.users.getUser(userId);
         const ledstripUser = await prisma.user.findUnique({
             where: { id: userId },
-            include: { ledstrips: true },
+            include: {
+                ledstrips: true,
+                savedKwargs: true,
+            },
         });
 
         return NextResponse.json({
