@@ -10,7 +10,7 @@ import ColorInput from "@/components/colorInput";
 import { isColor, isRangedFloat } from "@/models/typeCheckers";
 import RangedFloatInput from "@/components/rangedFloat";
 import { Box, Button, Grid, IconButton, FormControl, FormLabel, Dialog, DialogTitle, DialogContent } from "@mui/material";
-import { Save } from "@mui/icons-material";
+import { Close, Save } from "@mui/icons-material";
 import assert from "assert";
 import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/ModesContext";
 import SaveDialog from "@/components/SaveDialog";
@@ -169,6 +169,19 @@ const KwargsFormDialog: React.FC<KwargsFormProps> = ({ mode, onClose }) => {
             }
         }}>
         <DialogTitle>{mode.toUpperCase()}</DialogTitle>
+        <IconButton
+            aria-label="close"
+            id="modal-close"
+            onClick={onClose}
+            sx={(theme) => ({
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: theme.palette.grey[500],
+            })}
+        >
+            <Close />
+        </IconButton>
         <DialogContent>
             <Box sx={{
                 display: 'flex',

@@ -1,15 +1,19 @@
 import "cypress-real-events";
-import {  } from '@clerk/testing/cypress'
+import {} from "@clerk/testing/cypress";
 
 describe("template spec", () => {
     beforeEach(() => {
         cy.viewport(430, 932);
         cy.visit("/");
         cy.url().should("include", "/sign-in");
-        
+
         const userEmail = Cypress.env("TEST_USER_EMAIL");
         const userPassword = Cypress.env("TEST_USER_PASSWORD");
-        cy.clerkSignIn({ strategy: 'password', identifier: userEmail, password: userPassword })
+        cy.clerkSignIn({
+            strategy: "password",
+            identifier: userEmail,
+            password: userPassword,
+        });
 
         cy.visit("/");
         cy.url({ timeout: 12000 }).should("not.include", "/sign-in");
@@ -17,7 +21,7 @@ describe("template spec", () => {
     });
 
     it("can click each mode button", () => {
-        cy.get(".led-strip-button").click();
+        cy.get(".led-strip-button").should("not.be.disabled").click();
         cy.get(".mode-button").each((button, index, list) => {
             cy.wrap(button).click();
 
@@ -31,7 +35,7 @@ describe("template spec", () => {
     });
 
     it("can long-press each button", () => {
-        cy.get(".led-strip-button").click();
+        cy.get(".led-strip-button").should("not.be.disabled").click();
         cy.wait(100);
         cy.get(".mode-button").each((button, index, list) => {
             cy.wrap(button).realMouseDown();
