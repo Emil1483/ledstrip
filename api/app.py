@@ -1,7 +1,6 @@
 import json
 from os import getenv
 from time import time
-from paho.mqtt.client import MQTTErrorCode
 
 from api.src.mqtt_helpers.mqtt_wrapper import MQTTWrapper
 from api.src.mqtt_helpers.mqtt_rpc_error import MQTTRPCError
@@ -34,7 +33,7 @@ if __name__ == "__main__":
         password=MQTT_PASSWORD,
         use_tls=MQTT_TLS,
     ) as mqtt:
-        logger.info(f"MQTT Server running")
+        logger.info("MQTT Server running")
 
         @lights_mqtt_rpc.register("set_mode")
         def set_mode(mode: str, kwargs: dict):

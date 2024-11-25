@@ -10,18 +10,6 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest, { params }: any) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const id = params.id;
 
         const ledstrip = await prisma.ledstrip.findUnique({
@@ -52,18 +40,6 @@ export async function GET(request: NextRequest, { params }: any) {
 
 export async function DELETE(request: NextRequest, { params }: any) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const id = params.id;
 
         const result = await prisma.ledstrip.delete({
@@ -82,18 +58,6 @@ export async function DELETE(request: NextRequest, { params }: any) {
 
 export async function PATCH(request: NextRequest, { params }: any) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const id = params.id;
 
         const data = await request.json();

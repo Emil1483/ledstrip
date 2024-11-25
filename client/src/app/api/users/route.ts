@@ -10,18 +10,6 @@ const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const clerkUsers = await clerkClient.users.getUserList();
 
         return NextResponse.json(
@@ -48,18 +36,6 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const data = await request.json();
 
         const clerkUser = await clerkClient.users.getUser(data.id);

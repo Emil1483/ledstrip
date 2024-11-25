@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const user = await currentUser();
 
     if (!user) {
-        return NextResponse.json({ error: "Invalid API Key" }, { status: 401 });
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { name, iconId, kwargs, mode } = await request.json();
