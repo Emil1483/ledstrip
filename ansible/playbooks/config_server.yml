@@ -153,15 +153,3 @@
         volumes:
           - "/var/run/docker.sock:/var/run/docker.sock"
           - "portainer_data:/data"
-
-    - name: Start Mosquitto container
-      docker_container:
-        name: mosquitto
-        image: eclipse-mosquitto:latest
-        state: started
-        restart_policy: unless-stopped
-        ports:
-          - "1883:1883"
-          - "9001:9001"
-        networks:
-          - name: ledstrip-network
