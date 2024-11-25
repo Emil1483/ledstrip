@@ -64,12 +64,21 @@ jobs:
         with:
           clean: true
 
+      - name: Set Docker tag
+        id: docker_tag
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
           compose-file: compose.yml
         env:
-          TAG: ${{ github.sha }}
+          TAG: ${{ steps.docker_tag.outputs.tag }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
