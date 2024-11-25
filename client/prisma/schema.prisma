@@ -8,6 +8,24 @@ datasource db {
 }
 
 model User {
-  id          String @id
-  savedStates String
+  id          String        @id
+  ledstrips   Ledstrip[]    @relation("UserLedstrips")
+  savedKwargs SavedKwargs[]
+}
+
+model Ledstrip {
+  id    String @id
+  name  String
+  users User[] @relation("UserLedstrips")
+}
+
+model SavedKwargs {
+  id     Int    @id @default(autoincrement())
+  kwargs String
+  mode   String
+  name   String
+  iconId Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }

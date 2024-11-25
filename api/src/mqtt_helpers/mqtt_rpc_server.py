@@ -100,7 +100,7 @@ class MQTTRPCServer:
 
         if status != MQTT_ERR_SUCCESS:
             raise ValueError(
-                f"Failed to subscribe to reply topic: {topic}. Status: {status}"
+                f"Failed to subscribe to reply topic: {reply_topic}. Status: {status}"
             )
 
         queue: Queue[MQTTMessage] = Queue(1)

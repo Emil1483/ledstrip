@@ -44,3 +44,4 @@
       MQTT_USERNAME: "{{ mqtt_username }}"
       MQTT_PASSWORD: "{{ mqtt_password }}"
       CLERK_PEM_PUBLIC_KEY: "{{ clerk_pem_public_key }}"
+      API_KEY: "{{ api_key }}"

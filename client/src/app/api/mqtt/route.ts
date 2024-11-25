@@ -1,4 +1,5 @@
 import { MessageFromWS, MessageToWS } from "@/models/mqtt";
+import { PrismaClient } from "@prisma/client";
 import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
@@ -12,6 +13,8 @@ const mqttPassword = process.env.MQTT_PASSWORD;
 function sendFromWS(client: import("ws").WebSocket, message: MessageFromWS) {
     client.send(JSON.stringify(message));
 }
+
+const prisma = new PrismaClient();
 
 export async function SOCKET(
     client: import("ws").WebSocket,
@@ -80,6 +83,22 @@ export async function SOCKET(
 
         console.log(`Connecting to MQTT broker at ${mqttUrl}`);
 
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.sub },
+            include: { ledstrips: true },
+        });
+
+        if (user == null) {
+            sendFromWS(client, {
+                type: "error",
+                error: "User not initialized",
+            });
+            client.close(3000);
+            return;
+        }
+
+        const userLedstripIds = user.ledstrips.map((l) => l.id);
+
         const mqttClient = mqtt.connect(mqttUrl, {
             username: mqttUsername,
             password: mqttPassword,
@@ -93,6 +112,21 @@ export async function SOCKET(
 
             client.on("message", async (message) => {
                 const wsMessage: MessageToWS = JSON.parse(message.toString());
+                if (wsMessage.topic.startsWith("lights/")) {
+                    const id = wsMessage.topic.split("/")[1];
+                    if (!userLedstripIds.includes(id)) {
+                        console.error(`User ${user!.id} does not own ${id}`);
+                        if (wsMessage.requestId) {
+                            sendFromWS(client, {
+                                type: "response",
+                                requestId: wsMessage.requestId,
+                                response: `You are not allowed to ${wsMessage.method} to topic ${wsMessage.topic}`,
+                                statusCode: 403,
+                            });
+                        }
+                        return;
+                    }
+                }
                 if (wsMessage.method == "subscribe") {
                     mqttClient.subscribe(wsMessage.topic, (err) => {
                         if (!wsMessage.requestId) return;

@@ -1,46 +1,54 @@
 'use client'
 
 import React from "react";
-import { AppBarComponent } from "@/components/AppBarComponent";
 import { useLedStrips } from "@/contexts/LedStripsContext";
-import { Box, Divider, List, ListItemButton, ListItemText, Typography } from '@mui/material';
+import { Box, Divider, List, ListItemButton, ListItemText } from '@mui/material';
 import Link from "next/link";
 
 
 
 export const LedStripsComponent: React.FC = () => {
-    const ledStrips = useLedStrips()
+    const ledstrips = useLedStrips()
 
-    const calculateOpacity = (value: number): number => {
-        return Math.max(0, Math.min(2, 2 - value)) / 2;
-    };
+    function color(aliveFor: number | undefined) {
+        if (aliveFor == undefined) {
+            return "grey"
+        }
+        if (aliveFor < 2) {
+            const opacity = 1 - aliveFor / 2
+            return `rgba(0, 255, 0, ${opacity})`
+        }
 
-    return <>
-        <AppBarComponent />
-        <div>
-            <List sx={{ width: '100%' }}>
-                {ledStrips.map((strip) => <React.Fragment key={strip.id}>
-                    <Link href={`/${strip.id}`} passHref legacyBehavior>
-                        <ListItemButton className="led-strip-button" key={strip.id}>
-                            <ListItemText primary={`ID: ${strip.id}`} />
-                            <Box
-                                sx={{
-                                    padding: '4px 10px',
-                                    borderRadius: '32px',
-                                    backgroundColor: `rgba(0, 255, 0, ${calculateOpacity(strip.aliveFor)})`, // Green to transparent
-                                    textAlign: 'right',
-                                }}
-                            >
-                                <Typography variant="body2">
-                                    {strip.aliveFor.toFixed(2)}
-                                </Typography>
-                            </Box>
-                        </ListItemButton>
-                    </Link>
-                    <Divider />
-                </React.Fragment>
-                )}
-            </List>
-        </div>
-    </>
+        const opacity = Math.min(1, (aliveFor - 2) / 2)
+        return `rgba(255, 0, 0, ${opacity})`
+    }
+
+    return <List sx={{ padding: "0px" }}>
+        {ledstrips.map((strip) => <React.Fragment key={strip.id}>
+            <Link href={`/${strip.id}`} passHref legacyBehavior>
+                <ListItemButton
+                    className="led-strip-button"
+                    key={strip.id}
+                    sx={{
+                        padding: 0,
+                        margin: 0,
+                        display: 'flex',
+                        height: '64px',
+                    }}
+                    disabled={strip.aliveFor == undefined} >
+                    <Box
+                        sx={{
+                            width: "8px",
+                            height: "100%",
+                            backgroundColor: color(strip.aliveFor),
+                            marginRight: "16px",
+                        }}
+                    />
+                    <ListItemText primary={strip.name} />
+                </ListItemButton>
+            </Link>
+            <Divider />
+        </React.Fragment>
+        )}
+    </List>
 };

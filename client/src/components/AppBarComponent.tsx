@@ -17,21 +17,21 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
     function appbarColor() {
         switch (readyState) {
             case ReadyState.UNINSTANTIATED:
-                return "#a0a0a0";
+                return "warning";
             case ReadyState.CONNECTING:
-                return "#6e7feb";
+                return "secondary";
             case ReadyState.OPEN:
-                return "#1835F2";
+                return "primary";
             case ReadyState.CLOSING:
-                return "#FFA500";
+                return "warning";
             case ReadyState.CLOSED:
-                return "#FF0000";
+                return "error";
         }
     }
 
 
     return (
-        <AppBar position="static" sx={{ backgroundColor: appbarColor() }}  >
+        <AppBar color={appbarColor()} position="static"  >
             <Toolbar>
                 {title && (<Typography variant="h6" component="div">
                     {title}

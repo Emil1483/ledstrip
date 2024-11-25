@@ -7,9 +7,13 @@ services:
       - ./client:/client:rw
     working_dir: /client
     command: >
-      sh -c "npm i -g prisma@5.13.0 && prisma db push"
+      sh -c "npm i -g prisma@5.13.0 ts-node@10.9.2 && prisma db push && prisma db seed"
     environment:
-      DATABASE_URL: "file:./sqlite.db"
+      DATABASE_URL: file:./sqlite.db
+      LEDSTRIP_ID: 0
+      LEDSTRIP_NAME: Test Ledstrip
+      TEST_USER_ID: user_2h0zDqHr3bPJffHWX0SS1D3qMbl
+      CLERK_SECRET_KEY: $CLERK_SECRET_KEY
 
   mosquitto:
     image: eclipse-mosquitto:latest
@@ -28,7 +32,7 @@ services:
     environment:
       - MQTT_HOST=mosquitto
       - LEDSTRIP_SERVICE=canvas
-      - LEDSTRIP_ID=emil
+      - LEDSTRIP_ID=0
 
   client:
     image: superemil64/ledstrip-client:$TAG
@@ -52,6 +56,7 @@ services:
         6MTJ9wjYMiFB3RPAZXFlwJ1bscElMtzd67u6qBD/+9PIOp43m/qIN4dLOaUxo6WJ
         7wIDAQAB
         -----END PUBLIC KEY-----
+      - API_KEY=banana
     depends_on:
       prisma:
         condition: service_completed_successfully

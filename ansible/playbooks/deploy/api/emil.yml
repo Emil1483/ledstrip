@@ -7,7 +7,7 @@
 
   vars:
     led_count: "109"
-    ledstrip_id: "emil"
+    ledstrip_id: "0"
     tag: "{{ tag }}"
 
   tasks:

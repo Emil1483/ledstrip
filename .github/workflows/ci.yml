@@ -7,17 +7,11 @@ on:
     types: [released]
 
 jobs:
-  build-api:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -25,71 +19,44 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          version: "lab:latest"
+          driver: cloud
+          endpoint: "superemil64/default"
+          install: true
+
       - name: Set Docker tag
         id: docker_tag
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" || "${{ github.event_name }}" == "release" ]]; then
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
             echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
           fi
 
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Build API
+        uses: docker/build-push-action@v6
         with:
           file: api/Dockerfile
           platforms: linux/amd64,linux/arm64
-          push: true
           tags: superemil64/ledstrip-api:${{ steps.docker_tag.outputs.tag }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          outputs: type=registry
 
-  build-client:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Set Docker tag
-        id: docker_tag
-        run: |
-          echo "ref type is ${{ github.ref_type }} and event name is ${{ github.event_name }}"
-          if [[ "${{ github.ref_type }}" == "tag" || "${{ github.event_name }}" == "release" ]]; then
-            echo "We are on a tag or release"
-            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
-          else
-            echo "We are not on a tag or release"
-            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
+      - name: Build Client
+        uses: docker/build-push-action@v6
         with:
           context: client
           platforms: linux/amd64
-          push: true
           tags: superemil64/ledstrip-client:${{ steps.docker_tag.outputs.tag }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          outputs: type=registry
 
   test:
     runs-on: ubuntu-22.04
 
     needs:
-      - build-api
-      - build-client
+      - build
 
     steps:
       - name: Checkout repository
@@ -97,12 +64,21 @@ jobs:
         with:
           clean: true
 
+      - name: Set Docker tag
+        id: docker_tag
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Docker Compose
         uses: hoverkraft-tech/compose-action@v2.0.2
         with:
           compose-file: compose.yml
         env:
-          TAG: ${{ github.sha }}
+          TAG: ${{ steps.docker_tag.outputs.tag }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 

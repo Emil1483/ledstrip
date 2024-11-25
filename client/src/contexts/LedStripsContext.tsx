@@ -5,63 +5,59 @@ import { useMQTTSubscribe } from '@/contexts/MQTTContext';
 import { MQTTMessage } from '@/models/mqtt';
 
 
-const LedStripsContext = createContext<Array<{ id: string, aliveFor: number }>>([]);
+const LedStripsContext = createContext<Array<Ledstrip & { aliveFor?: number }>>([]);
 
 interface LedStripProviderProps {
     children: ReactNode;
+    ledstrips: Ledstrip[];
 }
 
-export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children }) => {
-    const [ledStrips, setLedStrips] = useState<{
-        [id: string]: {
-            aliveAt: number,
-            aliveFor: number,
+export const LedStripProvider: React.FC<LedStripProviderProps> = ({ children, ledstrips }) => {
+    const [extendedLedstrips, setLedstrips] = useState<{
+        [id: string]: Ledstrip & {
+            aliveAt?: number,
+            aliveFor?: number,
         }
-    }>({});
+    }>(ledstrips.reduce((acc: any, ledstrip) => {
+        acc[ledstrip.id] = ledstrip;
+        return acc;
+    }, {}));
 
     const subscribe = useMQTTSubscribe();
 
     useEffect(() => {
-        // TODO: get the ids I have access to from prisma
-        ["emil", "aurora"].forEach(i => subscribe(`lights/${i}/health`, (message: MQTTMessage<{ alive_at: number }>) => {
-            setLedStrips((ledStrips) => {
-                const newLedStrips = { ...ledStrips }
-                newLedStrips[i] = {
-                    aliveAt: message.message.alive_at,
-                    aliveFor: (Date.now() / 1000) - message.message.alive_at
-                }
-                return newLedStrips
+        ledstrips.forEach(ledstrip => {
+            subscribe(`lights/${ledstrip.id}/health`, (message: MQTTMessage<{ alive_at: number }>) => {
+                setLedstrips((ledstrips) => {
+                    const newLedstrips = { ...ledstrips }
+                    newLedstrips[ledstrip.id] = {
+                        ...ledstrip,
+                        aliveAt: message.message.alive_at,
+                        aliveFor: (Date.now() / 1000) - message.message.alive_at
+                    }
+                    return newLedstrips
+                })
             })
-        }))
+        });
     }, []);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            Object.keys(ledStrips).forEach((key) => {
-                setLedStrips((ledStrips) => {
-                    const newLedStrips = { ...ledStrips }
-                    newLedStrips[key] = {
-                        aliveAt: newLedStrips[key].aliveAt,
-                        aliveFor: (Date.now() / 1000) - newLedStrips[key].aliveAt
+            Object.keys(extendedLedstrips).forEach((key) => {
+                setLedstrips((ledstrips) => {
+                    const newLedstrips = { ...ledstrips }
+                    const ledstrip = newLedstrips[key]
+                    if (ledstrip && ledstrip.aliveAt) {
+                        newLedstrips[key].aliveFor = (Date.now() / 1000) - ledstrip.aliveAt
                     }
-                    return newLedStrips
+                    return newLedstrips
                 })
             })
         }, 10);
         return () => clearInterval(intervalId);
-    }, [ledStrips])
+    }, [extendedLedstrips])
 
-    function aliveForEntries() {
-        return Object.entries(ledStrips).map(([key, ledStrip]) => {
-            return {
-                id: key,
-                aliveFor: (Date.now() / 1000) - ledStrip.aliveAt
-            }
-        })
-    }
-
-
-    return <LedStripsContext.Provider value={aliveForEntries()}>
+    return <LedStripsContext.Provider value={Object.values(extendedLedstrips)}>
         {children}
     </LedStripsContext.Provider>
 };
