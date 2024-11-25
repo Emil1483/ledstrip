@@ -56,6 +56,7 @@ services:
         6MTJ9wjYMiFB3RPAZXFlwJ1bscElMtzd67u6qBD/+9PIOp43m/qIN4dLOaUxo6WJ
         7wIDAQAB
         -----END PUBLIC KEY-----
+      - API_KEY=banana
     depends_on:
       prisma:
         condition: service_completed_successfully

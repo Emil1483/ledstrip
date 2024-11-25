@@ -10,6 +10,11 @@ const isApiRoute = createRouteMatcher(["/api/:path*"]);
 const isAuthRoute = createRouteMatcher(["/sign-in", "/sign-up"]);
 
 export default clerkMiddleware((auth, req) => {
+    if (!process.env.API_KEY) {
+        console.error("Missing environment variable API_KEY");
+        return new Response("Server is misconfigured!", { status: 500 });
+    }
+
     const apiKey = req.headers.get("X-API-Key");
     if (process.env.API_KEY == apiKey) {
         return;
