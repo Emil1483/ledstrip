@@ -30,7 +30,7 @@ jobs:
       - name: Set Docker tag
         id: docker_tag
         run: |
-          if [[ "${{ github.ref_type }}" == "tag" || "${{ github.event_name }}" == "release" ]]; then
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
           else
             echo "tag=${{ github.sha }}" >> $GITHUB_OUTPUT

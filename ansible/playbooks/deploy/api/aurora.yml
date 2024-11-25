@@ -7,7 +7,7 @@
 
   vars:
     led_count: "109" # TODO Is this right?
-    ledstrip_id: "aurora"
+    ledstrip_id: "1"
     tag: "{{ tag }}"
 
   tasks:
