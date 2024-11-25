@@ -124,10 +124,13 @@ const ModesComponent: React.FC = () => {
                         throw new Error(`Icon with id ${kwargs.iconId} not found`)
                     }
 
-                    let color = undefined
+                    let background = undefined
+                    let foreground = undefined
                     for (const value of Object.values(kwargs.kwargs)) {
                         if (isColor(value)) {
-                            color = `rgb(${value.r},${value.g},${value.b})`
+                            background = `rgb(${value.r},${value.g},${value.b})`
+                            const luminance = (0.299 * value.r + 0.587 * value.g + 0.114 * value.b) / 255;
+                            foreground = luminance > 0.5 ? "black" : "white";
                             break
                         }
                     }
@@ -139,7 +142,16 @@ const ModesComponent: React.FC = () => {
                         className='saved-kwargs-button'
                         onClick={() => changeMode(kwargs.mode, kwargs.kwargs)}>
                         <ListItemText primary={kwargs.name} />
-                        <Icon sx={{ color: color }} />
+                        <Box
+                            sx={{
+                                backgroundColor: background,
+                                borderRadius: '25%',
+                                padding: '6px 12px',
+                                display: 'flex',
+                            }}
+                        >
+                            <Icon sx={{ color: foreground }} />
+                        </Box>
                     </ListItemButton>;
                 })}
             </List>
