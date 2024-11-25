@@ -4,13 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
-export async function POST(request: NextRequest) {
-    const user = await currentUser();
-
-    if (!user) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
+export async function POST(request: NextRequest, { params }: any) {
     const { name, iconId, kwargs, mode } = await request.json();
 
     if (!name) {
@@ -50,7 +44,7 @@ export async function POST(request: NextRequest) {
                 kwargs: JSON.stringify(kwargs),
                 user: {
                     connect: {
-                        id: user.id,
+                        id: params.id,
                     },
                 },
             },
@@ -58,7 +52,7 @@ export async function POST(request: NextRequest) {
 
         const savedKwargs = await prisma.savedKwargs.findMany({
             where: {
-                userId: user.id,
+                userId: params.id,
             },
         });
 

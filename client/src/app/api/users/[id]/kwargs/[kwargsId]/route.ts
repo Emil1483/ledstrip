@@ -11,7 +11,7 @@ export async function DELETE(request: NextRequest, { params }: any) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const id = parseInt(params.id);
+    const id = parseInt(params.kwargsId);
 
     try {
         await prisma.savedKwargs.delete({

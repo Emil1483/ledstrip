@@ -4,6 +4,7 @@ import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { useMQTTPublishFast, useMQTTRPCCall, useMQTTSubscribe } from '@/contexts/MQTTContext';
 import { MQTTMessage } from '@/models/mqtt';
 import { toast } from 'react-toastify';
+import { useAuth } from '@clerk/nextjs';
 
 interface SavedKwargs {
     kwargs: ModeState,
@@ -35,6 +36,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
     const subscribe = useMQTTSubscribe();
     const publishFast = useMQTTPublishFast();
     const rpcCall = useMQTTRPCCall();
+    const auth = useAuth();
 
     useEffect(() => {
         subscribe(`lights/${ledstrip.id}/status`, (message: MQTTMessage<Modes>) => {
@@ -43,9 +45,10 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
     }, []);
 
     async function saveCurrentState(name: string, iconId: number) {
+        const userId = auth.userId
         for (const mode in currentModes) {
             if (currentModes[mode].on) {
-                const result = await fetch("api/kwargs", {
+                const result = await fetch(`api/users/${userId}/kwargs`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -84,7 +87,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
     }
 
     async function deleteSavedKwargs(id: number) {
-        const result = await fetch(`/api/kwargs/${id}`, {
+        const result = await fetch(`/api/users/${auth.userId}/kwargs/${id}`, {
             method: "DELETE"
         })
         if (!result.ok) {
