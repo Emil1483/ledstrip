@@ -16,7 +16,7 @@ import { useChangeMode, useChangeModeFast, useCurrentModes } from "@/contexts/Mo
 import SaveDialog from "@/components/SaveDialog";
 
 interface KwargsFormProps {
-    mode: string | null
+    mode: string
     onClose: () => void
 }
 
@@ -34,11 +34,6 @@ function getDefaultState(mode: Mode) {
 
 
 const KwargsFormDialog: React.FC<KwargsFormProps> = ({ mode, onClose }) => {
-    if (mode === null) {
-        return <></>
-    }
-
-
     const [saving, setSaving] = useState(false)
 
     const currentModes = useCurrentModes()

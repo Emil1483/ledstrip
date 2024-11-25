@@ -1,6 +1,6 @@
 'use client'
 
-import { Grid, Button, Modal, DialogTitle, alpha, Box, Typography, List, ListItemButton, ListItemText, Icon, IconButton } from '@mui/material';
+import { Grid, Button, alpha, Box, Typography, List, ListItemButton, ListItemText, Icon, IconButton } from '@mui/material';
 import KwargsFormDialog from "@/components/KwargsFormDialog";
 import assert from "assert";
 import Stack from '@mui/joy/Stack';
@@ -181,10 +181,12 @@ const ModesComponent: React.FC = () => {
             </Box>
         </Box>
 
-        <KwargsFormDialog
-            mode={selectedMode}
-            onClose={() => setSelectedMode(null)}
-        ></KwargsFormDialog>
+        {selectedMode &&
+            <KwargsFormDialog
+                mode={selectedMode}
+                onClose={() => setSelectedMode(null)}
+            ></KwargsFormDialog>
+        }
 
         <ConfirmDialog />
     </>
