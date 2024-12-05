@@ -9,6 +9,7 @@ import { MQTTProvider } from "@/contexts/MQTTContext";
 import 'react-toastify/dist/ReactToastify.css';
 import theme from '@/theme';
 import { Roboto } from 'next/font/google';
+import { NotificationsProvider } from '@/contexts/NotificationsContext';
 
 const roboto = Roboto({
   weight: ['300', '400', '500', '700'],
@@ -29,9 +30,11 @@ export default function RootLayout({
         <body className={roboto.variable}>
           <ThemeProvider theme={theme}>
             <AppRouterCacheProvider>
-              <MQTTProvider>
-                {children}
-              </MQTTProvider>
+              <NotificationsProvider>
+                <MQTTProvider>
+                  {children}
+                </MQTTProvider>
+              </NotificationsProvider>
             </AppRouterCacheProvider>
           </ThemeProvider>
           <ToastContainer />
