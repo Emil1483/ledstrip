@@ -25,7 +25,7 @@ export const LedStripsComponent: React.FC = () => {
 
     return <List sx={{ padding: "0px" }}>
         {ledstrips.map((strip) => <React.Fragment key={strip.id}>
-            <Link href={`/${strip.id}`} passHref legacyBehavior>
+            <Link href={`/ledstrips/${strip.id}`} passHref legacyBehavior>
                 <ListItemButton
                     className="led-strip-button"
                     key={strip.id}

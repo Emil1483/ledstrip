@@ -9,7 +9,7 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 const prisma = new PrismaClient();
 
 export default async function Page() {
-    const { userId } = auth();
+    const { userId } = await auth();
 
     const user = await prisma.user.findUnique({
         where: { id: userId! },

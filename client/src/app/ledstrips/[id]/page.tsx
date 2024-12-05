@@ -5,18 +5,18 @@ import { PrismaClient } from "@prisma/client";
 import { AppBarComponent } from "@/components/AppBarComponent";
 import { Box, Typography } from "@mui/material";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth } from "@clerk/nextjs/server";
 
 const prisma = new PrismaClient();
 
 export default async function Page(context: any) {
-    const user = await currentUser();
+    const { userId } = await auth();
 
     const ledstrip = await prisma.ledstrip.findUnique({
         where: { id: context.params.id },
         include: {
             users: {
-                where: { id: user!.id },
+                where: { id: userId! },
                 include: { savedKwargs: true },
             },
         },

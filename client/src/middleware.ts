@@ -9,7 +9,7 @@ const isSenseiveApiRoute = createRouteMatcher([
 const isApiRoute = createRouteMatcher(["/api/:path*"]);
 const isAuthRoute = createRouteMatcher(["/sign-in", "/sign-up"]);
 
-export default clerkMiddleware((auth, req) => {
+export default clerkMiddleware(async (auth, req) => {
     if (!process.env.API_KEY) {
         console.error("Missing environment variable API_KEY");
         return new Response("Server is misconfigured!", { status: 500 });
@@ -24,10 +24,12 @@ export default clerkMiddleware((auth, req) => {
         return;
     }
 
+    const { userId, redirectToSignIn } = await auth();
+
     if (isUserRoute(req)) {
         const parts = req.nextUrl.pathname.split("/");
         const paramsId = parts[3];
-        if (auth().userId !== paramsId) {
+        if (userId !== paramsId) {
             return new Response("Unauthorized", { status: 401 });
         }
         return;
@@ -37,11 +39,11 @@ export default clerkMiddleware((auth, req) => {
         return new Response("Invalid API Key", { status: 401 });
     }
 
-    if (!auth().userId) {
+    if (!userId) {
         if (isApiRoute(req)) {
             return new Response("Unauthorized", { status: 401 });
         } else {
-            return auth().redirectToSignIn();
+            return redirectToSignIn();
         }
     }
 });
