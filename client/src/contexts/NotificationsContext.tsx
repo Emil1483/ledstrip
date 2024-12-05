@@ -45,7 +45,7 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
     async function register() {
         const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
         if (!publicKey) {
-            throw new Error('VAPID_PUBLIC_KEY is not set')
+            throw new Error('NEXT_PUBLIC_VAPID_PUBLIC_KEY is not set')
         }
 
         const registration = await navigator.serviceWorker.register('/sw.js', {

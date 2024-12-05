@@ -1,4 +1,4 @@
-# TAG=$(git rev-parse HEAD) CLERK_SECRET_KEY=$(cat .clerk_key) TEST_USER_PASSWORD=$(cat .test_password) docker compose up -d
+# TAG=$(git rev-parse HEAD) VAPID_PRIVATE_KEY=$(cat .vapid_key) CLERK_SECRET_KEY=$(cat .clerk_key) TEST_USER_PASSWORD=$(cat .test_password) docker compose up -d
 
 services:
   prisma:
@@ -45,6 +45,7 @@ services:
     environment:
       - MQTT_URL=ws://mosquitto:9001
       - CLERK_SECRET_KEY=$CLERK_SECRET_KEY
+      - VAPID_PRIVATE_KEY=$VAPID_PRIVATE_KEY
       - DATABASE_URL=file:/app/data/sqlite.db
       - |
         CLERK_PEM_PUBLIC_KEY=-----BEGIN PUBLIC KEY-----

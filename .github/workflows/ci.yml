@@ -80,6 +80,7 @@ jobs:
         env:
           TAG: ${{ steps.docker_tag.outputs.tag }}
           CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          VAPID_PRIVATE_KEY: ${{ secrets.VAPID_PRIVATE_KEY }}
           TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
 
       - name: Wait for cypress to finish

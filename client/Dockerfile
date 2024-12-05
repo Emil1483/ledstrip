@@ -31,6 +31,7 @@ FROM base AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=BD_bJMwIq1wYtXtCLSf1ZyzY_E4yquIccH229JxuKxpW1OwK8pn87LJmGq6xhX808rZdBJwf_R7aXYBzzeUglMk
 
 RUN addgroup -g 1001 -S nodejs
 RUN adduser -S nextjs -u 1001
