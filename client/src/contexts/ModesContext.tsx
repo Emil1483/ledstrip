@@ -48,7 +48,7 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
         const userId = auth.userId
         for (const mode in currentModes) {
             if (currentModes[mode].on) {
-                const result = await fetch(`api/users/${userId}/kwargs`, {
+                const result = await fetch(`/api/users/${userId}/kwargs`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
