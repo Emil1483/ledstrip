@@ -3,13 +3,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { PushSubscription as WebPushSubscription } from "web-push";
 import webpush from "web-push";
 
-webpush.setVapidDetails(
-    "mailto:emil@djupvik.dev",
-    process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-    process.env.VAPID_PRIVATE_KEY!
-);
-
 export async function POST(request: NextRequest, { params }: any) {
+    webpush.setVapidDetails(
+        "mailto:emil@djupvik.dev",
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+        process.env.VAPID_PRIVATE_KEY!
+    );
+
     try {
         const ledstripId = params.id;
 
