@@ -47,6 +47,13 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
             scope: '/',
             updateViaCache: 'none',
         })
+
+        if (!registration.active) {
+            console.error('Service worker not active')
+            setReadyState(NotificationsReadyState.NOT_SUPPORTED)
+            return
+        }
+
         const existing = await registration.pushManager.getSubscription()
 
         if (existing) {
@@ -69,7 +76,8 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
         })
 
         if (!response.ok) {
-            throw new Error('Failed to register for notifications')
+            console.error('Failed to register for notifications')
+            setReadyState(NotificationsReadyState.NOT_SUPPORTED)
         }
 
         setReadyState(NotificationsReadyState.REGISTERED)
