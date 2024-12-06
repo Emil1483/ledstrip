@@ -2,14 +2,17 @@
 
 import { useAuth } from '@clerk/nextjs';
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 export enum NotificationsReadyState {
     NOT_SUPPORTED = 1,
-    SUPPORTED = 2,
-    REGISTERED = 3,
+    UNSUBSCRIBED = 2,
+    SUBSCRIBED = 3,
 }
 
 const ReadyStateContext = createContext<NotificationsReadyState>(NotificationsReadyState.NOT_SUPPORTED);
+const SubscribeContext = createContext<() => void>(() => { });
+const UnsubscribeContext = createContext<() => void>(() => { });
 
 interface NotificationsProviderProps {
     children: ReactNode;
@@ -32,12 +35,11 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
         }
 
         if ('serviceWorker' in navigator && 'PushManager' in window) {
-            setReadyState(NotificationsReadyState.SUPPORTED)
-            register(userId)
+            register()
         }
     }, [isLoaded, userId])
 
-    async function register(userId: string) {
+    async function register() {
         const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
         if (!publicKey) {
             throw new Error('NEXT_PUBLIC_VAPID_PUBLIC_KEY is not set')
@@ -48,18 +50,66 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
             updateViaCache: 'none',
         })
 
+        const existing = await registration.pushManager.getSubscription()
+
+        if (existing) {
+            setReadyState(NotificationsReadyState.SUBSCRIBED)
+        } else {
+            setReadyState(NotificationsReadyState.UNSUBSCRIBED)
+        }
+    }
+
+    async function unsubscribe() {
+        if (readyState !== NotificationsReadyState.SUBSCRIBED) {
+            throw new Error('Not subscribed for notifications')
+        }
+
+        const registration = await navigator.serviceWorker.getRegistration()
+        if (!registration) {
+            throw new Error('Service worker not registered')
+        }
+
         if (!registration.active) {
-            console.error('Service worker not active')
-            setReadyState(NotificationsReadyState.NOT_SUPPORTED)
+            toast.error('Service worker not active')
             return
         }
 
         const existing = await registration.pushManager.getSubscription()
-
-        if (existing) {
-            console.log('Already registered for notifications')
-            setReadyState(NotificationsReadyState.REGISTERED)
+        if (!existing) {
+            console.warn('Subscription not found')
             return
+        }
+
+        await existing.unsubscribe()
+
+        setReadyState(NotificationsReadyState.UNSUBSCRIBED)
+        toast.success('Unsubscribed from notifications')
+    }
+
+    async function subscribe() {
+        if (readyState === NotificationsReadyState.NOT_SUPPORTED) {
+            toast.error('Notifications are not supported')
+            return
+        }
+
+        const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
+        if (!publicKey) {
+            throw new Error('NEXT_PUBLIC_VAPID_PUBLIC_KEY is not set')
+        }
+
+        const registration = await navigator.serviceWorker.getRegistration()
+        if (!registration) {
+            throw new Error('Service worker not registered')
+        }
+
+        if (!registration.active) {
+            toast.error('Service worker not active')
+            return
+        }
+
+        const existing = await registration.pushManager.getSubscription()
+        if (existing) {
+            throw new Error('Already subscribed for notifications')
         }
 
         const sub = await registration.pushManager.subscribe({
@@ -76,16 +126,21 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
         })
 
         if (!response.ok) {
-            console.error('Failed to register for notifications')
-            setReadyState(NotificationsReadyState.NOT_SUPPORTED)
+            toast.error('Failed to upload subscription details')
+            return
         }
 
-        setReadyState(NotificationsReadyState.REGISTERED)
+        setReadyState(NotificationsReadyState.SUBSCRIBED)
+        toast.success('Registered for notifications')
     }
 
 
     return <ReadyStateContext.Provider value={readyState}>
-        {children}
+        <SubscribeContext.Provider value={subscribe}>
+            <UnsubscribeContext.Provider value={unsubscribe}>
+                {children}
+            </UnsubscribeContext.Provider>
+        </SubscribeContext.Provider>
     </ReadyStateContext.Provider>
 
 };
@@ -94,6 +149,22 @@ export function useNotificationsReadyState() {
     const context = React.useContext(ReadyStateContext);
     if (!context) {
         throw new Error('useNotificationsReadyState must be used within a NotificationsProvider');
+    }
+    return context;
+}
+
+export function useSubscribe() {
+    const context = React.useContext(SubscribeContext);
+    if (!context) {
+        throw new Error('useResubscribe must be used within a NotificationsProvider');
+    }
+    return context;
+}
+
+export function useUnsubscribe() {
+    const context = React.useContext(UnsubscribeContext);
+    if (!context) {
+        throw new Error('useUnsubscribe must be used within a NotificationsProvider');
     }
     return context;
 }

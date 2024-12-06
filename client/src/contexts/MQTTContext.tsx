@@ -85,7 +85,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
 
     const { sendMessage, lastMessage, readyState } = useWebSocket("/api/mqtt", {
-        shouldReconnect: (event) => event.code !== 3000,
+        shouldReconnect: (_) => true,
         reconnectAttempts: 500,
         reconnectInterval: 500,
     })
