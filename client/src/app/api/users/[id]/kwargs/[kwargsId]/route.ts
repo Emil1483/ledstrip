@@ -1,7 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/services/prismaService";
 import { NextRequest, NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 export async function PATCH(request: NextRequest, { params }: any) {
     const { name, iconId, kwargs, mode } = await request.json();

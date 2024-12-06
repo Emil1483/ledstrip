@@ -1,22 +1,9 @@
-import { PrismaClient } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/services/prismaService";
 
-const prisma = new PrismaClient();
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest, { params }: any) {
     try {
-        const apiKey = request.headers.get("X-API-Key");
-
-        if (process.env.API_KEY != apiKey) {
-            console.error(
-                `Invalid API Key: ${apiKey} != ${process.env.API_KEY}`
-            );
-            return NextResponse.json(
-                { error: "Invalid API Key" },
-                { status: 401 }
-            );
-        }
-
         const userId = params.id;
 
         const data = await request.json();

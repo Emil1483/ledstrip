@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/services/prismaService";
+
 import {
     PrismaClientKnownRequestError,
     PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { NextRequest, NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     try {

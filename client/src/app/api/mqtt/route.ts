@@ -1,5 +1,6 @@
 import { MessageFromWS, MessageToWS } from "@/models/mqtt";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/services/prismaService";
+
 import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
@@ -13,8 +14,6 @@ const mqttPassword = process.env.MQTT_PASSWORD;
 function sendFromWS(client: import("ws").WebSocket, message: MessageFromWS) {
     client.send(JSON.stringify(message));
 }
-
-const prisma = new PrismaClient();
 
 export async function SOCKET(
     client: import("ws").WebSocket,

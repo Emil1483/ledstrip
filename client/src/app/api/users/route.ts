@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClerkClient } from "@clerk/backend";
-import { PrismaClient } from "@prisma/client";
+
+import { prisma } from "@/services/prismaService";
 
 const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
-
-const prisma = new PrismaClient();
 
 export async function GET(request: NextRequest) {
     try {

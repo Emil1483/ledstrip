@@ -1,13 +1,12 @@
 import React from "react";
 import { ModesProvider } from "@/contexts/ModesContext";
 import ModesComponent from "@/components/ModesComponent";
-import { PrismaClient } from "@prisma/client";
 import { AppBarComponent } from "@/components/AppBarComponent";
 import { Box, Typography } from "@mui/material";
 import SentimentDissatisfiedIcon from "@mui/icons-material/SentimentDissatisfied";
 import { auth } from "@clerk/nextjs/server";
+import { prisma } from "@/services/prismaService";
 
-const prisma = new PrismaClient();
 
 export default async function Page(context: any) {
     const { userId } = await auth();

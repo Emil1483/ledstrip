@@ -3,10 +3,8 @@ import { LedStripsComponent } from "@/components/LedStripsComponent";
 import { LedStripProvider } from "@/contexts/LedStripsContext";
 import { auth } from "@clerk/nextjs/server";
 import { Box, Typography } from "@mui/material";
-import { PrismaClient } from "@prisma/client";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/services/prismaService";
 
 export default async function Page() {
     const { userId } = await auth();

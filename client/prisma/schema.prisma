@@ -8,9 +8,10 @@ datasource db {
 }
 
 model User {
-  id          String        @id
-  ledstrips   Ledstrip[]    @relation("UserLedstrips")
-  savedKwargs SavedKwargs[]
+  id                       String                     @id
+  ledstrips                Ledstrip[]                 @relation("UserLedstrips")
+  savedKwargs              SavedKwargs[]
+  NotificationSubscription NotificationSubscription[]
 }
 
 model Ledstrip {
@@ -28,4 +29,13 @@ model SavedKwargs {
 
   userId String
   user   User   @relation(fields: [userId], references: [id])
+}
+
+model NotificationSubscription {
+  userId    String   @id
+  endpoint  String
+  p256dh    String
+  auth      String
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

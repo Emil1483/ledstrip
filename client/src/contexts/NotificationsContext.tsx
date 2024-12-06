@@ -1,6 +1,6 @@
 'use client'
 
-import { registerUser } from '@/actions';
+import { useAuth } from '@clerk/nextjs';
 import React, { createContext, useState, ReactNode, useEffect } from 'react';
 
 export enum NotificationsReadyState {
@@ -35,14 +35,25 @@ function urlBase64ToUint8Array(base64String: string) {
 export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ children }) => {
     const [readyState, setReadyState] = useState<NotificationsReadyState>(NotificationsReadyState.NOT_SUPPORTED);
 
+    const { isLoaded, userId } = useAuth();
+
     useEffect(() => {
+        if (!isLoaded) {
+            return
+        }
+
+        if (!userId) {
+            setReadyState(NotificationsReadyState.NOT_SUPPORTED)
+            return
+        }
+
         if ('serviceWorker' in navigator && 'PushManager' in window) {
             setReadyState(NotificationsReadyState.SUPPORTED)
-            register()
+            register(userId)
         }
-    }, [])
+    }, [isLoaded, userId])
 
-    async function register() {
+    async function register(userId: string) {
         const publicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
         if (!publicKey) {
             throw new Error('NEXT_PUBLIC_VAPID_PUBLIC_KEY is not set')
@@ -59,9 +70,20 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
             ),
         })
 
-        setReadyState(NotificationsReadyState.REGISTERED)
 
-        await registerUser(sub)
+        const response = await fetch(`/api/users/${userId}/notifications/register`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(sub.toJSON()),
+        })
+
+        if (!response.ok) {
+            throw new Error('Failed to register for notifications')
+        }
+
+        setReadyState(NotificationsReadyState.REGISTERED)
     }
 
 
