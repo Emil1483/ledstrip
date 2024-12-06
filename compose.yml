@@ -9,6 +9,7 @@ services:
     command: >
       sh -c "npm i -g prisma@5.13.0 ts-node@10.9.2 && prisma db push && prisma db seed"
     environment:
+      # sh -c "npm i -g prisma@5.13.0 ts-node@10.9.2 @clerk/backend@^1.19.2 && prisma db push && prisma db seed"
       DATABASE_URL: file:./sqlite.db
       LEDSTRIP_ID: 0
       LEDSTRIP_NAME: Test Ledstrip
