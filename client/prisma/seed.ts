@@ -1,5 +1,7 @@
-import { prisma } from "@/services/prismaService";
+import { PrismaClient } from "@prisma/client";
 import { createClerkClient } from "@clerk/backend";
+
+export const prisma = new PrismaClient();
 
 const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
@@ -27,8 +29,12 @@ async function main() {
         throw new Error("User not found");
     }
 
-    await prisma.user.create({
-        data: {
+    await prisma.user.upsert({
+        where: {
+            id: clerkUser.id,
+        },
+        update: {},
+        create: {
             id: clerkUser.id,
             ledstrips: {
                 create: {
