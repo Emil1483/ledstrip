@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(
             await prisma.ledstrip.findMany({
                 include: {
-                    users: true,
+                    owners: true,
                 },
             })
         );

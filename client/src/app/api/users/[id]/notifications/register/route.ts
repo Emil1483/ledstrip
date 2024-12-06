@@ -11,7 +11,11 @@ export async function POST(request: NextRequest, { params }: any) {
             where: {
                 userId: userId,
             },
-            update: {},
+            update: {
+                endpoint: data.endpoint,
+                p256dh: data.keys.p256dh,
+                auth: data.keys.auth,
+            },
             create: {
                 user: {
                     connect: {

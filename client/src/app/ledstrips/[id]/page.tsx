@@ -14,7 +14,7 @@ export default async function Page(context: any) {
     const ledstrip = await prisma.ledstrip.findUnique({
         where: { id: context.params.id },
         include: {
-            users: {
+            owners: {
                 where: { id: userId! },
                 include: { savedKwargs: true },
             },
@@ -51,7 +51,7 @@ export default async function Page(context: any) {
         </>
     }
 
-    if (ledstrip.users.length == 0) {
+    if (ledstrip.owners.length == 0) {
         return <>
             <AppBarComponent />
             <Box
@@ -80,7 +80,7 @@ export default async function Page(context: any) {
         </>
     }
 
-    const ledstripUser = ledstrip.users[0];
+    const ledstripUser = ledstrip.owners[0];
     const savedKwargs = ledstripUser.savedKwargs.map((kwargs) => {
         return {
             name: kwargs.name,

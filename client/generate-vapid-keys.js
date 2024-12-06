@@ -1,9 +1,10 @@
-const webPush = require('web-push');
-const vapidKeys = webPush.generateVAPIDKeys();
+const webpush = require('web-push');
+
+const vapidKeys = webpush.generateVAPIDKeys();
 
 console.log('Paste the following keys in your .env file:')
 console.log('-------------------')
 console.log(`
-NEXT_PUBLIC_VAPID_PUBLIC_KEY=${vapidKeys.publicKey}
-NEXT_PUBLIC_VAPID_PRIVATE_KEY=${vapidKeys.privateKey}
-`)	
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=${vapidKeys.publicKey} 
+VAPID_PRIVATE_KEY=${vapidKeys.privateKey}
+`)

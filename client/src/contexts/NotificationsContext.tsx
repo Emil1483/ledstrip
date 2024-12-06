@@ -15,22 +15,6 @@ interface NotificationsProviderProps {
     children: ReactNode;
 }
 
-function urlBase64ToUint8Array(base64String: string) {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-    const base64 = (base64String + padding)
-        .replace(/\\-/g, '+')
-        .replace(/_/g, '/')
-
-    const rawData = window.atob(base64)
-    const outputArray = new Uint8Array(rawData.length)
-
-    for (let i = 0; i < rawData.length; ++i) {
-        outputArray[i] = rawData.charCodeAt(i)
-    }
-    return outputArray
-}
-
-
 
 export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ children }) => {
     const [readyState, setReadyState] = useState<NotificationsReadyState>(NotificationsReadyState.NOT_SUPPORTED);
@@ -63,13 +47,18 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
             scope: '/',
             updateViaCache: 'none',
         })
+        const existing = await registration.pushManager.getSubscription()
+
+        if (existing) {
+            console.log('Already registered for notifications')
+            setReadyState(NotificationsReadyState.REGISTERED)
+            return
+        }
+
         const sub = await registration.pushManager.subscribe({
             userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-                publicKey
-            ),
+            applicationServerKey: publicKey
         })
-
 
         const response = await fetch(`/api/users/${userId}/notifications/register`, {
             method: 'POST',

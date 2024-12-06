@@ -13,11 +13,11 @@ export async function GET(request: NextRequest, { params }: any) {
 
         const ledstrip = await prisma.ledstrip.findUnique({
             where: { id },
-            include: { users: true },
+            include: { owners: true },
         });
 
         const users = await Promise.all(
-            ledstrip!.users.map(async (user) => {
+            ledstrip!.owners.map(async (user) => {
                 return {
                     ledstripData: user,
                     clerkData: await clerkClient.users.getUser(user.id),
