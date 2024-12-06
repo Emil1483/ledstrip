@@ -1,14 +1,15 @@
 'use client'
 
-import React from "react";
-import { AppBar, Toolbar, Box, Typography } from '@mui/material';
+import React, { use } from "react";
+import { AppBar, Toolbar, Box, Typography, IconButton } from '@mui/material';
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 import { ReadyState } from "react-use-websocket";
 import { useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
-import { NotificationsReadyState, useNotificationsReadyState } from "@/contexts/NotificationsContext";
+import { NotificationsReadyState, useNotificationsReadyState, useSubscribe, useUnsubscribe } from "@/contexts/NotificationsContext";
 
 import { Notifications, NotificationsOff, NotificationImportant } from "@mui/icons-material";
+import { toast } from "react-toastify";
 
 interface AppBarComponentProps {
     title?: string;
@@ -17,6 +18,8 @@ interface AppBarComponentProps {
 export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
     const mqttReadyState = useMQTTWebsocketReadyState();
     const notificationsReadyState = useNotificationsReadyState();
+    const subscribe = useSubscribe();
+    const unsubscribe = useUnsubscribe();
 
     function appbarColor() {
         switch (mqttReadyState) {
@@ -37,10 +40,22 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
         switch (notificationsReadyState) {
             case NotificationsReadyState.NOT_SUPPORTED:
                 return <NotificationImportant />;
-            case NotificationsReadyState.SUPPORTED:
+            case NotificationsReadyState.UNSUBSCRIBED:
                 return <NotificationsOff />;
-            case NotificationsReadyState.REGISTERED:
+            case NotificationsReadyState.SUBSCRIBED:
                 return <Notifications />;
+        }
+    }
+
+    function toggleSubscribe() {
+        switch (notificationsReadyState) {
+            case NotificationsReadyState.NOT_SUPPORTED:
+                toast.error("Notifications are not supported on this device");
+                return;
+            case NotificationsReadyState.UNSUBSCRIBED:
+                return subscribe();
+            case NotificationsReadyState.SUBSCRIBED:
+                return unsubscribe();
         }
     }
 
@@ -53,7 +68,9 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
             )}
             <Box sx={{ flexGrow: 1 }}></Box>
             <Box sx={{ paddingRight: "12px" }}>
-                {notificationsStatus()}
+                <IconButton onClick={toggleSubscribe} color="inherit">
+                    {notificationsStatus()}
+                </IconButton>
             </Box>
             <SignedOut>
                 <SignInButton />
