@@ -4,7 +4,11 @@ import React, { createContext, useState, ReactNode, useEffect } from 'react';
 import { useMQTTPublishFast, useMQTTRPCCall, useMQTTSubscribe } from '@/contexts/MQTTContext';
 import { MQTTMessage } from '@/models/mqtt';
 import { toast } from 'react-toastify';
-import { useAuth } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs';
+import { useNotifyOwners } from '@/contexts/NotificationsContext';
+import { isColor } from '@/models/typeCheckers';
+import { closest } from 'color-2-name';
+
 
 interface SavedKwargs {
     kwargs: ModeState,
@@ -36,7 +40,9 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
     const subscribe = useMQTTSubscribe();
     const publishFast = useMQTTPublishFast();
     const rpcCall = useMQTTRPCCall();
+    const notifyOwners = useNotifyOwners();
     const auth = useAuth();
+    const user = useUser();
 
     useEffect(() => {
         subscribe(`lights/${ledstrip.id}/status`, (message: MQTTMessage<Modes>) => {
@@ -77,6 +83,47 @@ export const ModesProvider: React.FC<ModesProviderProps> = ({ children, ledstrip
 
     async function changeMode(mode: string, kwargs: ModeState) {
         await rpcCall(`lights/${ledstrip.id}/set_mode`, { mode: mode, kwargs: kwargs })
+
+        const userName = user.user?.firstName
+        if (!userName) {
+            throw new Error("User is not logged in")
+        }
+
+        const kwargsString = Object.entries(kwargs).map(([key, value]) => {
+            if (isColor(value)) {
+                const valueString = closest(`rgb(${value.r},${value.g},${value.b})`).name
+                return `${key}: ${valueString}`
+            }
+
+            if (typeof value === "object") {
+                if (Object.keys(value).length === 1) {
+                    const valueString = Object.values(value)[0].toString()
+                    return `${key}: ${valueString}`
+                } else {
+                    const valueString = Object.entries(value).map(([key, value]) => {
+                        return `${key}: ${value}`
+                    }).join(", ")
+                    return `${key}: (${valueString})`
+                }
+            }
+
+            return `${key}: ${value}`;
+        }).join(", ")
+
+        const savedKwargs = currentSavedKwargs
+            .find(savedKwargs => {
+                const a = JSON.stringify({ mode: savedKwargs.mode, kwargs: savedKwargs.kwargs })
+                const b = JSON.stringify({ mode: mode, kwargs: kwargs })
+                console.log(a, b)
+                return a === b
+            })
+
+        let message = `${userName} set ${ledstrip.name} to ${mode}(${kwargsString})`
+        if (savedKwargs) {
+            message = `${userName} set ${ledstrip.name} to ${savedKwargs.name} | ${mode}(${kwargsString})`
+        }
+
+        await notifyOwners(ledstrip.id, `${ledstrip.name} set to ${mode}`, message)
     };
 
     async function changeModeFast(mode: string, kwargs: ModeState) {

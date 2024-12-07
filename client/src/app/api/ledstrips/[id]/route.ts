@@ -1,11 +1,26 @@
 import { prisma } from "@/services/prismaService";
-import { createClerkClient } from "@clerk/backend";
+import { createClerkClient, User as ClerkData } from "@clerk/backend";
 
 import { NextRequest, NextResponse } from "next/server";
 
 const clerkClient = createClerkClient({
     secretKey: process.env.CLERK_SECRET_KEY,
 });
+
+export interface LedstripResponse {
+    id: string;
+    name: string;
+    users: User[];
+}
+
+export interface Owner {
+    id: string;
+}
+
+export interface User {
+    ledstripData: Owner;
+    clerkData: ClerkData;
+}
 
 export async function GET(request: NextRequest, { params }: any) {
     try {

@@ -141,8 +141,9 @@ const ModesComponent: React.FC = () => {
                         id={kwargs.id.toString()}
                         className='saved-kwargs-button'
                         onClick={() => changeMode(kwargs.mode, kwargs.kwargs)}>
-                        <ListItemText primary={kwargs.name} />
+                        <ListItemText key={kwargs.id} primary={kwargs.name} />
                         <Box
+                            key={kwargs.id + 1}
                             sx={{
                                 backgroundColor: background,
                                 borderRadius: '25%',

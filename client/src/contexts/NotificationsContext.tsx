@@ -13,6 +13,7 @@ export enum NotificationsReadyState {
 const ReadyStateContext = createContext<NotificationsReadyState>(NotificationsReadyState.NOT_SUPPORTED);
 const SubscribeContext = createContext<() => void>(() => { });
 const UnsubscribeContext = createContext<() => void>(() => { });
+const NotifyOwnersContext = createContext<(ledstripId: string, title: string, message: string) => void>(() => { });
 
 interface NotificationsProviderProps {
     children: ReactNode;
@@ -56,6 +57,21 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
             setReadyState(NotificationsReadyState.SUBSCRIBED)
         } else {
             setReadyState(NotificationsReadyState.UNSUBSCRIBED)
+        }
+    }
+
+    async function notifyOwners(ledstripId: string, title: string, message: string) {
+        const response = await fetch(`/api/ledstrips/${ledstripId}/notifyOwners`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ title, message }),
+        })
+
+        if (!response.ok) {
+            toast.error('Failed to notify owners')
+            return
         }
     }
 
@@ -138,7 +154,9 @@ export const NotificationsProvider: React.FC<NotificationsProviderProps> = ({ ch
     return <ReadyStateContext.Provider value={readyState}>
         <SubscribeContext.Provider value={subscribe}>
             <UnsubscribeContext.Provider value={unsubscribe}>
-                {children}
+                <NotifyOwnersContext.Provider value={notifyOwners}>
+                    {children}
+                </NotifyOwnersContext.Provider >
             </UnsubscribeContext.Provider>
         </SubscribeContext.Provider>
     </ReadyStateContext.Provider>
@@ -165,6 +183,14 @@ export function useUnsubscribe() {
     const context = React.useContext(UnsubscribeContext);
     if (!context) {
         throw new Error('useUnsubscribe must be used within a NotificationsProvider');
+    }
+    return context;
+}
+
+export function useNotifyOwners() {
+    const context = React.useContext(NotifyOwnersContext);
+    if (!context) {
+        throw new Error('useNotifyOwners must be used within a NotificationsProvider');
     }
     return context;
 }

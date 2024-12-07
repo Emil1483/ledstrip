@@ -1,4 +1,5 @@
 import { prisma } from "@/services/prismaService";
+import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { PushSubscription as WebPushSubscription } from "web-push";
 import webpush from "web-push";
@@ -9,6 +10,8 @@ export async function POST(request: NextRequest, { params }: any) {
         process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
         process.env.VAPID_PRIVATE_KEY!
     );
+
+    const { userId } = await auth();
 
     try {
         const ledstripId = params.id;
@@ -52,6 +55,14 @@ export async function POST(request: NextRequest, { params }: any) {
         const result: { [userId: string]: boolean } = {};
 
         for (const owner of ledstrip.owners) {
+            if (owner.id == userId) {
+                console.log(
+                    "Skipping sending notification to initializer",
+                    owner.id
+                );
+                continue;
+            }
+
             result[owner.id] = false;
             const subscriptions = owner.notificationSubscriptions;
             if (subscriptions.length == 0) {
