@@ -30,12 +30,9 @@
     image: "{{ docker_hub_username }}/ledstrip-client:{{ tag }}"
     state: started
     restart_policy: unless-stopped
+    network_mode: host
     volumes:
       - ledstrip_client_data:/etc/client_data
-    ports:
-      - "{{ client_port }}:{{ client_port }}"
-    networks:
-      - name: ledstrip-network
     env:
       PORT: "{{ client_port }}"
       CLERK_SECRET_KEY: "{{ clerk_secret_key }}"

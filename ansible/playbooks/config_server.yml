@@ -109,11 +109,6 @@
       docker_volume:
         name: ledstrip_client_data
 
-    - name: Create Ledstrip network
-      docker_network:
-        name: ledstrip-network
-        state: present
-
     - name: Start Caddy container
       docker_container:
         name: caddy
