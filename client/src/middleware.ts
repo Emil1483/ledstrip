@@ -43,14 +43,15 @@ export default clerkMiddleware(async (auth, req) => {
         const parts = req.nextUrl.pathname.split("/");
         const paramsId = parts[3];
 
-        const response = await fetch(
-            `${req.nextUrl.origin}/api/ledstrips/${paramsId}`,
-            {
-                headers: {
-                    "X-API-Key": process.env.API_KEY,
-                },
-            }
-        );
+        const port = process.env.PORT || 3000;
+        const baseUrl = `http://localhost:${port}`;
+
+        const response = await fetch(`${baseUrl}/api/ledstrips/${paramsId}`, {
+            headers: {
+                "X-API-Key": process.env.API_KEY,
+            },
+        });
+
         const ledstripData: LedstripResponse = await response.json();
 
         const user = ledstripData.users.find(
