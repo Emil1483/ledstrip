@@ -1,5 +1,4 @@
 import { LedstripResponse } from "@/app/api/ledstrips/[id]/route";
-import { prisma } from "@/services/prismaService";
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isUserRoute = createRouteMatcher(["/api/users/:id/:path*"]);
