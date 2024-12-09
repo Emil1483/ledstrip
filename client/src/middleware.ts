@@ -43,8 +43,9 @@ export default clerkMiddleware(async (auth, req) => {
         const parts = req.nextUrl.pathname.split("/");
         const paramsId = parts[3];
 
+        const host = process.env.CONTAINER_HOST || "localhost";
         const port = process.env.PORT || 3000;
-        const baseUrl = `http://localhost:${port}`;
+        const baseUrl = `http://${host}:${port}`;
 
         const response = await fetch(`${baseUrl}/api/ledstrips/${paramsId}`, {
             headers: {
