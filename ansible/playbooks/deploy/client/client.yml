@@ -24,6 +24,10 @@
   loop: "{{ running_containers.containers }}"
   when: "'ledstrip-client' in item.Image"
 
+- name: Create Docker network
+  docker_network:
+    name: ledstrip-network
+
 - name: Start Client Docker container
   docker_container:
     name: "client-{{ tag }}"
