@@ -8,6 +8,8 @@ export const AccessTokensComponent: React.FC = () => {
     const addToken = useCreateAccessToken();
     const deleteToken = useDeleteAccessToken();
 
+    console.log(tokens);
+
     return (
         <div>
             <List>

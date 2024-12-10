@@ -31,8 +31,8 @@ export const AccessTokensProvider: React.FC<AccessTokensProviderProps> = ({ chil
             }
         });
         if (response.ok) {
-            const newToken: AccessToken = await response.json();
-            setAccessTokens((prevTokens) => [...prevTokens, newToken]);
+            const newTokens: AccessToken[] = await response.json();
+            setAccessTokens(newTokens);
         } else {
             toast.error('Failed to create access token');
         }
@@ -43,7 +43,8 @@ export const AccessTokensProvider: React.FC<AccessTokensProviderProps> = ({ chil
             method: 'DELETE'
         });
         if (response.ok) {
-            setAccessTokens((prevTokens) => prevTokens.filter(token => token.id !== id));
+            const newTokens: AccessToken[] = await response.json();
+            setAccessTokens(newTokens);
         } else {
             toast.error('Failed to delete access token');
         }
