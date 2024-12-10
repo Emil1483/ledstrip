@@ -12,6 +12,7 @@ model User {
   ledstrips                 Ledstrip[]                 @relation("UserLedstrips")
   savedKwargs               SavedKwargs[]
   notificationSubscriptions NotificationSubscription[]
+  accessTokens              AccessToken[]
 }
 
 model Ledstrip {
@@ -38,4 +39,11 @@ model NotificationSubscription {
   auth      String
   user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
+}
+
+model AccessToken {
+  id     Int    @id @default(autoincrement())
+  token  String
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
 }

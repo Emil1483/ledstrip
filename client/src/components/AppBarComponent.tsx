@@ -1,6 +1,6 @@
 'use client'
 
-import React, { use } from "react";
+import React from "react";
 import { AppBar, Toolbar, Box, Typography, IconButton } from '@mui/material';
 import { SignInButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
@@ -8,8 +8,9 @@ import { ReadyState } from "react-use-websocket";
 import { useMQTTWebsocketReadyState } from "@/contexts/MQTTContext";
 import { NotificationsReadyState, useNotificationsReadyState, useSubscribe, useUnsubscribe } from "@/contexts/NotificationsContext";
 
-import { Notifications, NotificationsOff, NotificationImportant } from "@mui/icons-material";
+import { Notifications, NotificationsOff, NotificationImportant, Key } from "@mui/icons-material";
 import { toast } from "react-toastify";
+import { AccessTokensComponent } from "@/components/AccessTokensComponent";
 
 interface AppBarComponentProps {
     title?: string;
@@ -76,7 +77,11 @@ export const AppBarComponent: React.FC<AppBarComponentProps> = ({ title }) => {
                 <SignInButton />
             </SignedOut>
             <SignedIn>
-                <UserButton />
+                <UserButton>
+                    <UserButton.UserProfilePage label="Access Tokens" labelIcon={<Key />} url="accessTokens">
+                        <AccessTokensComponent />
+                    </UserButton.UserProfilePage>
+                </UserButton>
             </SignedIn>
         </Toolbar>
     </AppBar>
