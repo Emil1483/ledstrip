@@ -26,8 +26,12 @@ export default async function RootLayout({
 }) {
   const { userId } = await auth();
 
+  if (!userId) {
+    return <></>;
+  }
+
   const user = await prisma.user.findUnique({
-    where: { id: userId! },
+    where: { id: userId },
     include: { accessTokens: true },
   });
 

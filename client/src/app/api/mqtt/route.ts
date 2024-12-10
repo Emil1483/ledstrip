@@ -1,7 +1,6 @@
 import { MessageFromWS, MessageToWS } from "@/models/mqtt";
 import { prisma } from "@/services/prismaService";
 
-import { assert } from "console";
 import cookie from "cookie";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import mqtt from "mqtt";
