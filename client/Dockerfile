@@ -31,7 +31,7 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-RUN apt-get install -y openssl
+RUN apk add --no-cache openssl
 
 ENV NODE_ENV=production
 
