@@ -57,9 +57,9 @@ services:
         7wIDAQAB
         -----END PUBLIC KEY-----
       - API_KEY=banana
-    # depends_on:
-    #   prisma:
-    #     condition: service_completed_successfully
+    depends_on:
+      prisma:
+        condition: service_completed_successfully
 
   cypress:
     container_name: cypress
