@@ -27,7 +27,24 @@ export default async function RootLayout({
   const { userId } = await auth();
 
   if (!userId) {
-    return <></>;
+    return <ClerkProvider
+      appearance={{
+        variables: {
+          fontFamily: roboto.style.fontFamily,
+        },
+      }}
+    >
+      <html lang="en">
+        <body className={roboto.variable} style={{ margin: 0 }}>
+          <ThemeProvider>
+            <AppRouterCacheProvider>
+              {children}
+            </AppRouterCacheProvider>
+          </ThemeProvider>
+          <ToastContainer />
+        </body>
+      </html>
+    </ClerkProvider>
   }
 
   const user = await prisma.user.findUnique({
@@ -61,30 +78,29 @@ export default async function RootLayout({
     </Box>
   }
 
-  return (
-    <ClerkProvider
-      appearance={{
-        variables: {
-          fontFamily: roboto.style.fontFamily,
-        },
-      }}
-    >
-      <html lang="en">
-        <body className={roboto.variable} style={{ margin: 0 }}>
-          <ThemeProvider>
-            <AppRouterCacheProvider>
-              <NotificationsProvider>
-                <AccessTokensProvider initialAccessTokens={user.accessTokens}>
-                  <MQTTProvider>
-                    {children}
-                  </MQTTProvider>
-                </AccessTokensProvider>
-              </NotificationsProvider>
-            </AppRouterCacheProvider>
-          </ThemeProvider>
-          <ToastContainer />
-        </body>
-      </html>
-    </ClerkProvider>
-  )
+  return <ClerkProvider
+    appearance={{
+      variables: {
+        fontFamily: roboto.style.fontFamily,
+      },
+    }}
+  >
+    <html lang="en">
+      <body className={roboto.variable} style={{ margin: 0 }}>
+        <ThemeProvider>
+          <AppRouterCacheProvider>
+            <NotificationsProvider>
+              <AccessTokensProvider initialAccessTokens={user.accessTokens}>
+                <MQTTProvider>
+                  {children}
+                </MQTTProvider>
+              </AccessTokensProvider>
+            </NotificationsProvider>
+          </AppRouterCacheProvider>
+        </ThemeProvider>
+        <ToastContainer />
+      </body>
+    </html>
+  </ClerkProvider>
+
 }
