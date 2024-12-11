@@ -8,7 +8,6 @@ ENV NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
 
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
-RUN apk add --no-cache openssl
 
 WORKDIR /app
 
@@ -31,6 +30,8 @@ RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
+
+RUN apt-get install -y openssl
 
 ENV NODE_ENV=production
 
