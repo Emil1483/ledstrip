@@ -35,7 +35,6 @@
       LED_COUNT: "{{ led_count }}"
       LEDSTRIP_ID: "{{ ledstrip_id }}"
       MQTT_HOST: "{{ mqtt_host }}"
-      MQTT_PORT: "8883"
-      MQTT_TLS: "true"
+      MQTT_PORT: "1883"
       MQTT_USERNAME: "{{ mqtt_username }}"
       MQTT_PASSWORD: "{{ mqtt_password }}"

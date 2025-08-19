@@ -50,7 +50,7 @@
       CLERK_SECRET_KEY: "{{ clerk_secret_key }}"
       VAPID_PRIVATE_KEY: "{{ vapid_private_key }}"
       DATABASE_URL: "file://etc/client_data/sqlite.db"
-      MQTT_URL: "wss://{{ mqtt_host }}:8884/mqtt"
+      MQTT_URL: "mqtt://{{ mqtt_host }}:1883"
       MQTT_USERNAME: "{{ mqtt_username }}"
       MQTT_PASSWORD: "{{ mqtt_password }}"
       CLERK_PEM_PUBLIC_KEY: "{{ clerk_pem_public_key }}"

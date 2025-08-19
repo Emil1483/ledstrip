@@ -1,4 +1,4 @@
-# sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass_private client0.yml --diff --extra-vars "tag=v1.2.5"
+# sudo ansible-playbook -i ../../../inventory.yml --vault-id default@/etc/ansible_pass_private client0.yml --diff --extra-vars "tag=v1.3.0"
 
 - name: Deploy Client container on Linode
   hosts: linode
