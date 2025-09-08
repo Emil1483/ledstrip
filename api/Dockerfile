@@ -2,6 +2,7 @@ FROM python:3.11
 
 WORKDIR /app
 
+RUN apt-get update
 RUN apt-get install -y python3-libgpiod
 
 COPY api/requirements.txt api/requirements.txt
