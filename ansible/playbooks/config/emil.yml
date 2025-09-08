@@ -1,0 +1,26 @@
+# sudo ansible-playbook -i ../../inventory.yml --vault-id default@/etc/ansible_pass_private emil.yml --diff
+
+- name: Configure PI with portainer, docker and frpc
+  hosts: emil-local
+  become: true
+  gather_facts: false
+
+  vars_prompt:
+    - name: "portainer_edge_id"
+      prompt: "Portainer Edge ID"
+      private: no
+
+    - name: "portainer_edge_key"
+      prompt: "Portainer Edge Key"
+      private: no
+
+  vars:
+    ssh_alias: "Emil Desk SSH"
+    ssh_remote_port: 6000
+
+  vars_files:
+    - ../../vars.yml
+
+  tasks:
+    - name: Include config tasks
+      include_tasks: pi.yml
