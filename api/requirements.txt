@@ -3,6 +3,7 @@ adafruit-blinka==8.66.0
 adafruit-platformdetect==3.83.1
 RPi.Gpio==0.7.1
 rpi-ws281x==5.0.0
+lgpio==0.2.2.0
 Flask==3.0.2
 python-dotenv==0.21.1
 pydantic==2.7.1
