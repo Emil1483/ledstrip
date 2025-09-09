@@ -31,6 +31,8 @@
     state: started
     restart_policy: unless-stopped
     privileged: true
+    devices:
+      - "/dev/gpiomem:/dev/gpiomem"
     env:
       LED_COUNT: "{{ led_count }}"
       LEDSTRIP_ID: "{{ ledstrip_id }}"
