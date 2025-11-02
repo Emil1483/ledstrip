@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useState, ReactNode, useEffect, useRef } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useRef, useCallback } from 'react';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { v4 as uuidV4 } from 'uuid';
 import pTimeout, { TimeoutError } from 'p-timeout';
@@ -84,11 +84,24 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
 
-    const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket("/api/mqtt", {
+    const [shouldConnect, setShouldConnect] = useState(true);
+
+    const forceRestart = useCallback(() => {
+        setShouldConnect(false);
+
+        setTimeout(() => {
+            setShouldConnect(true);
+        }, 500);
+    }, []);
+
+    const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
+        "/api/mqtt", {
         shouldReconnect: (_) => true,
         reconnectAttempts: 500,
         reconnectInterval: 500,
-    })
+    },
+        shouldConnect,
+    )
 
     const connectingSinceRef = useRef<number | null>(null)
 
@@ -112,6 +125,7 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
             if (connectingTooLong) {
                 console.warn("⚠️ WebSocket stuck in CONNECTING — forcing reconnect")
                 ws?.close(4001, "stuck-connecting")
+                forceRestart()
                 connectingSinceRef.current = null
             }
         }, 3000)
