@@ -84,7 +84,33 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
     }
 
 
-    const [shouldConnect, setShouldConnect] = useState(true);
+    const [shouldConnect, setShouldConnect] = useState(false);
+
+    useEffect(() => {
+        let timeoutId: number | undefined;
+
+        function tryEnable() {
+            if (
+                document.visibilityState === "visible" &&
+                navigator.onLine
+            ) {
+                timeoutId = window.setTimeout(() => {
+                    setShouldConnect(true);
+                }, 500);
+            }
+        }
+
+        tryEnable();
+
+        document.addEventListener("visibilitychange", tryEnable);
+        window.addEventListener("online", tryEnable);
+
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+            document.removeEventListener("visibilitychange", tryEnable);
+            window.removeEventListener("online", tryEnable);
+        };
+    }, []);
 
     const forceRestart = useCallback(() => {
         setShouldConnect(false);
@@ -124,7 +150,6 @@ export const MQTTProvider: React.FC<MQTTProviderProps> = ({ children }) => {
 
             if (connectingTooLong) {
                 console.warn("⚠️ WebSocket stuck in CONNECTING — forcing reconnect")
-                ws?.close(4001, "stuck-connecting")
                 forceRestart()
                 connectingSinceRef.current = null
             }
